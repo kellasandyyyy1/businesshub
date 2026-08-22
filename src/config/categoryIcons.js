@@ -19,7 +19,7 @@ import {
 } from '@tabler/icons-react'
 
 /**
- * Categories store their icon as a kebab-case name (see the seed), so rows
+ * Categories store their icon as a kebab-case name (see db/defaults), so rows
  * stay plain serializable data in IndexedDB. This resolves one to a component.
  */
 const ICONS = {

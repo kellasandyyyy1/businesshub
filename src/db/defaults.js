@@ -1,0 +1,62 @@
+/**
+ * First-run configuration.
+ *
+ * This module holds *configuration only* — the category list a new business
+ * picks from and the baseline settings. It deliberately contains no
+ * transactions, clients, invoices or budgets: a new device opens the app with
+ * an empty ledger and fills it in itself.
+ *
+ * Payment methods are not here. They already have a code-level default in
+ * `hooks/useSettingsData.js` (DEFAULT_PAYMENT_METHODS) and are only written to
+ * the database once the user edits the list.
+ */
+
+/**
+ * The starting chart of accounts. Icon names are bare Tabler names resolved by
+ * `config/categoryIcons.js` — no `ti-` prefix.
+ */
+export const CATEGORIES = [
+  // Income
+  { name: 'Client Payments', type: 'income', icon: 'cash' },
+  { name: 'Retainers', type: 'income', icon: 'repeat' },
+  { name: 'Consulting', type: 'income', icon: 'briefcase' },
+  { name: 'Interest Income', type: 'income', icon: 'percentage' },
+  // Expense
+  { name: 'Software & Subscriptions', type: 'expense', icon: 'device-laptop' },
+  { name: 'Office & Rent', type: 'expense', icon: 'building' },
+  { name: 'Utilities', type: 'expense', icon: 'bolt' },
+  { name: 'Internet & Comms', type: 'expense', icon: 'wifi' },
+  { name: 'Travel & Transport', type: 'expense', icon: 'car' },
+  { name: 'Meals & Entertainment', type: 'expense', icon: 'tools-kitchen-2' },
+  { name: 'Salaries & Contractors', type: 'expense', icon: 'users' },
+  { name: 'Marketing', type: 'expense', icon: 'speakerphone' },
+  { name: 'Taxes & Government', type: 'expense', icon: 'receipt-tax' },
+  { name: 'Equipment', type: 'expense', icon: 'device-desktop' },
+  { name: 'Bank Fees', type: 'expense', icon: 'building-bank' },
+  { name: 'Professional Services', type: 'expense', icon: 'scale' },
+]
+
+/**
+ * Baseline settings. `businessName` is intentionally absent — its absence is
+ * what makes the onboarding gate in App.jsx open on a fresh device. Currency
+ * and locale are overwritten by whatever the user picks during onboarding.
+ */
+export const DEFAULT_SETTINGS = [
+  { key: 'currency', value: 'PHP' },
+  { key: 'symbol', value: '₱' },
+  { key: 'locale', value: 'en-PH' },
+  { key: 'taxRate', value: 0.12 },
+  { key: 'fiscalYearStart', value: '01-01' },
+  { key: 'theme', value: 'system' },
+]
+
+/** Writes the defaults. Runs once, on a database that has just been created. */
+export async function seedDefaults(db) {
+  await db.transaction('rw', db.categories, db.settings, async () => {
+    const createdAt = new Date().toISOString()
+    await db.categories.bulkAdd(CATEGORIES.map((c) => ({ ...c, createdAt })))
+    await db.settings.bulkAdd(DEFAULT_SETTINGS)
+  })
+}
+
+export default seedDefaults

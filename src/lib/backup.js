@@ -70,8 +70,8 @@ export async function importAll(db, payload) {
 }
 
 /**
- * Erases every row, then writes a single marker so the first-run seeding does
- * not immediately refill the database with sample data.
+ * Erases every row, then writes a single marker so the first-run defaults are
+ * not immediately written back.
  */
 export async function clearAll(db) {
   await db.transaction('rw', TABLES.map((name) => db[name]), async () => {

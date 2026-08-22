@@ -39,6 +39,17 @@ export function useAiInsights() {
     setError(null)
 
     const fingerprint = await dataFingerprint()
+
+    // Nothing to analyse yet. A new device starts with an empty ledger, and
+    // asking the model to find patterns in zero rows comes back with an empty
+    // list — which the parse below would raise as an error. Leaving it idle
+    // hands the page to its own rules engine, whose empty state says the
+    // useful thing: there is not enough history yet.
+    if (fingerprint.startsWith('0|0|0|0')) {
+      setState({ status: 'idle', insights: null, generatedAt: null })
+      return
+    }
+
     const cached = await readAiCache('insights')
 
     if (!force && cached && !isStale(cached, fingerprint)) {

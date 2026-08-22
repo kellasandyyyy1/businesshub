@@ -44,7 +44,8 @@ cp .env.example .env     # add your Groq key for the assistant
 npm run dev              # http://localhost:5173
 ```
 
-Sample Philippine business data seeds itself on first run, so nothing is empty.
+A new install starts empty. The first run collects your business name, currency
+and opening balance, and sets up a starting list of categories — nothing else.
 
 `npm run dev` also starts the push server if `server/` is set up; without it the
 app runs fine and the push toggle reads "Not supported".

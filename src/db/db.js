@@ -1,5 +1,5 @@
 import Dexie from 'dexie'
-import { seedDatabase } from './seed'
+import { seedDefaults } from './defaults'
 
 /**
  * Business Finance Hub — local-only database.
@@ -54,6 +54,47 @@ db.version(3)
   .stores({})
   .upgrade((tx) => tx.table('settings').where('key').equals('groqApiKey').delete())
 
+/**
+ * v4 removes the sample business the app used to seed on first run.
+ *
+ * Early builds populated a fictional company — transactions, clients,
+ * invoices and budgets — so the interface never looked empty. That space
+ * belongs to the user's own ledger, so the sample is cleared out here and
+ * nothing takes its place.
+ *
+ * WARNING: this clears the four data tables outright. It cannot tell a seeded
+ * row from one the user typed, so any real data on the device goes with it.
+ * The AI tables go too — both hold output derived from the sample figures.
+ *
+ * Categories and settings survive; they are configuration, not data. The one
+ * exception is a device that was seeded but never onboarded: its business name
+ * came from the sample, so it is dropped and onboarding opens on next load.
+ */
+db.version(4)
+  .stores({})
+  .upgrade(async (tx) => {
+    for (const name of ['transactions', 'clients', 'invoices', 'budgets']) {
+      await tx.table(name).clear()
+    }
+    // Present from v2 onward; guarded so the upgrade cannot fail on a database
+    // that predates them.
+    for (const name of ['categorizationHistory', 'aiCache']) {
+      if (tx.db.tables.some((t) => t.name === name)) await tx.table(name).clear()
+    }
+
+    const settings = tx.table('settings')
+    await settings.where('key').equals('seededAt').delete()
+
+    // A device that was seeded but never onboarded carries the sample
+    // business's identity — its name and its invoice numbering. Both go, so
+    // onboarding opens on the next load and invoice numbers restart at the
+    // default prefix. A device the user really onboarded keeps what they typed.
+    const onboarded = await settings.where('key').equals('onboarded').first()
+    if (onboarded?.value !== true) {
+      await settings.where('key').anyOf(['businessName', 'invoicePrefix']).delete()
+    }
+  })
+
 /** Enum-ish constants so pages and forms never hand-write these strings. */
 export const TRANSACTION_TYPES = ['income', 'expense', 'transfer']
 export const TRANSACTION_STATUSES = ['cleared', 'pending']
@@ -73,13 +114,17 @@ export async function putSetting(key, value) {
 }
 
 /**
- * Opens the database, seeding sample data the first time it is created.
- * Safe to call more than once — seeding is skipped once tables hold rows.
+ * Opens the database, writing the default categories and settings the first
+ * time it is created. No sample data is written — a new device starts with an
+ * empty ledger and onboarding collects the rest.
+ *
+ * Safe to call more than once, and skipped after Settings → Data → clear all,
+ * which leaves an `initialized` marker behind.
  */
 export async function initDb() {
   await db.open()
   const count = await db.settings.count()
-  if (count === 0) await seedDatabase(db)
+  if (count === 0) await seedDefaults(db)
   return db
 }
 
