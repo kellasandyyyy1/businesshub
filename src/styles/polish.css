@@ -394,9 +394,27 @@
   color: var(--ink);
 }
 
-/* The sentence wraps before the action does on a narrow screen. */
+/* The sentence takes the line and the action drops beneath it. Wrapping alone
+   was not enough: the text flexes, so it shrank to make room for the button
+   instead of pushing it down — 166px of sentence broken over three lines with
+   a 44px close target beside it. Giving the action a full-width basis is what
+   actually moves it. */
 @media (max-width: 560px) {
+  .bfh-aihint {
+    align-items: flex-start;
+    padding: 10px 12px;
+  }
   .bfh-aihint__body {
     flex-wrap: wrap;
+    row-gap: 4px;
+  }
+  .bfh-aihint__text {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .bfh-aihint__try {
+    flex-basis: 100%;
+    padding: 0;
+    text-align: left;
   }
 }
