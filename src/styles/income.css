@@ -1,0 +1,211 @@
+/* ==========================================================================
+   Income
+   ========================================================================== */
+
+/* The page's own heading row. Smaller than the display title the placeholder
+   routes use — this page has real content under it and does not need a banner. */
+.bfh-pagehead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bfh-pagehead__title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: var(--weight-medium);
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+/* Metric cards on this page are readouts, not links to somewhere else. */
+.bfh-metric--static {
+  cursor: default;
+}
+
+/* The top-source card holds a name, which has no business being tabular. */
+.bfh-metric--static .bfh-metric__value {
+  font-variant-numeric: normal;
+  overflow-wrap: anywhere;
+}
+
+/* ---- Chart and breakdown ---------------------------------------------------- */
+
+.bfh-income__split {
+  display: grid;
+  /* The chart takes the slack; the breakdown keeps a fixed column. 360px, not
+     320: an expense category like "Salaries & Contractors" needs the room once
+     an icon and a bar are sharing the row with it. */
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 10px;
+  align-items: start;
+  width: 100%;
+}
+
+@media (max-width: 1023px) {
+  .bfh-income__split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.bfh-breakdown {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.bfh-breakdown__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.bfh-breakdown__list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+}
+
+.bfh-breakdown__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+}
+.bfh-breakdown__row + .bfh-breakdown__row {
+  border-top: var(--hairline) solid var(--b);
+}
+
+/* The name gets a floor before the bar is allowed any width. In a 320px card a
+   plain 1:2 split leaves so little room that even "Retainers" clips. */
+.bfh-breakdown__name {
+  flex: 1 1 auto;
+  min-width: 84px;
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The track is the full width; the fill is this row against the largest row. */
+.bfh-breakdown__bar {
+  flex: 2 1 30px;
+  min-width: 24px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--b);
+  overflow: hidden;
+}
+
+.bfh-breakdown__fill {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--ink);
+}
+
+.bfh-breakdown__amount {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.bfh-breakdown__share {
+  flex: none;
+  width: 36px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--ink3);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.bfh-breakdown__more {
+  align-self: flex-start;
+  margin-top: 10px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Narrow phones cannot spare the bar; the number is what matters. */
+@media (max-width: 400px) {
+  .bfh-breakdown__bar {
+    display: none;
+  }
+}
+
+/* ---- Transactions table ------------------------------------------------------ */
+
+.bfh-ledger__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+/* A ghost field, narrower than the toolbar's — it sits beside a heading. */
+.bfh-search--sm {
+  flex: 0 1 220px;
+  height: 32px;
+  max-width: 240px;
+}
+@media (max-width: 767px) {
+  .bfh-search--sm {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+}
+
+.bfh-cell-client {
+  font-size: 12px;
+  color: var(--ink2);
+  white-space: nowrap;
+}
+
+/* Both ledgers keep the amount in plain ink — direction is carried by the
+   minus sign on the expense side, never by colour. */
+.bfh-table--income .bfh-cell-amount,
+.bfh-table--expense .bfh-cell-amount {
+  color: var(--ink);
+}
+
+.bfh-table--income .bfh-cell-status,
+.bfh-table--expense .bfh-cell-status {
+  text-align: right;
+}
+
+.bfh-table--income .bfh-status-pill,
+.bfh-table--expense .bfh-status-pill {
+  text-transform: uppercase;
+}
+
+/* An icon may sit beside the label, so the name cell is itself a row. */
+.bfh-breakdown__name {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.bfh-breakdown__name svg {
+  flex: none;
+  color: var(--ink2);
+}
+
+.bfh-breakdown__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

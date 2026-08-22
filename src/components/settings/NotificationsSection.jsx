@@ -1,0 +1,144 @@
+import { useEffect, useState } from 'react'
+
+import { putSetting } from '../../db/db'
+import {
+  isPushConfigured,
+  isPushEnabled,
+  isPushSupported,
+  subscribeToPush,
+  unsubscribeFromPush,
+} from '../../lib/push'
+
+/**
+ * These drive the bell indicator and the dashboard's attention list. The brief
+ * named the section without specifying its contents, so the toggles map to the
+ * alerts the app already computes rather than inventing new ones.
+ */
+const TOGGLES = [
+  {
+    key: 'notifyOverdue',
+    label: 'Overdue invoices',
+    note: 'Count an invoice as needing attention once it passes its due date.',
+    fallback: true,
+  },
+  {
+    key: 'notifyBudgets',
+    label: 'Budget warnings',
+    note: 'Flag a budget once spending passes 80% of its limit.',
+    fallback: true,
+  },
+  {
+    key: 'notifyPending',
+    label: 'Uncleared transactions',
+    note: 'Remind me about entries still marked pending.',
+    fallback: true,
+  },
+  {
+    key: 'notifyWeekly',
+    label: 'Weekly summary',
+    note: 'Show a recap of the week the first time the app opens on a Monday.',
+    fallback: false,
+  },
+]
+
+/* Shown only after someone actually tries the toggle, never while the section
+   is sitting idle, and worded for the person reading it rather than for
+   whoever wrote the fetch. */
+const FAILURE_NOTE = {
+  denied: 'Notifications are blocked for this site in your browser settings.',
+  server: 'Push server unavailable. Try again later.',
+  unsupported: 'This browser cannot receive push notifications.',
+  unconfigured: 'Push notifications are not set up for this build.',
+}
+
+export default function NotificationsSection({ settings }) {
+  const [pushOn, setPushOn] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [failure, setFailure] = useState(null)
+
+  // localStorage is not available during the first render on every host. No
+  // failure is surfaced here: an untouched toggle has nothing to report yet.
+  useEffect(() => {
+    setPushOn(isPushEnabled())
+  }, [])
+
+  // A build with no backend URL, or a browser without the APIs, has no honest
+  // toggle to offer, so it says "Not supported" rather than a dead switch.
+  const available = isPushSupported() && isPushConfigured()
+
+  const togglePush = async () => {
+    setBusy(true)
+    setFailure(null)
+    if (pushOn) {
+      await unsubscribeFromPush()
+      setPushOn(false)
+    } else {
+      const result = await subscribeToPush()
+      if (result.ok) setPushOn(true)
+      else setFailure(result.reason)
+    }
+    setBusy(false)
+  }
+
+  return (
+    <div className="bfh-settings__body">
+      <h2 className="bfh-panel__title">Notifications</h2>
+      <p className="bfh-settings__note">
+        Everything is calculated on this device. Turning push on registers this browser with the
+        delivery server — it stores nothing but that registration.
+      </p>
+
+      <ul className="bfh-catlist">
+        {TOGGLES.map((toggle) => {
+          const value = settings[toggle.key] ?? toggle.fallback
+          return (
+            <li key={toggle.key} className="bfh-catrow bfh-catrow--stacked">
+              <span className="bfh-catrow__body">
+                <span className="bfh-catrow__name">{toggle.label}</span>
+                <span className="bfh-settings__note">{toggle.note}</span>
+              </span>
+
+              <button
+                type="button"
+                className="bfh-switch"
+                role="switch"
+                aria-checked={value}
+                aria-label={toggle.label}
+                onClick={() => putSetting(toggle.key, !value)}
+              >
+                <span className="bfh-switch__knob" />
+              </button>
+            </li>
+          )
+        })}
+      </ul>
+
+      <section className="bfh-push">
+        <div className="bfh-catrow bfh-catrow--stacked bfh-push__row">
+          <span className="bfh-catrow__body">
+            <span className="bfh-catrow__name">Push notifications</span>
+            <span className="bfh-settings__note">Get alerts when you&rsquo;re away from the app.</span>
+          </span>
+
+          {available ? (
+            <button
+              type="button"
+              className="bfh-switch"
+              role="switch"
+              aria-checked={pushOn}
+              aria-label="Push notifications"
+              disabled={busy}
+              onClick={togglePush}
+            >
+              <span className="bfh-switch__knob" />
+            </button>
+          ) : (
+            <span className="bfh-micro bfh-push__unsupported">Not supported</span>
+          )}
+        </div>
+
+        {failure && <p className="bfh-push__failure">{FAILURE_NOTE[failure]}</p>}
+      </section>
+    </div>
+  )
+}

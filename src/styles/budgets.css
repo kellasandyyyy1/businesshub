@@ -1,0 +1,206 @@
+/* ==========================================================================
+   Budgets and Cash flow
+   ========================================================================== */
+
+.bfh-pagetitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: var(--weight-medium);
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.bfh-summary--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 620px) {
+  .bfh-summary--3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.bfh-summary__value--lg {
+  font-size: 18px;
+}
+
+/* ---- Budget cards --------------------------------------------------------- */
+
+.bfh-budgets {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (max-width: 760px) {
+  .bfh-budgets {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.bfh-budget {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--card-padding);
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  box-shadow: var(--shadow-card);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    box-shadow var(--duration-shadow) var(--ease-out-soft),
+    transform var(--duration-transform) var(--ease-out-soft);
+}
+.bfh-budget:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+.bfh-budget__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.bfh-budget__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+.bfh-budget__title span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Over 80% used, the percentage takes a dashed underline. The bar stays ink —
+   caution is signalled by treatment, never by colour. */
+.bfh-budget__pct {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink3);
+  font-variant-numeric: tabular-nums;
+}
+.bfh-budget__pct[data-caution='true'] {
+  color: var(--ink2);
+  border-bottom: 1px dashed var(--b2);
+  padding-bottom: 1px;
+}
+
+.bfh-budget__amount {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink2);
+}
+
+.bfh-budget__split {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--ink2);
+}
+
+.bfh-budget__track {
+  display: block;
+  height: 4px;
+  margin-top: 2px;
+  border-radius: 2px;
+  background: var(--b);
+  overflow: hidden;
+}
+
+.bfh-budget__fill {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--ink);
+  transition: width var(--duration-transform) var(--ease-out-soft);
+}
+
+.bfh-budget__warn {
+  align-self: flex-start;
+  padding-bottom: 2px;
+  border-bottom: 1px dashed var(--b2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--ink2);
+}
+
+.bfh-budget__cat {
+  margin-top: 2px;
+}
+
+/* Delete sits apart from the confirm/cancel pair. */
+.bfh-modal__delete {
+  margin-right: auto;
+}
+
+/* ---- Cash flow ------------------------------------------------------------ */
+
+.bfh-cashchart {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.bfh-inline-prompt {
+  align-self: flex-start;
+  margin-top: 2px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--ink-c) / 0.25);
+  text-underline-offset: 2px;
+  transition:
+    color var(--duration-micro) var(--ease-out-soft),
+    text-decoration-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-inline-prompt:hover {
+  color: var(--ink);
+  text-decoration-color: rgb(var(--ink-c));
+}
+
+.bfh-inline-form {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+.bfh-inline-form input {
+  width: 100%;
+  min-width: 0;
+  padding: 5px 8px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-xs);
+  background: var(--bg);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink);
+  outline: none;
+}
+.bfh-inline-form input:focus {
+  border-color: var(--ink);
+}
+.bfh-inline-form .bfh-btn-primary--inline {
+  height: 26px;
+  padding: 0 10px;
+}
+
+/* The upcoming table's tabs sit inside the card, above the header row. */
+.bfh-tabs--flush {
+  border-bottom: var(--hairline) solid var(--b);
+  margin: 0 calc(var(--card-padding) * -1);
+  padding: 0 var(--card-padding);
+}

@@ -1,0 +1,853 @@
+/* ==========================================================================
+   Responsive retrofit — layout only.
+   Layers: bottom nav 50 · FAB 60 · panels/modals 100 · sheets 100 ·
+           command bar 110 · onboarding 120.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Sidebar rail
+   Full at 1280+, icon-only 1024–1279, gone below that (bottom nav takes over).
+   -------------------------------------------------------------------------- */
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  :root {
+    --shell-sidebar: var(--shell-sidebar-collapsed);
+  }
+}
+
+@media (max-width: 1023px) {
+  :root {
+    --shell-sidebar: 0px;
+  }
+  .bfh-sidebar {
+    display: none;
+  }
+  /* The bottom bar is the navigation below 1024px; a second drawer would be
+     two systems doing one job. */
+  .bfh-hamburger,
+  .bfh-sidebar__scrim {
+    display: none !important;
+  }
+}
+
+/* Tooltip for the collapsed rail, since the label is gone. */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .bfh-nav__item {
+    position: relative;
+  }
+  .bfh-nav__item:hover::after {
+    content: attr(data-label);
+    position: absolute;
+    left: calc(100% + 8px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--card);
+    border: var(--hairline) solid var(--b2);
+    border-radius: var(--radius-sm);
+    padding: 5px 10px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: var(--ink);
+    white-space: nowrap;
+    z-index: 100;
+    pointer-events: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Topbar and content well
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .bfh-greeting {
+    font-size: 14px;
+  }
+  /* The date line and the period switcher move into the page itself. */
+  .bfh-greeting__sub,
+  .bfh-topbar .bfh-periods {
+    display: none;
+  }
+  .bfh-topbar {
+    padding: 0 16px;
+  }
+  .bfh-main {
+    padding: 16px;
+  }
+}
+
+@media (min-width: 768px) {
+  .bfh-main {
+    padding: 18px 20px;
+  }
+}
+
+/* Clear the bottom bar and the home indicator. */
+@media (max-width: 1023px) {
+  .bfh-main {
+    padding-bottom: calc(56px + env(safe-area-inset-bottom) + 16px);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Bottom navigation
+   -------------------------------------------------------------------------- */
+
+.bfh-bottomnav {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 50;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  height: calc(56px + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--card);
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-bottomnav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 56px;
+  border: 0;
+  background: transparent;
+  color: var(--ink3);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-bottomnav__item:hover {
+  color: var(--ink2);
+}
+.bfh-bottomnav__item[aria-current='page'],
+.bfh-bottomnav__item[aria-current='true'] {
+  color: var(--ink);
+}
+
+.bfh-bottomnav__label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  line-height: 1;
+}
+
+/* --------------------------------------------------------------------------
+   More drawer
+   -------------------------------------------------------------------------- */
+
+.bfh-moredrawer {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+}
+
+.bfh-moredrawer__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: rgb(0 0 0 / 0.3);
+  animation: bfh-fade var(--duration-micro) var(--ease-out-soft);
+}
+
+.bfh-moredrawer__sheet {
+  position: relative;
+  width: 100%;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 0 8px calc(12px + env(safe-area-inset-bottom));
+  background: var(--card);
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
+  animation: bfh-sheet-up 280ms var(--ease-out-soft);
+}
+
+@keyframes bfh-sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.bfh-moredrawer__handle {
+  display: block;
+  width: 32px;
+  height: 4px;
+  margin: 12px auto 8px;
+  border-radius: var(--radius-pill);
+  background: var(--b2);
+}
+
+.bfh-moredrawer__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.bfh-moredrawer__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--ink2);
+  text-decoration: none;
+}
+.bfh-moredrawer__list li + li .bfh-moredrawer__item {
+  border-top: var(--hairline) solid var(--b);
+  border-radius: 0;
+}
+.bfh-moredrawer__item[aria-current='page'] {
+  color: var(--ink);
+  font-weight: var(--weight-medium);
+}
+
+/* --------------------------------------------------------------------------
+   Floating action button
+   -------------------------------------------------------------------------- */
+
+.bfh-fab {
+  position: fixed;
+  right: 20px;
+  bottom: calc(72px + env(safe-area-inset-bottom));
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+  box-shadow: 0 4px 14px -4px rgb(0 0 0 / 0.3);
+  cursor: pointer;
+}
+
+/* The AI launcher would otherwise sit under the bottom bar on a tablet. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .bfh-ai-fab {
+    bottom: calc(76px + env(safe-area-inset-bottom));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Overlay stacking — modals and panels must clear the bottom nav and FAB
+   -------------------------------------------------------------------------- */
+
+.bfh-modal {
+  z-index: 100;
+}
+.bfh-panel {
+  z-index: 100;
+}
+.bfh-ask {
+  z-index: 110;
+}
+.bfh-onboard {
+  z-index: 120;
+}
+
+/* --------------------------------------------------------------------------
+   Modals become bottom sheets on mobile
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .bfh-modal {
+    place-items: end stretch;
+    padding: 0;
+  }
+  .bfh-modal__panel {
+    width: 100%;
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    overflow-y: auto;
+    padding-bottom: env(safe-area-inset-bottom);
+    animation: bfh-sheet-up 280ms var(--ease-out-soft);
+  }
+  /* The grab handle that says "this drags up from the bottom". */
+  .bfh-modal__panel::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 4px;
+    margin: 10px auto 0;
+    border-radius: var(--radius-pill);
+    background: var(--b2);
+  }
+  .bfh-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Slide-in panels become full screen on mobile
+   -------------------------------------------------------------------------- */
+
+/* A back arrow reads as "up a level" on a full-screen view; an X does not. */
+.bfh-panel__back {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 8px 0 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink2);
+  cursor: pointer;
+}
+
+
+@media (max-width: 767px) {
+  .bfh-panel,
+  .bfh-panel--wide {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    border-left: 0;
+    border-radius: 0;
+  }
+  .bfh-panel__close {
+    display: none;
+  }
+  .bfh-panel__back {
+    display: inline-flex;
+  }
+  .bfh-panel__foot {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Dashboard
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .bfh-metrics {
+    /* minmax(0,…) not 1fr: a long value — a client name in the top-source
+       card — would otherwise stretch its column and leave the pair uneven. */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 8px;
+  }
+  .bfh-metric__value {
+    font-size: 17px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+  .bfh-metrics {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 10px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .bfh-metrics {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Chart and the health/alerts stack sit side by side only on desktop. */
+@media (max-width: 1023px) {
+  .bfh-split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* In-page period pills, since the topbar switcher is hidden on mobile. */
+.bfh-periodpills {
+  display: none;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+.bfh-periodpills::-webkit-scrollbar {
+  display: none;
+}
+@media (max-width: 767px) {
+  .bfh-periodpills {
+    display: flex;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Transactions and invoices — table becomes a card list on mobile
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .bfh-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    /* A wrapping column sizes its line to the widest item, and the filter row's
+       max-content width is far wider than the screen — which then stretched the
+       search field to match and pushed both off the right edge. */
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  .bfh-toolbar > * {
+    width: 100%;
+    min-width: 0;
+  }
+  .bfh-search {
+    /* The toolbar is a column here, so the desktop `flex: 1 1 220px` would
+       make the field grow down the page instead of across it. */
+    flex: 0 0 auto;
+    height: 40px;
+    max-width: none;
+  }
+  .bfh-toolbar__filters {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+  }
+  .bfh-toolbar__filters::-webkit-scrollbar {
+    display: none;
+  }
+  .bfh-filter select {
+    white-space: nowrap;
+  }
+  /* The FAB covers this action on mobile. */
+  .bfh-toolbar .bfh-btn-primary--inline {
+    display: none;
+  }
+  .bfh-table-card {
+    padding: 10px;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+.bfh-cardlist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bfh-txcard {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  text-align: left;
+  cursor: pointer;
+}
+
+.bfh-txcard__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.bfh-txcard__name {
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.bfh-txcard__amount {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.bfh-txcard__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+/* --------------------------------------------------------------------------
+   Clients — two columns on tablet and up, list-then-detail on mobile
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .bfh-clients__grid {
+    display: block;
+  }
+  .bfh-clientlist {
+    max-height: none;
+  }
+  .bfh-clientempty {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .bfh-clients__grid {
+    grid-template-columns: 240px minmax(0, 1fr);
+  }
+}
+
+/* Back link at the top of the mobile client detail route. */
+.bfh-backlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink2);
+  cursor: pointer;
+}
+.bfh-backlink:hover {
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   Reports and Settings — side rails stack under 768px
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .bfh-reports__grid,
+  .bfh-settings__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .bfh-reportnav__list {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .bfh-reportnav__list::-webkit-scrollbar {
+    display: none;
+  }
+  .bfh-reportnav__item {
+    white-space: nowrap;
+    border-bottom: 0;
+    border-right: var(--hairline) solid var(--b);
+  }
+  .bfh-reportnav__dates {
+    flex-direction: row;
+  }
+  .bfh-reportnav__dates .bfh-formfield {
+    flex: 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Tap targets — 44px minimum on touch-first widths
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1023px) {
+  .bfh-iconaction,
+  .bfh-icon-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .bfh-period,
+  .bfh-tab,
+  .bfh-filter select {
+    min-height: 36px;
+  }
+  .bfh-row,
+  .bfh-clientrow,
+  .bfh-catrow {
+    min-height: 44px;
+  }
+}
+
+/* Nothing may push the document sideways. */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   Responsive audit pass — mobile legibility and touch
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Text floor: 11px on phones
+   --------------------------------------------------------------------------
+   The design system's 9px mono micro-label is deliberate and stays that way on
+   desktop. On a phone held at arm's length it stops being readable, so every
+   label a user has to read to work the interface is lifted to 11px here. Chart
+   axis ticks are the one exception noted below.
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1023px) {
+  .bfh-micro,
+  .bfh-micro.bfh-link,
+  .bfh-howto__tag,
+  .bfh-howto__tipnum,
+  .bfh-breakdown__share,
+  .bfh-recurring__freq,
+  .bfh-recurring__annual,
+  .bfh-clientrow__body .bfh-micro,
+  .bfh-greeting__sub,
+  .bfh-avatar,
+  .bfh-cell-amount,
+  .bfh-chip,
+  .bfh-chip--button,
+  .bfh-status-pill,
+  .bfh-cell-status,
+  .bfh-status,
+  .bfh-delta,
+  .bfh-pill-invert,
+  .bfh-badge,
+  .bfh-aipill,
+  .bfh-bottomnav__label,
+  .bfh-period,
+  .bfh-tab,
+  .bfh-ghostaction,
+  .bfh-alert__sub,
+  .bfh-alert__title,
+  .bfh-budget__warn,
+  .bfh-inline-prompt,
+  .bfh-report__label,
+  .bfh-ai-note__link,
+  .bfh-link,
+  .bfh-panel__back,
+  .bfh-backlink,
+  .bfh-formerror,
+  .bfh-kbd,
+  .bfh-toggle__option,
+  .bfh-btn-danger,
+  .bfh-filter select,
+  .bfh-export__previewmeta,
+  .bfh-suggest__pill,
+  .bfh-suggest__confirm,
+  .bfh-suggest__dismiss,
+  .bfh-ask__followups,
+  .bfh-table th,
+  .bfh-report__table th,
+  .bfh-doc__items th,
+  .bfh-export__table th,
+  .bfh-report__table tr[data-kind='section'] td,
+  .bfh-chart__axis,
+  .bfh-cashchart text {
+    font-size: 11px;
+  }
+
+}
+
+/* --------------------------------------------------------------------------
+   Tap targets: 44px minimum on phones
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .bfh-period,
+  .bfh-tab,
+  .bfh-ghostaction,
+  .bfh-reportnav__item,
+  .bfh-btn-primary--inline,
+  .bfh-btn-ghost,
+  .bfh-check,
+  .bfh-toggle__option,
+  .bfh-filter select {
+    min-height: 44px;
+  }
+
+  /* Text-sized controls keep their type scale; only the touch area grows. */
+  .bfh-link,
+  .bfh-inline-prompt,
+  .bfh-ai-note__link,
+  .bfh-panel__back,
+  .bfh-backlink {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .bfh-search {
+    height: 44px;
+  }
+  .bfh-search input {
+    height: 100%;
+  }
+
+  .bfh-formfield input,
+  .bfh-formfield select,
+  .bfh-formfield textarea,
+  .bfh-addcat__row input {
+    min-height: 44px;
+  }
+
+  /* The switch is 30×17 by design. Rather than inflate it, it carries an
+     invisible pad that brings the hit area up to 44px. */
+  .bfh-switch {
+    position: relative;
+  }
+  .bfh-switch::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Command bar becomes a bottom sheet on mobile
+   --------------------------------------------------------------------------
+   There is no Ctrl+K on a phone — the topbar button opens it, and it rises from
+   the bottom where the thumb already is. Tapping the backdrop closes it.
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .bfh-ask {
+    place-items: end stretch;
+    padding: 0;
+  }
+  .bfh-ask__panel {
+    width: 100%;
+    max-width: 100%;
+    height: 90vh;
+    max-height: 90vh;
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding-bottom: env(safe-area-inset-bottom);
+    animation: bfh-sheet-up 280ms var(--ease-out-soft);
+  }
+  .bfh-ask__panel::before {
+    content: '';
+    display: block;
+    flex: none;
+    width: 32px;
+    height: 4px;
+    margin: 10px auto 4px;
+    border-radius: var(--radius-pill);
+    background: var(--b2);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Invoice line items stack on mobile
+   --------------------------------------------------------------------------
+   Five columns will not fit a phone. Each line becomes its own small card:
+   description across the top, quantity and unit price beneath it, and the line
+   total right-aligned against them.
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .bfh-items__row--head {
+    display: none;
+  }
+  .bfh-items__row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    grid-template-areas:
+      'desc desc del'
+      'qty rate total';
+    gap: 8px;
+    padding: 10px;
+    border: var(--hairline) solid var(--b);
+    border-radius: var(--radius-sm);
+    background: var(--card);
+  }
+  .bfh-items__row > *:nth-child(1) {
+    grid-area: desc;
+  }
+  .bfh-items__row > *:nth-child(2) {
+    grid-area: qty;
+  }
+  .bfh-items__row > *:nth-child(3) {
+    grid-area: rate;
+  }
+  .bfh-items__row > *:nth-child(4) {
+    grid-area: total;
+    text-align: right;
+  }
+  .bfh-items__row > *:nth-child(5) {
+    grid-area: del;
+    justify-self: end;
+  }
+  .bfh-items__row input {
+    min-height: 40px;
+    font-size: 13px;
+  }
+}
+
+/* Width counts as much as height for a thumb. */
+@media (max-width: 767px) {
+  .bfh-period,
+  .bfh-tab {
+    min-width: 44px;
+  }
+  /* The field's own box has to clear 44px inside the wrapper's hairline. */
+  .bfh-search {
+    height: 46px;
+  }
+  .bfh-search input {
+    min-height: 44px;
+  }
+}
+
+/* On a tablet the panel gets a little more room than the 320px desktop rail —
+   the content well behind it is narrower, so the panel can afford the width. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .bfh-panel {
+    width: 360px;
+  }
+}
+
+/* The 11px floor makes "TRANSACTIONS" wider than a fifth of a 375px screen.
+   Dropping the micro tracking buys the room back without shrinking the type. */
+@media (max-width: 767px) {
+  /* Five equal columns leave 'Transactions' 10px short while the other four
+     have room to spare. Sharing the bar by content instead of by fifths fits
+     every label at 11px, with 44px still the narrowest slot. */
+  .bfh-bottomnav {
+    display: flex;
+  }
+  .bfh-bottomnav__item {
+    flex: 1 1 auto;
+    min-width: 44px;
+    padding: 0 4px;
+  }
+  .bfh-bottomnav__label {
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+}
+
+/* On a two-up metric grid the badge and its caption do not fit on one line —
+   "vs last period" was being ellipsised down to "vs last peri…". Letting the
+   caption drop beneath the badge keeps the whole phrase readable. */
+@media (max-width: 767px) {
+  .bfh-metric__row {
+    flex-wrap: wrap;
+    row-gap: 3px;
+  }
+  .bfh-metric__context {
+    white-space: normal;
+    overflow: visible;
+  }
+}

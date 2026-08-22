@@ -1,0 +1,313 @@
+/* ==========================================================================
+   Reports and Insights
+   ========================================================================== */
+
+.bfh-reports__grid {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  width: 100%;
+}
+@media (max-width: 860px) {
+  .bfh-reports__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---- Report type list ------------------------------------------------------ */
+
+.bfh-reportnav {
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  overflow: hidden;
+}
+
+.bfh-reportnav__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px;
+  border: 0;
+  border-bottom: var(--hairline) solid var(--b);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.3;
+  text-align: left;
+  color: var(--ink2);
+  cursor: pointer;
+  transition:
+    color var(--duration-micro) var(--ease-out-soft),
+    background-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-reportnav__item:hover {
+  color: var(--ink);
+  background: var(--bg);
+}
+.bfh-reportnav__item[aria-current='true'] {
+  color: var(--ink);
+  font-weight: var(--weight-medium);
+  background: var(--bg);
+}
+
+/* Reserved on every row so selecting one never shifts the label. */
+.bfh-reportnav__dot {
+  width: 4px;
+  height: 4px;
+  flex: none;
+  border-radius: var(--radius-pill);
+  background: transparent;
+}
+.bfh-reportnav__item[aria-current='true'] .bfh-reportnav__dot {
+  background: var(--ink);
+}
+
+.bfh-reportnav__dates {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+}
+
+/* ---- Report ---------------------------------------------------------------- */
+
+.bfh-report__head {
+  padding-bottom: 12px;
+  border-bottom: var(--hairline) solid var(--b);
+}
+
+.bfh-report__title {
+  margin: 0 0 2px;
+  font-size: 15px;
+  font-weight: var(--weight-medium);
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.bfh-report__table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 4px;
+}
+
+.bfh-report__table th {
+  padding: 10px 0 6px;
+  border-bottom: var(--hairline) solid var(--b);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: var(--weight-regular);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+  text-align: left;
+}
+
+.bfh-report__table td {
+  padding: 6px 0;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+/* Scoped past `.bfh-report__table td`, which would otherwise win on
+   specificity and force these figures back to 13px. */
+.bfh-report__table th.bfh-report__num,
+.bfh-report__table td.bfh-report__num {
+  width: 1%;
+  padding-left: 20px;
+  text-align: right;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Section headings sit flush; their detail rows indent under them. */
+.bfh-report__table tr[data-kind='section'] td {
+  padding-top: 16px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+}
+.bfh-report__table tr[data-kind='row'] .bfh-report__label {
+  padding-left: 16px;
+  color: var(--ink);
+}
+.bfh-report__table tr[data-kind='row'] .bfh-report__num {
+  color: var(--ink2);
+}
+
+.bfh-report__table tr[data-kind='subtotal'] td {
+  font-weight: var(--weight-medium);
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-report__table tr[data-kind='total'] td {
+  padding-top: 10px;
+  border-top: var(--hairline) solid var(--b);
+  font-weight: var(--weight-medium);
+}
+
+/* Double rule: two 0.5px lines with a 2px gap. Painted as a gradient rather
+   than "border: double", which snaps to whole pixels. */
+.bfh-report__table tr[data-kind='grand'] td {
+  padding-top: 14px;
+  font-weight: var(--weight-medium);
+  background-image: linear-gradient(
+    to bottom,
+    var(--b2) 0,
+    var(--b2) 0.5px,
+    transparent 0.5px,
+    transparent 2.5px,
+    var(--b2) 2.5px,
+    var(--b2) 3px,
+    transparent 3px
+  );
+  background-repeat: no-repeat;
+}
+.bfh-report__table tr[data-kind='grand'] .bfh-report__num {
+  font-size: 16px;
+}
+
+.bfh-report__foot {
+  display: flex;
+  gap: 8px;
+  padding-top: 16px;
+  margin-top: 12px;
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-ghostaction {
+  padding: 6px 12px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-xs);
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink2);
+  cursor: pointer;
+  transition:
+    color var(--duration-micro) var(--ease-out-soft),
+    border-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-ghostaction:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+/* ---- Insights --------------------------------------------------------------- */
+
+.bfh-insights__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bfh-aipill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  padding: 3px 9px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+}
+
+.bfh-insights__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.bfh-insight {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 10px;
+  margin: 0 -10px;
+  border-radius: var(--radius-xs);
+  transition: background-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-insights__list li + li {
+  border-top: var(--hairline) solid var(--b);
+  border-radius: 0;
+}
+.bfh-insight:hover {
+  background: var(--bg);
+}
+
+.bfh-insight__num {
+  flex: none;
+  width: 22px;
+  padding-top: 1px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink3);
+  font-variant-numeric: tabular-nums;
+}
+
+.bfh-insight__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  min-width: 0;
+}
+
+.bfh-insight__title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.bfh-insight__text {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink2);
+}
+
+.bfh-insight .bfh-chip {
+  margin-top: 3px;
+}
+.bfh-insight .bfh-pill-invert {
+  margin-top: 3px;
+}
+
+/* ---- Print: the report only -------------------------------------------------- */
+
+@media print {
+  .bfh-report,
+  .bfh-report * {
+    visibility: visible;
+  }
+  .bfh-report {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+  /* Export controls are not part of the document being exported. */
+  .bfh-report__foot {
+    display: none;
+  }
+}

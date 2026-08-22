@@ -1,0 +1,777 @@
+/* ==========================================================================
+   App shell — sidebar, topbar, content well.
+   Layout only from Tailwind in the JSX; every colour, border, and radius
+   here comes from a token.
+   ========================================================================== */
+
+:root {
+  --shell-sidebar: 196px;
+  --shell-sidebar-collapsed: 56px;
+  --shell-topbar: 56px;
+  --hairline: 0.5px;
+}
+
+/* Below 1024px the sidebar collapses to icons; below 768px it leaves the
+   layout entirely and returns as an overlay drawer. */
+@media (max-width: 1023px) {
+  :root {
+    --shell-sidebar: var(--shell-sidebar-collapsed);
+  }
+}
+@media (max-width: 767px) {
+  :root {
+    --shell-sidebar: 0px;
+  }
+}
+
+.bfh-shell {
+  /* Positioned so the content well can pin to it without going fixed. */
+  position: relative;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+/* --------------------------------------------------------------------------
+   Micro-label — the aesthetic's signature register
+   -------------------------------------------------------------------------- */
+
+.bfh-micro {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+}
+
+/* --------------------------------------------------------------------------
+   Sidebar
+   -------------------------------------------------------------------------- */
+
+.bfh-sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  width: var(--shell-sidebar);
+  background: var(--card);
+  border-right: var(--hairline) solid var(--b);
+  overflow: hidden;
+  transition:
+    width var(--duration-transform) var(--ease-out-soft),
+    transform var(--duration-transform) var(--ease-out-soft),
+    background-color var(--duration-theme) var(--ease-out-soft),
+    border-color var(--duration-theme) var(--ease-out-soft);
+}
+
+/* Mobile: off-canvas until opened. */
+@media (max-width: 767px) {
+  .bfh-sidebar {
+    width: 196px;
+    transform: translateX(-100%);
+    box-shadow: var(--shadow-modal);
+  }
+  .bfh-sidebar[data-open='true'] {
+    transform: translateX(0);
+  }
+}
+
+.bfh-sidebar__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 35;
+  background: rgb(var(--ink-c) / 0.3);
+  backdrop-filter: blur(6px);
+  border: 0;
+  padding: 0;
+  animation: bfh-fade var(--duration-micro) var(--ease-out-soft);
+}
+
+.bfh-sidebar__section {
+  border-bottom: var(--hairline) solid var(--b);
+}
+
+.bfh-sidebar__head {
+  padding: 14px 16px;
+}
+.bfh-sidebar[data-collapsed='true'] .bfh-sidebar__head {
+  padding: 14px 8px;
+}
+
+.bfh-logo {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+/* The lockup is 220x56. The head's content box is 164px at the full 196px
+   sidebar, so it scales down to fit and is never asked to scale up past its own
+   pixels, which would only make it soft. The ratio is declared so the row holds
+   its height before the file has loaded. */
+.bfh-logo__mark {
+  display: block;
+  width: 100%;
+  max-width: 164px;
+  height: auto;
+  aspect-ratio: 220 / 56;
+}
+
+/* Only the collapsed rail needs the short mark. */
+.bfh-logo__short {
+  display: none;
+}
+
+.bfh-logo__tag {
+  margin-top: 2px;
+}
+
+/* Primary action — the one inverted element in the chrome. */
+.bfh-btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    opacity var(--duration-micro) var(--ease-out-soft),
+    background-color var(--duration-theme) var(--ease-out-soft);
+}
+.bfh-btn-primary:hover {
+  opacity: 0.85;
+}
+.bfh-sidebar[data-collapsed='true'] .bfh-btn-primary {
+  padding: 7px 0;
+}
+
+/* ---- Nav ----------------------------------------------------------------- */
+
+.bfh-nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 0;
+}
+
+.bfh-nav__group + .bfh-nav__group {
+  margin-top: 14px;
+}
+
+.bfh-nav__label {
+  padding: 0 16px 6px;
+}
+.bfh-sidebar[data-collapsed='true'] .bfh-nav__label {
+  /* Keep the group rhythm without the text bleeding out of 56px. */
+  height: 1px;
+  padding: 0;
+  margin: 0 16px 8px;
+  overflow: hidden;
+  background: var(--b);
+  color: transparent;
+}
+
+.bfh-nav__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.3;
+  color: var(--ink2);
+  text-decoration: none;
+  transition:
+    color var(--duration-micro) var(--ease-out-soft),
+    background-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-nav__item:hover {
+  color: var(--ink);
+  background: var(--bg);
+}
+.bfh-nav__item[aria-current='page'] {
+  color: var(--ink);
+  font-weight: var(--weight-medium);
+}
+
+/* 4px filled dot marks the active route, sitting before the icon. */
+.bfh-nav__dot {
+  width: 4px;
+  height: 4px;
+  flex: none;
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+}
+.bfh-nav__item:not([aria-current='page']) .bfh-nav__dot {
+  background: transparent;
+}
+
+.bfh-nav__icon {
+  flex: none;
+}
+
+.bfh-nav__text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bfh-badge {
+  flex: none;
+  padding: 1px 6px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-pill);
+  background: var(--surface-fill);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  line-height: 1.5;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink2);
+}
+
+/* Collapsed: icons only, centred, dot and labels withdrawn. */
+.bfh-sidebar[data-collapsed='true'] .bfh-nav__item {
+  justify-content: center;
+  padding: 7px 0;
+}
+/* 40px of content box cannot carry a 3.93:1 wordmark; the rail gets the
+   initials instead. */
+.bfh-sidebar[data-collapsed='true'] .bfh-logo__mark {
+  display: none;
+}
+.bfh-sidebar[data-collapsed='true'] .bfh-logo__short {
+  display: block;
+}
+
+.bfh-sidebar[data-collapsed='true'] .bfh-nav__text,
+.bfh-sidebar[data-collapsed='true'] .bfh-badge,
+.bfh-sidebar[data-collapsed='true'] .bfh-logo__tag,
+.bfh-sidebar[data-collapsed='true'] .bfh-btn-primary span,
+.bfh-sidebar[data-collapsed='true'] .bfh-profile__meta,
+.bfh-sidebar[data-collapsed='true'] .bfh-profile__more {
+  display: none;
+}
+
+/* The active dot survives the collapse — it just moves to the rail's edge,
+   since there is no room for it inline ahead of a centred icon. */
+.bfh-sidebar[data-collapsed='true'] .bfh-nav__dot {
+  position: absolute;
+  left: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* An unread count still has to register when the labels are gone. */
+.bfh-sidebar[data-collapsed='true'] .bfh-nav__item[data-badge='true']::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  right: 12px;
+  width: 4px;
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+}
+
+.bfh-nav__divider {
+  height: var(--hairline);
+  margin: 12px 16px;
+  background: var(--b);
+}
+
+/* ---- Profile ------------------------------------------------------------- */
+
+.bfh-sidebar__foot {
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-profile:hover {
+  background: var(--bg);
+}
+.bfh-sidebar[data-collapsed='true'] .bfh-profile {
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.bfh-avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-pill);
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.5px;
+}
+
+.bfh-profile__meta {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.bfh-profile__name {
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  line-height: 1.3;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bfh-profile__more {
+  flex: none;
+  color: var(--ink3);
+}
+
+/* --------------------------------------------------------------------------
+   Topbar
+   -------------------------------------------------------------------------- */
+
+.bfh-topbar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: var(--shell-sidebar);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: var(--shell-topbar);
+  padding: 0 20px;
+  background: var(--card);
+  border-bottom: var(--hairline) solid var(--b);
+  transition:
+    left var(--duration-transform) var(--ease-out-soft),
+    background-color var(--duration-theme) var(--ease-out-soft),
+    border-color var(--duration-theme) var(--ease-out-soft);
+}
+
+.bfh-greeting {
+  font-size: 15px;
+  font-weight: var(--weight-medium);
+  line-height: 1.25;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bfh-greeting__sub {
+  margin-top: 2px;
+  font-size: 10px;
+}
+
+/* ---- Period switcher ----------------------------------------------------- */
+
+.bfh-periods {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bfh-period {
+  padding: 5px 9px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-xs);
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  line-height: 1.2;
+  color: var(--ink2);
+  cursor: pointer;
+  transition:
+    color var(--duration-micro) var(--ease-out-soft),
+    background-color var(--duration-micro) var(--ease-out-soft),
+    border-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-period:hover {
+  color: var(--ink);
+}
+.bfh-period[aria-pressed='true'] {
+  background: var(--invert-bg);
+  border-color: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+/* ---- Icon buttons -------------------------------------------------------- */
+
+.bfh-icon-btn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink2);
+  cursor: pointer;
+  transition:
+    color var(--duration-micro) var(--ease-out-soft),
+    background-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-icon-btn:hover {
+  color: var(--ink);
+  background: var(--bg);
+}
+
+.bfh-icon-btn__dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 4px;
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  animation: bfh-pulse var(--pulse-duration) ease-in-out infinite;
+}
+
+/* The hamburger only exists on the drawer breakpoint. */
+.bfh-hamburger {
+  display: none;
+}
+@media (max-width: 767px) {
+  .bfh-hamburger {
+    display: grid;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Content well
+   -------------------------------------------------------------------------- */
+
+.bfh-main {
+  /* Absolute, not fixed. A fixed element creates a stacking context whatever
+     its z-index, which trapped every panel and modal rendered inside the page
+     below the topbar, the bottom bar and the FAB. Pinned to the shell it lands
+     in exactly the same place and leaves overlays free to stack above them. */
+  position: absolute;
+  top: var(--shell-topbar);
+  right: 0;
+  bottom: 0;
+  left: var(--shell-sidebar);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 18px 20px;
+  background: var(--bg);
+  scrollbar-width: thin;
+  scrollbar-color: var(--b2) transparent;
+  transition: left var(--duration-transform) var(--ease-out-soft);
+}
+
+.bfh-main::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.bfh-main::-webkit-scrollbar-track {
+  background: transparent;
+}
+.bfh-main::-webkit-scrollbar-thumb {
+  background: var(--b2);
+  border-radius: var(--radius-pill);
+}
+
+/* --------------------------------------------------------------------------
+   Page entrance — blocks fade up 12px, staggered, capped at 330ms
+   -------------------------------------------------------------------------- */
+
+@keyframes bfh-enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--entrance-offset));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes bfh-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bfh-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+/* Motion is opt-in: with reduced motion the blocks simply start in place. */
+@media (prefers-reduced-motion: no-preference) {
+  .bfh-block {
+    opacity: 0;
+    animation: bfh-enter var(--duration-entrance) var(--ease-out-soft) forwards;
+    animation-delay: var(--enter-delay, 50ms);
+  }
+  .bfh-block:nth-child(1) {
+    --enter-delay: 50ms;
+  }
+  .bfh-block:nth-child(2) {
+    --enter-delay: 120ms;
+  }
+  .bfh-block:nth-child(3) {
+    --enter-delay: 190ms;
+  }
+  .bfh-block:nth-child(4) {
+    --enter-delay: 260ms;
+  }
+  .bfh-block:nth-child(n + 5) {
+    --enter-delay: 330ms;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Page scaffolding used by the placeholder routes
+   -------------------------------------------------------------------------- */
+
+.bfh-page {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  /* Fills the content well. The design system's 56rem measure still governs
+     prose — it was capping full-width data layouts here by mistake. */
+  width: 100%;
+}
+
+.bfh-page__title {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  line-height: var(--leading-tight);
+  font-weight: var(--weight-regular);
+  color: var(--ink);
+  margin: 0;
+}
+
+.bfh-card {
+  padding: var(--card-padding);
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  box-shadow: var(--shadow-card);
+}
+
+.bfh-boundary__note {
+  margin: 6px 0 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink2);
+}
+
+.bfh-boundary__retry {
+  flex: 0 0 auto;
+}
+
+/* The supplied wordmark is white artwork on a transparent background, so on the
+   light sidebar it disappears into the surface and only the chart glyph shows.
+   Inverting it there paints the same mark in ink; dark mode already suits it. */
+:root:not(.dark) .bfh-logo__mark {
+  filter: invert(1);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) .bfh-logo__mark {
+    filter: none;
+  }
+}
+:root.dark .bfh-logo__mark {
+  filter: none;
+}
+:root.light .bfh-logo__mark {
+  filter: invert(1);
+}
+
+/* ---- Notifications menu ------------------------------------------------------ */
+
+.bfh-bellwrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.bfh-notifmenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 40;
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  box-shadow: var(--shadow-card-hover);
+  outline: none;
+  overflow: hidden;
+  animation: bfh-notifmenu-in 180ms var(--ease-out-soft);
+}
+
+@keyframes bfh-notifmenu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bfh-notifmenu {
+    animation: none;
+  }
+}
+
+.bfh-notifmenu__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 14px;
+  border-bottom: var(--hairline) solid var(--b);
+}
+
+.bfh-notifmenu__title {
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+
+/* ---- Nothing to report -------------------------------------------------------- */
+
+.bfh-notifmenu__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 26px 20px 28px;
+  text-align: center;
+}
+.bfh-notifmenu__empty > svg {
+  margin-bottom: 10px;
+  color: var(--ink3);
+}
+
+.bfh-notifmenu__emptyhead {
+  margin: 0;
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+
+.bfh-notifmenu__emptybody {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink2);
+}
+
+/* ---- The list ------------------------------------------------------------------ */
+
+.bfh-notifmenu__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 340px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--b2) transparent;
+}
+.bfh-notifmenu__list::-webkit-scrollbar {
+  width: 4px;
+}
+.bfh-notifmenu__list::-webkit-scrollbar-thumb {
+  background: var(--b2);
+  border-radius: var(--radius-pill);
+}
+.bfh-notifmenu__list li + li .bfh-notifmenu__item {
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-notifmenu__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 14px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-notifmenu__item:hover {
+  background: var(--bg);
+}
+.bfh-notifmenu__item > svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--ink3);
+}
+
+.bfh-notifmenu__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.bfh-notifmenu__itemtitle {
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.bfh-notifmenu__itembody {
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--ink2);
+}
+
+/* The profile card is a control, so it says so on hover and focus. */
+.bfh-profile {
+  cursor: pointer;
+}

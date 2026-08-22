@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" width="140" height="140" role="img">
+  <title>BFH logomark</title>
+  <desc>A geometric dark wallet badge with a rising bar chart and trend line arrow breaking past the top edge, representing business financial growth.</desc>
+
+  <rect x="8" y="42" width="124" height="88" rx="14" fill="#0a0a0a"/>
+
+  <rect x="8" y="54" width="124" height="8" fill="#3a3a3a" opacity="0.4"/>
+  <rect x="8" y="54" width="124" height="4" fill="#ffffff" opacity="0.06"/>
+
+  <rect x="96" y="58" width="36" height="28" rx="8" fill="#3a3a3a" opacity="0.5"/>
+  <circle cx="107" cy="72" r="5" fill="#ffffff" opacity="0.3"/>
+  <circle cx="107" cy="72" r="2.5" fill="#0a0a0a" opacity="0.6"/>
+
+  <rect x="8" y="42" width="124" height="14" rx="7" fill="#0a0a0a"/>
+  <rect x="8" y="42" width="124" height="7" rx="3" fill="#3a3a3a" opacity="0.25"/>
+
+  <rect x="44" y="86" width="10" height="28" rx="2" fill="#ffffff" opacity="0.1"/>
+  <rect x="58" y="76" width="10" height="38" rx="2" fill="#ffffff" opacity="0.13"/>
+  <rect x="72" y="68" width="10" height="46" rx="2" fill="#ffffff" opacity="0.16"/>
+  <rect x="86" y="58" width="10" height="56" rx="2" fill="#ffffff" opacity="0.2"/>
+
+  <polyline points="44,90 58,78 72,70 86,60 100,46 112,30" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+
+  <polygon points="112,30 102,28 110,38" fill="#ffffff" opacity="0.9"/>
+
+  <line x1="20" y1="114" x2="36" y2="114" stroke="#ffffff" stroke-width="1" stroke-linecap="round" opacity="0.12"/>
+  <line x1="20" y1="120" x2="30" y2="120" stroke="#ffffff" stroke-width="1" stroke-linecap="round" opacity="0.08"/>
+
+  <rect x="8" y="42" width="124" height="88" rx="14" fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.08"/>
+</svg>

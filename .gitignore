@@ -1,0 +1,43 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+# Design system reference — kept local
+brylminimaldesign.md
+brylminimaldesign
+
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local environment — never commit
+.env
+.env.local
+.env*.local
+
+# Push server secrets and its local database
+server/.env
+server/*.db
+server/*.db-wal
+server/*.db-shm
+
+
+# vite-plugin-pwa dev output
+dev-dist

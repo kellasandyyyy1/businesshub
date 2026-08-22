@@ -1,0 +1,585 @@
+/* ==========================================================================
+   Transactions — toolbar, summary strip, table, detail panel, form modal
+   ========================================================================== */
+
+/* ---- Toolbar -------------------------------------------------------------- */
+
+.bfh-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.bfh-search {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1 1 220px;
+  max-width: 320px;
+  padding: 0 10px;
+  height: 30px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-xs);
+  background: var(--bg);
+  color: var(--ink3);
+}
+
+.bfh-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  outline: none;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--ink);
+}
+.bfh-search input::placeholder {
+  color: var(--ink3);
+}
+/* The native clear affordance does not belong in this register. */
+.bfh-search input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.bfh-toolbar__filters {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* Ghost pill select — a native control wearing a micro-label. */
+.bfh-filter select {
+  appearance: none;
+  padding: 5px 22px 5px 9px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink3) 50%),
+    linear-gradient(135deg, var(--ink3) 50%, transparent 50%);
+  background-position: right 11px center, right 8px center;
+  background-size: 3px 3px, 3px 3px;
+  background-repeat: no-repeat;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  line-height: 1.6;
+  color: var(--ink2);
+  cursor: pointer;
+  outline: none;
+  transition: color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-filter select:hover {
+  color: var(--ink);
+}
+.bfh-filter option {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink);
+  background: var(--card);
+}
+
+/* Sidebar's button is full-width; the toolbar's hugs its label. */
+.bfh-btn-primary--inline {
+  width: auto;
+  height: 30px;
+  padding: 0 12px;
+}
+
+/* ---- Summary strip -------------------------------------------------------- */
+
+.bfh-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-md);
+  background: var(--card);
+}
+
+.bfh-summary__cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 16px;
+}
+.bfh-summary__cell + .bfh-summary__cell {
+  border-left: var(--hairline) solid var(--b);
+}
+
+.bfh-summary__value {
+  font-size: 15px;
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+/* ---- Table ---------------------------------------------------------------- */
+
+.bfh-table-card {
+  padding: 4px var(--card-padding) 10px;
+}
+
+.bfh-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+.bfh-table th {
+  padding: 12px 8px 8px;
+  border-bottom: var(--hairline) solid var(--b);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: var(--weight-regular);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.bfh-table td {
+  height: 44px;
+  padding: 6px 8px;
+  border-bottom: var(--hairline) solid var(--b);
+  vertical-align: middle;
+}
+
+.bfh-row {
+  cursor: pointer;
+  outline: none;
+  transition: background-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-row:hover,
+.bfh-row:focus-visible,
+.bfh-row[data-selected='true'] {
+  background: var(--bg);
+}
+
+.bfh-cell-date {
+  width: 1%;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink2);
+}
+
+.bfh-cell-desc {
+  min-width: 0;
+}
+
+.bfh-row__name {
+  display: block;
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+/* Category chip under the description. It repeats the Category column at wide
+   widths, and stands in for it below 860px where that column is dropped. */
+.bfh-chip {
+  display: inline-block;
+  margin-top: 3px;
+  padding: 1px 7px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  line-height: 1.6;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+}
+
+td.bfh-cell-cat,
+th.bfh-cell-cat {
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--ink2);
+}
+td.bfh-cell-cat {
+  display: table-cell;
+}
+td.bfh-cell-cat span {
+  margin-left: 6px;
+  vertical-align: middle;
+}
+td.bfh-cell-cat svg {
+  vertical-align: middle;
+}
+
+td.bfh-cell-amount,
+th.bfh-cell-amount {
+  width: 1%;
+  text-align: right;
+  white-space: nowrap;
+}
+td.bfh-cell-amount {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.bfh-cell-status {
+  width: 1%;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+}
+
+.bfh-cell-actions {
+  width: 1%;
+  white-space: nowrap;
+}
+
+/* Actions stay out of sight until the row is engaged. */
+.bfh-row__actions {
+  display: inline-flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-row:hover .bfh-row__actions,
+.bfh-row:focus-visible .bfh-row__actions,
+.bfh-row:focus-within .bfh-row__actions {
+  opacity: 1;
+}
+
+.bfh-iconaction {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--ink3);
+  cursor: pointer;
+  transition:
+    color var(--duration-micro) var(--ease-out-soft),
+    background-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-iconaction:hover:not(:disabled) {
+  color: var(--ink);
+  background: var(--surface-fill);
+}
+.bfh-iconaction:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.bfh-empty {
+  margin: 18px 0;
+  font-size: 12px;
+  color: var(--ink2);
+  text-align: center;
+}
+
+.bfh-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 10px;
+}
+
+.bfh-pager__controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (max-width: 860px) {
+  td.bfh-cell-cat,
+  th.bfh-cell-cat {
+    display: none;
+  }
+}
+@media (max-width: 620px) {
+  .bfh-cell-status {
+    display: none;
+  }
+  .bfh-summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .bfh-summary__cell + .bfh-summary__cell {
+    border-left: 0;
+    border-top: var(--hairline) solid var(--b);
+  }
+}
+
+/* ---- Detail slide panel --------------------------------------------------- */
+
+.bfh-panel {
+  position: fixed;
+  top: var(--shell-topbar);
+  right: 0;
+  bottom: 0;
+  z-index: 28;
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+  max-width: 100vw;
+  background: var(--card);
+  border-left: var(--hairline) solid var(--b);
+  animation: bfh-slide-in 300ms ease;
+}
+
+@keyframes bfh-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.bfh-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: var(--hairline) solid var(--b);
+}
+
+.bfh-panel__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--b2) transparent;
+}
+
+.bfh-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.bfh-field__value {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.bfh-panel__foot {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: var(--hairline) solid var(--b);
+}
+.bfh-panel__foot .bfh-btn-primary {
+  width: auto;
+  flex: 1;
+}
+
+/* Ghost button — dashed, so a destructive action reads as different in kind
+   rather than in colour. */
+.bfh-btn-ghost {
+  flex: 1;
+  padding: 7px 12px;
+  border: var(--hairline) dashed var(--b2);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  color: var(--ink2);
+  cursor: pointer;
+  transition:
+    color var(--duration-micro) var(--ease-out-soft),
+    border-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-btn-ghost:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+/* ---- Modal ---------------------------------------------------------------- */
+
+.bfh-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.bfh-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: rgb(10 10 10 / 0.4);
+  backdrop-filter: blur(3px);
+  animation: bfh-fade var(--duration-micro) var(--ease-out-soft);
+}
+
+.bfh-modal__panel {
+  position: relative;
+  width: 480px;
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  box-shadow: var(--shadow-modal);
+  animation: bfh-modal-in 200ms var(--ease-out-soft);
+}
+
+@keyframes bfh-modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.bfh-modal__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 16px 20px 12px;
+  border-bottom: var(--hairline) solid var(--b);
+}
+
+.bfh-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 16px 20px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--b2) transparent;
+}
+
+.bfh-formfield {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.bfh-formfield--wide {
+  grid-column: 1 / -1;
+}
+
+.bfh-formfield input,
+.bfh-formfield select,
+.bfh-formfield textarea {
+  width: 100%;
+  padding: 7px 9px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-xs);
+  background: var(--bg);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-formfield textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+/* Same hand-drawn caret as the toolbar filters, so no browser chrome leaks
+   a colour into a monochrome page. */
+.bfh-formfield select {
+  appearance: none;
+  padding-right: 26px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink3) 50%),
+    linear-gradient(135deg, var(--ink3) 50%, transparent 50%);
+  background-position: right 13px center, right 10px center;
+  background-size: 3px 3px, 3px 3px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+.bfh-formfield input:focus,
+.bfh-formfield select:focus,
+.bfh-formfield textarea:focus {
+  border-color: var(--ink);
+}
+
+.bfh-formerror {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink2);
+}
+
+/* Type toggle — three segments, the chosen one inverted. */
+.bfh-toggle {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.bfh-toggle__option {
+  padding: 7px 8px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-xs);
+  background: var(--bg);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink2);
+  cursor: pointer;
+  transition:
+    color var(--duration-micro) var(--ease-out-soft),
+    background-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-toggle__option:hover {
+  color: var(--ink);
+}
+.bfh-toggle__option[aria-pressed='true'] {
+  background: var(--invert-bg);
+  border-color: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.bfh-modal__foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px 16px;
+  border-top: var(--hairline) solid var(--b);
+}
+.bfh-modal__foot .bfh-btn-primary,
+.bfh-modal__foot .bfh-btn-ghost {
+  flex: 0 0 auto;
+  width: auto;
+  padding: 7px 18px;
+}
+
+@media (max-width: 520px) {
+  .bfh-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

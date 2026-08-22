@@ -1,0 +1,391 @@
+/* ==========================================================================
+   Polish — empty states, onboarding, page transition, shortcuts, print
+   ========================================================================== */
+
+/* ---- Empty states ------------------------------------------------------------ */
+
+/* No border, no fill. The space around it is the design. */
+.bfh-emptystate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px 20px;
+  text-align: center;
+  color: var(--ink3);
+}
+
+.bfh-emptystate__heading {
+  margin: 4px 0 0;
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.bfh-emptystate__body {
+  margin: 0;
+  max-width: 34ch;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink2);
+}
+
+.bfh-emptystate .bfh-btn-primary {
+  margin-top: 6px;
+}
+
+/* ---- Page transition ----------------------------------------------------------- */
+
+@keyframes bfh-pagefade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bfh-pagefade {
+    animation: bfh-pagefade 200ms ease;
+  }
+}
+
+/* ---- Onboarding ------------------------------------------------------------------ */
+
+.bfh-onboard {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  overflow-y: auto;
+  background: var(--bg);
+}
+
+.bfh-onboard__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: 100%;
+  max-width: 26rem;
+  margin: 0 auto;
+  padding: 12vh 24px 48px;
+}
+
+.bfh-onboard__head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Numbered, em-dashed step markers — the section-header convention. */
+.bfh-onboard__steps {
+  display: flex;
+  gap: 14px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.bfh-onboard__steps li[data-state='current'] {
+  color: var(--ink);
+}
+.bfh-onboard__steps li[data-state='done'] {
+  color: var(--ink2);
+}
+
+.bfh-onboard__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.bfh-onboard__title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-heading);
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.bfh-onboard__note {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink2);
+}
+
+.bfh-onboard__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 6px;
+}
+.bfh-onboard__actions .bfh-btn-ghost {
+  flex: 0 0 auto;
+  border-style: solid;
+  border-color: var(--b);
+}
+
+.bfh-onboard__summary {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  border-top: var(--hairline) solid var(--b);
+}
+.bfh-onboard__summary > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: var(--hairline) solid var(--b);
+}
+.bfh-onboard__summary dd {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+/* ---- Shortcuts reference ----------------------------------------------------------- */
+
+.bfh-shortcuts {
+  padding-top: 14px;
+  border-top: var(--hairline) solid var(--b);
+}
+.bfh-shortcuts dl {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px 0 0;
+}
+.bfh-shortcuts dl > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bfh-shortcuts dd {
+  margin: 0;
+  font-size: 12px;
+  color: var(--ink2);
+}
+
+.bfh-kbd {
+  display: inline-block;
+  min-width: 52px;
+  padding: 2px 7px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-align: center;
+  color: var(--ink);
+}
+
+/* ---- Print ------------------------------------------------------------------------- */
+
+@media print {
+  /* Documents print as black ink on white paper regardless of the screen
+     theme. `:root:not(.light)` is needed to match the specificity of the
+     dark-mode rule, which is still live during a print from a dark screen. */
+  :root,
+  :root.dark,
+  :root:not(.light) {
+    --background: 255 255 255;
+    --ink-c: 0 0 0;
+    --gray-200: 220 220 220;
+    --gray-300: 190 190 190;
+    --gray-400: 120 120 120;
+    --gray-500: 90 90 90;
+    color-scheme: light;
+  }
+
+  body {
+    background: #ffffff;
+    color: #000000;
+  }
+
+  /* Nothing interactive belongs on paper. */
+  .bfh-ai-fab,
+  .bfh-sidebar__scrim {
+    display: none !important;
+  }
+
+  @page {
+    margin: 16mm;
+  }
+}
+
+/* ==========================================================================
+   Onboarding — the assistant step
+   ========================================================================== */
+
+/* The assistant step carries more below it than the others, so its heading
+   sits tighter to the tag above it. */
+.bfh-onboard__title--tight {
+  margin-top: 6px;
+  font-size: 22px;
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.02em;
+}
+
+.bfh-onboard__note--wide {
+  max-width: 420px;
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.bfh-onboard__features {
+  list-style: none;
+  margin: 20px 0 0;
+  padding: 0;
+}
+
+.bfh-onboard__feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: var(--hairline) solid var(--b);
+}
+.bfh-onboard__feature:last-child {
+  border-bottom: 0;
+}
+
+.bfh-onboard__featureicon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 7px;
+  background: var(--bg);
+  color: var(--ink2);
+}
+
+.bfh-onboard__featurebody {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.bfh-onboard__featurelabel {
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.bfh-onboard__featuresub {
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--ink2);
+}
+
+.bfh-onboard__shortcut {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 16px 0 0;
+  padding: 10px 14px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  font-size: 12px;
+  color: var(--ink2);
+}
+.bfh-onboard__shortcut svg {
+  flex: none;
+  color: var(--ink3);
+}
+
+.bfh-onboard__kbd {
+  padding: 2px 7px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--ink3);
+}
+
+.bfh-onboard__try {
+  align-self: flex-start;
+  margin-top: 16px;
+  padding: 7px 12px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink2);
+  cursor: pointer;
+  transition: color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-onboard__try:hover {
+  color: var(--ink);
+}
+
+/* ==========================================================================
+   Dashboard — assistant hint
+   ========================================================================== */
+
+.bfh-aihint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-md);
+  background: var(--card);
+}
+
+.bfh-aihint__body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+.bfh-aihint__body svg {
+  flex: none;
+  color: var(--ink2);
+}
+
+.bfh-aihint__text {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.bfh-aihint__try {
+  flex: none;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+  cursor: pointer;
+  transition: color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-aihint__try:hover {
+  color: var(--ink);
+}
+
+/* The sentence wraps before the action does on a narrow screen. */
+@media (max-width: 560px) {
+  .bfh-aihint__body {
+    flex-wrap: wrap;
+  }
+}

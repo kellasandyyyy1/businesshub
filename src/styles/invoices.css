@@ -1,0 +1,501 @@
+/* ==========================================================================
+   Invoices — summary cards, status tabs, table, editor and document panels
+   ========================================================================== */
+
+/* ---- Summary cards -------------------------------------------------------- */
+
+.bfh-inv-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (max-width: 1100px) {
+  .bfh-inv-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .bfh-inv-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.bfh-inv-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--card-padding);
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  box-shadow: var(--shadow-card);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    box-shadow var(--duration-shadow) var(--ease-out-soft),
+    transform var(--duration-transform) var(--ease-out-soft);
+}
+.bfh-inv-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+.bfh-inv-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 16px;
+}
+
+.bfh-inv-card__count {
+  font-size: 20px;
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.bfh-inv-card__value {
+  font-size: 11px;
+  line-height: 1.3;
+  color: var(--ink2);
+}
+
+.bfh-outstanding {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 12px var(--card-padding);
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-md);
+  background: var(--card);
+}
+
+.bfh-outstanding__value {
+  font-size: 18px;
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+/* ---- Status tabs ---------------------------------------------------------- */
+
+.bfh-tabbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bfh-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bfh-tab {
+  padding: 6px 10px;
+  border: 0;
+  border-bottom: 1.5px solid transparent;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  line-height: 1.4;
+  color: var(--ink3);
+  cursor: pointer;
+  transition: color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-tab:hover {
+  color: var(--ink2);
+}
+.bfh-tab[aria-selected='true'] {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+/* ---- Table ---------------------------------------------------------------- */
+
+.bfh-cell-number {
+  width: 1%;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink);
+}
+
+.bfh-cell-client {
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+
+.bfh-cell-pill {
+  width: 1%;
+  white-space: nowrap;
+}
+
+/* ---- Status pill ---------------------------------------------------------- */
+
+.bfh-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 1px 8px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  line-height: 1.7;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink2);
+  white-space: nowrap;
+}
+.bfh-status-pill[data-status='draft'] {
+  border-style: dashed;
+  color: var(--ink3);
+}
+.bfh-status-pill[data-status='paid'] {
+  background: var(--invert-bg);
+  border-color: var(--invert-bg);
+  color: var(--invert-fg);
+}
+.bfh-status-pill[data-status='overdue'] {
+  color: var(--ink);
+}
+
+.bfh-status-pill__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  animation: bfh-pulse var(--pulse-duration) ease-in-out infinite;
+}
+
+/* ---- Wide slide panel ----------------------------------------------------- */
+
+.bfh-panel--wide {
+  width: 560px;
+}
+
+.bfh-panel__heading {
+  margin: 0;
+  font-size: 15px;
+  font-weight: var(--weight-medium);
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.bfh-panel__head-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bfh-form--flush {
+  padding: 0;
+}
+
+/* ---- Line items ----------------------------------------------------------- */
+
+.bfh-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 4px;
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-items__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 56px 84px 92px 24px;
+  align-items: center;
+  gap: 6px;
+}
+
+.bfh-items__row--head {
+  padding-bottom: 2px;
+}
+
+.bfh-items__row input {
+  width: 100%;
+  min-width: 0;
+  padding: 6px 8px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-xs);
+  background: var(--bg);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-items__row input:focus {
+  border-color: var(--ink);
+}
+
+.bfh-items__total {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.bfh-additem {
+  align-self: flex-start;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink3);
+  cursor: pointer;
+  transition: color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-additem:hover {
+  color: var(--ink);
+}
+
+/* ---- Totals block --------------------------------------------------------- */
+
+.bfh-totals {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-totals__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bfh-totals__row--grand {
+  padding-top: 8px;
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-rate {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.bfh-rate input {
+  width: 68px;
+  padding: 5px 8px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-xs);
+  background: var(--bg);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink);
+  outline: none;
+}
+.bfh-rate input:focus {
+  border-color: var(--ink);
+}
+
+.bfh-totals__value {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink2);
+  font-variant-numeric: tabular-nums;
+}
+
+.bfh-totals__grand {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Document preview ----------------------------------------------------- */
+
+.bfh-doc {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+
+.bfh-doc__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.bfh-doc__business {
+  font-size: 15px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-heading);
+  color: var(--ink);
+}
+
+.bfh-doc__meta {
+  text-align: right;
+}
+
+.bfh-doc__number {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink);
+}
+
+.bfh-doc__party {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bfh-doc__client {
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+
+.bfh-doc__client-meta {
+  font-size: 11px;
+  color: var(--ink2);
+}
+
+.bfh-doc__items {
+  width: 100%;
+  border-collapse: collapse;
+}
+.bfh-doc__items th {
+  padding: 0 0 6px;
+  border-bottom: var(--hairline) solid var(--b);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: var(--weight-regular);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+  text-align: left;
+}
+.bfh-doc__items th:not(:first-child),
+.bfh-doc__items td:not(:first-child) {
+  text-align: right;
+  white-space: nowrap;
+  width: 1%;
+  padding-left: 12px;
+}
+.bfh-doc__items td {
+  padding: 8px 0;
+  border-bottom: var(--hairline) solid var(--b);
+  font-size: 12px;
+  color: var(--ink);
+}
+.bfh-doc__items td:not(:first-child) {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink2);
+}
+
+.bfh-doc__totals {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-self: flex-end;
+  min-width: 220px;
+}
+.bfh-doc__totals > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink2);
+  font-variant-numeric: tabular-nums;
+}
+.bfh-doc__grand {
+  padding-top: 6px;
+  border-top: var(--hairline) solid var(--b);
+  font-size: 14px !important;
+  color: var(--ink) !important;
+}
+
+.bfh-doc__notes p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink2);
+}
+
+/* ---- Payment history ------------------------------------------------------ */
+
+.bfh-payments ul {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+.bfh-payments li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: var(--hairline) solid var(--b);
+}
+
+.bfh-payments__method {
+  flex: 1;
+  font-size: 12px;
+  color: var(--ink2);
+}
+
+.bfh-payments__amount {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+
+.bfh-payments__balance {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+/* Three actions need a little more room than the two-button footer. */
+.bfh-panel--wide .bfh-panel__foot .bfh-btn-primary {
+  flex: 1;
+}
+
+/* ---- Print: the document only ---------------------------------------------- */
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .bfh-doc,
+  .bfh-doc * {
+    visibility: visible;
+  }
+  .bfh-doc {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+  }
+}

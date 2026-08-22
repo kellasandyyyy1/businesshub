@@ -1,0 +1,127 @@
+/* ==========================================================================
+   Expenses
+   ========================================================================== */
+
+/* The one-line read on the period, under the chart. */
+.bfh-chart__note {
+  margin: 10px 0 0;
+  padding-top: 10px;
+  border-top: var(--hairline) solid var(--b);
+  color: var(--ink3);
+}
+
+/* ---- Recurring tab ----------------------------------------------------------- */
+
+.bfh-recurring__row {
+  align-items: flex-start;
+}
+
+.bfh-recurring__freq {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+}
+
+/* The monthly figure leads; the yearly one sits under it as the consequence. */
+.bfh-recurring__cost {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  flex: none;
+  margin-left: auto;
+}
+
+.bfh-recurring__annual {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink3);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ---- Budget strip ------------------------------------------------------------ */
+
+.bfh-budgetstrip {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bfh-budgetstrip__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* More than four budgets scroll sideways rather than wrapping into a block. */
+.bfh-budgetstrip__scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+.bfh-budgetstrip__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.bfh-budgetcard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: none;
+  width: 160px;
+  padding: 12px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-md);
+  background: var(--card);
+}
+
+.bfh-budgetcard__figures {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink2);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bfh-budgetcard__track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--b);
+  overflow: hidden;
+}
+
+.bfh-budgetcard__fill {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--ink);
+}
+
+.bfh-budgetcard__pct {
+  font-size: 11px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+/* Past 80%, the only signal is a dashed underline — no colour, no fill. */
+.bfh-budgetcard__pct[data-caution='true'] {
+  text-decoration: underline dashed;
+  text-underline-offset: 3px;
+}
+
+/* On a phone the cards sit at about two and a half across, so the cut-off card
+   shows there is more to scroll to. */
+@media (max-width: 767px) {
+  .bfh-budgetcard {
+    width: 38vw;
+    min-width: 128px;
+  }
+}

@@ -1,0 +1,455 @@
+/* ==========================================================================
+   Ask BFH — the assistant panel
+   ========================================================================== */
+
+.bfh-assist {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: grid;
+  place-items: center;
+}
+
+/* The page behind stays legible but goes soft, so the conversation is plainly
+   the thing in focus. Ink-tinted rather than pure black, and blurred a little
+   harder than a form modal because this surface is meant to be sat with. */
+.bfh-assist__scrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: rgb(10 10 10 / 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: bfh-assist-scrim 240ms var(--ease-out-soft);
+}
+
+@keyframes bfh-assist-scrim {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+    -webkit-backdrop-filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+.bfh-assist__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 540px;
+  max-width: calc(100vw - 32px);
+  max-height: 80vh;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  box-shadow: var(--shadow-card-hover);
+  overflow: hidden;
+  /* Rises and settles rather than snapping into place. */
+  animation: bfh-assist-in 260ms var(--ease-out-soft);
+}
+
+@keyframes bfh-assist-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Nothing should move for anyone who has asked for less motion; the blur and
+   the dimming still do the work of separating the two layers. */
+@media (prefers-reduced-motion: reduce) {
+  .bfh-assist__panel,
+  .bfh-assist__scrim {
+    animation: none;
+  }
+}
+
+/* The grab handle only means anything on the bottom sheet. */
+.bfh-assist__grip {
+  display: none;
+}
+
+/* ---- Header -------------------------------------------------------------- */
+
+.bfh-assist__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: none;
+  height: 48px;
+  padding: 0 16px;
+  border-bottom: var(--hairline) solid var(--b);
+}
+
+.bfh-assist__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+.bfh-assist__title svg {
+  color: var(--ink3);
+}
+
+.bfh-assist__headright {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bfh-assist__esc {
+  padding: 2px 6px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+}
+
+/* ---- Suggestions --------------------------------------------------------- */
+
+.bfh-assist__suggest {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
+}
+
+.bfh-assist__eyebrow {
+  margin-bottom: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink3);
+}
+
+.bfh-assist__suggestion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  text-align: left;
+  color: var(--ink2);
+  cursor: pointer;
+  transition:
+    background-color 0.12s var(--ease-out-soft),
+    color 0.12s var(--ease-out-soft);
+}
+.bfh-assist__suggestion:hover {
+  background: var(--b);
+  color: var(--ink);
+}
+.bfh-assist__suggestion svg {
+  flex: none;
+  color: var(--ink3);
+}
+
+/* ---- Thread -------------------------------------------------------------- */
+
+.bfh-assist__thread {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--b2) transparent;
+}
+.bfh-assist__thread::-webkit-scrollbar {
+  width: 4px;
+}
+.bfh-assist__thread::-webkit-scrollbar-thumb {
+  background: var(--b2);
+  border-radius: var(--radius-pill);
+}
+
+/* The question is the one inverted element in the thread. */
+.bfh-assist__ask {
+  align-self: flex-end;
+  max-width: 80%;
+  margin: 0;
+  padding: 9px 14px;
+  border-radius: 12px 12px 2px 12px;
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* The answer is not a bubble — it is the page talking, so it runs full width. */
+.bfh-assist__reply {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  align-self: stretch;
+}
+
+.bfh-assist__who {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink3);
+}
+
+/* ---- Rendered answer ------------------------------------------------------ */
+
+.ai-text {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--ink);
+}
+.ai-text p {
+  margin: 0 0 6px;
+}
+.ai-text p:last-child {
+  margin-bottom: 0;
+}
+.ai-text strong {
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+.ai-text ul,
+.ai-text ol {
+  margin: 4px 0;
+  padding-left: 16px;
+}
+.ai-text li {
+  margin-bottom: 3px;
+  color: var(--ink2);
+}
+
+/* ---- Stats --------------------------------------------------------------- */
+
+.bfh-assist__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.bfh-assist__stat {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  padding: 8px 12px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+
+.bfh-assist__statvalue {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.bfh-assist__statlabel {
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+}
+
+/* ---- Follow-ups ----------------------------------------------------------- */
+
+.bfh-assist__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.bfh-assist__chip {
+  padding: 5px 10px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--ink2);
+  cursor: pointer;
+  transition:
+    background-color 0.12s var(--ease-out-soft),
+    color 0.12s var(--ease-out-soft),
+    border-color 0.12s var(--ease-out-soft);
+}
+.bfh-assist__chip:hover {
+  background: var(--invert-bg);
+  border-color: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+/* ---- Thinking ------------------------------------------------------------- */
+
+.bfh-assist__dots {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+}
+.bfh-assist__dots span {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--radius-pill);
+  background: var(--ink3);
+  animation: bfh-assist-pulse 1.2s var(--ease-out-soft) infinite;
+}
+.bfh-assist__dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.bfh-assist__dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bfh-assist-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bfh-assist__dots span {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+/* ---- Error ---------------------------------------------------------------- */
+
+.bfh-assist__error {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink2);
+}
+
+.bfh-assist__retry {
+  padding: 5px 10px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-xs);
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink2);
+  cursor: pointer;
+  transition: color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-assist__retry:hover {
+  color: var(--ink);
+}
+
+/* ---- Input ---------------------------------------------------------------- */
+
+.bfh-assist__inputrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  padding: 12px 16px;
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-assist__input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+}
+.bfh-assist__input::placeholder {
+  color: var(--ink3);
+}
+
+.bfh-assist__send {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+  cursor: pointer;
+  transition: opacity 0.15s var(--ease-out-soft);
+}
+.bfh-assist__send:disabled {
+  background: var(--b2);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---- Bottom sheet on a phone ------------------------------------------------ */
+
+@media (max-width: 767px) {
+  .bfh-assist {
+    place-items: end stretch;
+  }
+  .bfh-assist__panel {
+    width: 100%;
+    max-width: 100%;
+    max-height: 90vh;
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding-bottom: env(safe-area-inset-bottom);
+    animation: bfh-sheet-up 280ms var(--ease-out-soft);
+  }
+  .bfh-assist__grip {
+    display: block;
+    flex: none;
+    width: 32px;
+    height: 4px;
+    margin: 12px auto 0;
+    border-radius: var(--radius-pill);
+    background: var(--b2);
+  }
+  /* There is no Esc key on a phone keyboard. */
+  .bfh-assist__esc {
+    display: none;
+  }
+}

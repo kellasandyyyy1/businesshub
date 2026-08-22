@@ -1,0 +1,266 @@
+/* ==========================================================================
+   bryl-minimal — design tokens
+   Monochrome, typography-first. No accent color: emphasis comes from
+   inversion, font role, and halftone texture.
+
+   Colors are stored as raw RGB channels so alpha can be applied at the
+   point of use:  rgb(var(--ink-c) / 0.25)
+   ========================================================================== */
+
+:root {
+  color-scheme: light dark;
+
+  /* ---- Color: light theme (semantic roles) ---------------------------- */
+  --background: 255 255 255; /* #ffffff */
+  --ink-c: 10 10 10; /* #0a0a0a */
+
+  --gray-50: 250 250 250; /* #fafafa  faintest fill */
+  --gray-100: 245 245 245; /* #f5f5f5  subtle fill */
+  --gray-200: 233 233 233; /* #e9e9e9  hairlines, borders */
+  --gray-300: 212 212 212; /* #d4d4d4  strong borders, scrollbar */
+  --gray-400: 163 163 163; /* #a3a3a3  faint text, labels */
+  --gray-500: 115 115 115; /* #737373  muted text */
+  --gray-600: 82 82 82; /* #525252 */
+  --gray-700: 64 64 64; /* #404040 */
+  --gray-800: 38 38 38; /* #262626 */
+  --gray-900: 23 23 23; /* #171717 */
+  --gray-950: 15 15 15; /* #0f0f0f */
+
+  /* Text roles — never lighter than gray-400 for anything readable. */
+  --text-primary: rgb(var(--ink-c));
+  --text-secondary: rgb(var(--gray-500));
+  --text-tertiary: rgb(var(--gray-400));
+
+  /* Surfaces & lines */
+  --surface: rgb(var(--background));
+  --surface-subtle: rgb(var(--gray-50));
+  --surface-fill: rgb(var(--gray-100));
+  --border-hairline: rgb(var(--gray-200));
+  --border-strong: rgb(var(--gray-300));
+
+  /* Inversion — the single "loud" element allowed per view */
+  --invert-bg: rgb(var(--ink-c));
+  --invert-fg: rgb(var(--background));
+
+  /* Short aliases used throughout the app shell and pages. These reference
+     the channel vars above, so the dark re-mapping flows through untouched. */
+  --bg: rgb(var(--background)); /* page ground */
+  --card: rgb(var(--gray-50)); /* chrome + card fill */
+  --b: rgb(var(--gray-200)); /* hairline */
+  --b2: rgb(var(--gray-300)); /* strong border, scrollbar thumb */
+  --ink: rgb(var(--ink-c)); /* primary text */
+  --ink2: rgb(var(--gray-500)); /* secondary text */
+  --ink3: rgb(var(--gray-400)); /* tertiary text, micro-labels */
+
+  /* ---- Typography ------------------------------------------------------ */
+  --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-display: 'Geist Pixel', 'Geist Mono', ui-monospace, monospace;
+  --font-serif: 'Source Serif 4', Georgia, serif;
+
+  /* Compact scale — base UI text is 15px, not 16px */
+  --text-page-title: 3rem; /* pixel font, lowercase, line-height 1 */
+  --text-h1: 1.6rem;
+  --text-h2: 1.3rem;
+  --text-h3: 1.1rem;
+  --text-longform: 1.0625rem; /* 17px serif */
+  --text-body: 0.9375rem; /* 15px */
+  --text-small: 0.8125rem; /* 13px */
+  --text-micro: 0.6875rem; /* 11px mono label */
+  --text-micro-sm: 0.5625rem; /* 9px mono label (tags, pills) */
+
+  --leading-tight: 1;
+  --leading-heading: 1.2;
+  --leading-body: 1.6;
+  --leading-longform: 1.75;
+
+  --tracking-heading: -0.02em;
+  --tracking-micro: 1px; /* wide tracking on uppercase mono labels */
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* ---- Layout ---------------------------------------------------------- */
+  --measure-reading: 42rem; /* 672px */
+  --measure-wide: 56rem; /* 896px */
+  --sidebar-width: 14rem;
+  --page-padding-x: 1rem;
+  --page-padding-x-desktop: 1.5rem;
+  --card-padding: 1.25rem;
+  --space-section: 3.5rem; /* vertical rhythm between sections */
+  --space-component: 0.75rem;
+  --space-grid: 1.5rem;
+
+  /* ---- Radii ----------------------------------------------------------- */
+  --radius-lg: 16px; /* large cards, modal panels */
+  --radius-md: 12px; /* medium cards */
+  --radius-thumb: 10px; /* thumbnails */
+  --radius-sm: 8px; /* small elements, buttons */
+  --radius-xs: 6px; /* inputs, minimal controls */
+  --radius-pill: 9999px;
+
+  /* ---- Shadows — soft ground contact, never material elevation --------- */
+  --shadow-card: 0 8px 22px -14px rgb(0 0 0 / 0.25);
+  --shadow-card-hover: 0 18px 36px -20px rgb(0 0 0 / 0.4);
+  --shadow-modal: 0 40px 90px -20px rgb(0 0 0 / 0.35);
+
+  /* ---- Motion ---------------------------------------------------------- */
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-micro: 200ms;
+  --duration-shadow: 350ms;
+  --duration-transform: 420ms;
+  --duration-theme: 500ms;
+  --duration-entrance: 700ms;
+  --stagger-step: 70ms;
+  --entrance-offset: 12px;
+  --pulse-duration: 1.8s;
+
+  /* ---- Halftone texture ------------------------------------------------ */
+  --halftone-cell: 9px;
+  --halftone-cell-dense: 6px;
+  --halftone-cell-densest: 5px;
+  --halftone-dot: rgb(var(--ink-c) / 0.9);
+  --halftone-image: radial-gradient(
+    circle at center,
+    var(--halftone-dot) 1px,
+    transparent 1px
+  );
+
+  /* Scrollbars */
+  --scrollbar-size: 6px;
+  --scrollbar-thumb: rgb(var(--gray-300));
+
+  /* ---- Breakpoints — reference values; media queries need literals ------- */
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+}
+
+/* Safe areas for notched devices. viewport-fit=cover makes these meaningful. */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+/* ==========================================================================
+   Dark theme — a re-mapping of the same semantic roles, not a redesign.
+   Applied by OS preference, or manually via `.dark` on <html>.
+   `.light` on <html> forces light even when the OS prefers dark.
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    color-scheme: dark;
+
+    --background: 12 12 15; /* #0c0c0f */
+    --ink-c: 244 244 245; /* #f4f4f5 */
+
+    --gray-50: 24 24 27; /* #18181b */
+    --gray-100: 30 30 34; /* #1e1e22 */
+    --gray-200: 42 42 48; /* #2a2a30 */
+    --gray-300: 58 58 66; /* #3a3a42 */
+    --gray-400: 138 138 146; /* #8a8a92 */
+    --gray-500: 160 160 168; /* #a0a0a8 */
+    --gray-600: 180 180 188; /* #b4b4bc */
+    --gray-700: 200 200 206; /* #c8c8ce */
+    --gray-800: 220 220 224; /* #dcdce0 */
+    --gray-900: 232 232 234; /* #e8e8ea */
+    --gray-950: 240 240 242; /* #f0f0f2 */
+
+    /* In dark mode shadows nearly disappear — borders carry the structure. */
+    --shadow-card: 0 8px 22px -14px rgb(0 0 0 / 0.6);
+    --shadow-card-hover: 0 18px 36px -20px rgb(0 0 0 / 0.75);
+    --shadow-modal: 0 40px 90px -20px rgb(0 0 0 / 0.7);
+
+    --halftone-dot: rgb(var(--ink-c) / 0.42);
+  }
+}
+
+:root.dark {
+  color-scheme: dark;
+
+  --background: 12 12 15;
+  --ink-c: 244 244 245;
+
+  --gray-50: 24 24 27;
+  --gray-100: 30 30 34;
+  --gray-200: 42 42 48;
+  --gray-300: 58 58 66;
+  --gray-400: 138 138 146;
+  --gray-500: 160 160 168;
+  --gray-600: 180 180 188;
+  --gray-700: 200 200 206;
+  --gray-800: 220 220 224;
+  --gray-900: 232 232 234;
+  --gray-950: 240 240 242;
+
+  --shadow-card: 0 8px 22px -14px rgb(0 0 0 / 0.6);
+  --shadow-card-hover: 0 18px 36px -20px rgb(0 0 0 / 0.75);
+  --shadow-modal: 0 40px 90px -20px rgb(0 0 0 / 0.7);
+
+  --halftone-dot: rgb(var(--ink-c) / 0.42);
+}
+
+/* ==========================================================================
+   Global base
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: rgb(var(--background));
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+  transition:
+    background-color var(--duration-theme) var(--ease-out-soft),
+    color var(--duration-theme) var(--ease-out-soft),
+    border-color var(--duration-theme) var(--ease-out-soft);
+}
+
+::selection {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+/* Slim scrollbars everywhere, not just in the content well. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--b2) transparent;
+}
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--b2);
+  border-radius: 3px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

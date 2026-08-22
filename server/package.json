@@ -1,0 +1,20 @@
+{
+  "name": "bfh-push-server",
+  "private": true,
+  "version": "0.1.0",
+  "type": "commonjs",
+  "description": "Push delivery for Business Finance Hub. Stores subscriptions only — never financial data.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "keys": "node -e \"console.log(require('web-push').generateVAPIDKeys())\""
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.11.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "web-push": "^3.6.7"
+  }
+}

@@ -1,0 +1,202 @@
+/* ==========================================================================
+   Install and offline
+   ========================================================================== */
+
+/* The one inverted call to action in the app, shown only while a browser has
+   actually offered an install and the app is not already installed. */
+.bfh-install {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+  margin-bottom: 14px;
+}
+
+.bfh-install__body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+.bfh-install__body svg {
+  flex: none;
+  opacity: 0.7;
+}
+
+.bfh-install__text {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.bfh-install__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.bfh-install__go {
+  padding: 6px 14px;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: var(--invert-fg);
+  color: var(--invert-bg);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+}
+
+.bfh-install__close {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: currentColor;
+  opacity: 0.5;
+  cursor: pointer;
+  transition: opacity var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-install__close:hover {
+  opacity: 1;
+}
+
+@media (max-width: 560px) {
+  .bfh-install {
+    flex-wrap: wrap;
+  }
+  .bfh-install__actions {
+    margin-left: auto;
+  }
+}
+
+/* ---- Offline ------------------------------------------------------------- */
+
+.bfh-offlinebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 12px;
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+.bfh-offlinebar svg {
+  flex: none;
+}
+
+/* The bar takes 32px off the top, so the fixed chrome moves down to match
+   rather than hiding underneath it. */
+:root[data-offline='true'] .bfh-topbar,
+:root[data-offline='true'] .bfh-sidebar {
+  top: 32px;
+}
+:root[data-offline='true'] .bfh-main {
+  top: calc(var(--shell-topbar) + 32px);
+}
+
+@media (max-width: 767px) {
+  .bfh-offlinebar {
+    font-size: 9px;
+    letter-spacing: 0.04em;
+  }
+}
+
+/* ---- How to install on iOS ------------------------------------------------ */
+
+.bfh-iossheet__steps {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+}
+
+.bfh-iossheet__step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: var(--hairline) solid var(--b);
+}
+.bfh-iossheet__step:last-child {
+  border-bottom: 0;
+}
+
+.bfh-iossheet__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 7px;
+  background: var(--bg);
+  color: var(--ink2);
+}
+
+.bfh-iossheet__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.bfh-iossheet__label {
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.bfh-iossheet__sub {
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--ink2);
+}
+
+.bfh-iossheet__note {
+  margin: 16px 0 0;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  line-height: 1.6;
+  color: var(--ink3);
+}
+
+/* ---- The About row -------------------------------------------------------- */
+
+.bfh-installrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-installrow__done {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+}

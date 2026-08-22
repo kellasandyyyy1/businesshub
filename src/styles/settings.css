@@ -1,0 +1,648 @@
+/* ==========================================================================
+   Settings
+   ========================================================================== */
+
+.bfh-settings__grid {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  width: 100%;
+}
+@media (max-width: 860px) {
+  .bfh-settings__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.bfh-settings__body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.bfh-settings__note {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink2);
+}
+
+.bfh-settings__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bfh-settings__foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: var(--hairline) solid var(--b);
+}
+
+/* ---- Profile picture ------------------------------------------------------- */
+
+.bfh-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  padding: 22px 16px;
+  border: var(--hairline) dashed var(--b2);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  color: var(--ink3);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-micro) var(--ease-out-soft),
+    color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-dropzone:hover,
+.bfh-dropzone[data-dragging='true'] {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.bfh-dropzone__text {
+  font-size: 13px;
+  color: var(--ink2);
+}
+
+.bfh-logo-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bfh-logo-preview img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-sm);
+}
+
+.bfh-avatar__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+/* ---- Category and method lists ---------------------------------------------- */
+
+.bfh-catlist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.bfh-catrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 8px;
+  margin: 0 -8px;
+  border-radius: var(--radius-xs);
+  color: var(--ink2);
+  transition: background-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-catlist li + li {
+  border-top: var(--hairline) solid var(--b);
+  border-radius: 0;
+}
+.bfh-catrow:hover {
+  background: var(--bg);
+}
+
+.bfh-catrow--stacked {
+  align-items: flex-start;
+}
+
+.bfh-catrow__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.bfh-catrow__name {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--ink);
+}
+.bfh-catrow__body .bfh-catrow__name {
+  flex: none;
+}
+
+/* Delete stays out of the way until the row is engaged. */
+.bfh-catrow__delete {
+  opacity: 0;
+  transition: opacity var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-catrow:hover .bfh-catrow__delete,
+.bfh-catrow:focus-within .bfh-catrow__delete {
+  opacity: 1;
+}
+
+/* ---- Switch ------------------------------------------------------------------ */
+
+.bfh-switch {
+  flex: none;
+  width: 30px;
+  height: 17px;
+  padding: 2px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-micro) var(--ease-out-soft),
+    border-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-switch[aria-checked='true'] {
+  background: var(--invert-bg);
+  border-color: var(--invert-bg);
+}
+
+.bfh-switch__knob {
+  display: block;
+  width: 11px;
+  height: 11px;
+  border-radius: var(--radius-pill);
+  background: var(--b2);
+  transition:
+    transform var(--duration-micro) var(--ease-out-soft),
+    background-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-switch[aria-checked='true'] .bfh-switch__knob {
+  background: var(--invert-fg);
+  transform: translateX(13px);
+}
+
+/* ---- Add forms ---------------------------------------------------------------- */
+
+.bfh-addcat {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-addcat__row {
+  display: flex;
+  gap: 8px;
+}
+.bfh-addcat__row input {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 9px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-xs);
+  background: var(--bg);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-addcat__row input:focus {
+  border-color: var(--ink);
+}
+
+.bfh-iconpicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.bfh-iconpicker__option {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-xs);
+  background: var(--bg);
+  color: var(--ink2);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-micro) var(--ease-out-soft),
+    color var(--duration-micro) var(--ease-out-soft);
+}
+/* Hover and selection both invert — the picker is the one place where a
+   repeated inversion reads as a grid rather than as emphasis. */
+.bfh-iconpicker__option:hover,
+.bfh-iconpicker__option[aria-checked='true'] {
+  background: var(--invert-bg);
+  border-color: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+/* ---- Appearance ---------------------------------------------------------------- */
+
+.bfh-themes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.bfh-theme {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 120px;
+  padding: 10px;
+  border: 1.5px solid transparent;
+  box-shadow: inset 0 0 0 var(--hairline) var(--b);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-theme[aria-checked='true'] {
+  border-color: var(--ink);
+  box-shadow: none;
+}
+
+.bfh-theme__name {
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  text-transform: capitalize;
+}
+
+/* Each swatch paints its own palette, independent of the active theme. */
+.bfh-theme__swatch {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 4px;
+  height: 44px;
+  padding: 8px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+}
+.bfh-theme__swatch[data-variant='light'] {
+  background: #ffffff;
+}
+.bfh-theme__swatch[data-variant='dark'] {
+  background: #0c0c0f;
+}
+.bfh-theme__swatch[data-variant='system'] {
+  background: linear-gradient(105deg, #ffffff 0 50%, #0c0c0f 50% 100%);
+}
+
+.bfh-theme__bar {
+  height: 4px;
+  border-radius: 2px;
+  background: #0a0a0a;
+}
+.bfh-theme__bar[data-short='true'] {
+  width: 60%;
+  background: #d4d4d4;
+}
+.bfh-theme__swatch[data-variant='dark'] .bfh-theme__bar {
+  background: #f4f4f5;
+}
+.bfh-theme__swatch[data-variant='dark'] .bfh-theme__bar[data-short='true'] {
+  background: #3a3a42;
+}
+.bfh-theme__swatch[data-variant='system'] .bfh-theme__bar {
+  background: linear-gradient(105deg, #0a0a0a 0 50%, #f4f4f5 50% 100%);
+}
+.bfh-theme__swatch[data-variant='system'] .bfh-theme__bar[data-short='true'] {
+  background: linear-gradient(105deg, #d4d4d4 0 50%, #3a3a42 50% 100%);
+}
+
+/* ---- Data ------------------------------------------------------------------------ */
+
+.bfh-datablock {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-datablock__title {
+  margin: 0 0 3px;
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+
+/* The destructive block is set apart by a dashed rule, not a colour. */
+.bfh-datablock--danger {
+  margin-top: 4px;
+  padding-top: 18px;
+  border-top: var(--hairline) dashed var(--b2);
+}
+
+.bfh-btn-danger {
+  flex: none;
+  padding: 6px 12px;
+  border: var(--hairline) dashed var(--b2);
+  border-radius: var(--radius-xs);
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-micro) var(--ease-out-soft),
+    opacity var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-btn-danger:hover:not(:disabled) {
+  border-color: var(--ink);
+}
+.bfh-btn-danger:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ---- About -------------------------------------------------------------------------- */
+
+.bfh-about__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bfh-about__name {
+  font-size: 15px;
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-heading);
+  color: var(--ink);
+}
+
+.bfh-about__credit {
+  padding-top: 12px;
+  border-top: var(--hairline) solid var(--b);
+}
+
+/* The one link in About: a 25%-opacity underline that fills in on hover. */
+.bfh-about__link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--ink-c) / 0.25);
+  text-underline-offset: 2px;
+  transition: text-decoration-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-about__link:hover {
+  text-decoration-color: rgb(var(--ink-c));
+}
+
+/* ---- Push notifications ------------------------------------------------------ */
+
+.bfh-push {
+  display: flex;
+  flex-direction: column;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: var(--hairline) solid var(--b);
+}
+
+/* The row reuses the toggle layout above it but not the list's divider. The
+   negative margin goes with the padding, so this switch lines up with the four
+   in the list rather than sitting 8px proud of them. */
+.bfh-push__row {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.bfh-push__row:hover {
+  background: transparent;
+}
+
+.bfh-switch:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.bfh-push__unsupported {
+  flex: none;
+  color: var(--ink3);
+}
+
+/* Sentence case, not the uppercase micro register — this is a message, not a
+   label, and it should not read like a shipped debug string. */
+.bfh-push__failure {
+  margin: 8px 0 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.5;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink3);
+}
+
+/* ---- Mobile section list ------------------------------------------------------
+   On a phone the left rail becomes a full-width list; choosing a row opens that
+   section as its own screen, with a back arrow to return here. */
+
+.bfh-settingslist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  overflow: hidden;
+}
+
+.bfh-settingslist__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+}
+.bfh-settingslist li + li .bfh-settingslist__item {
+  border-top: var(--hairline) solid var(--b);
+}
+.bfh-settingslist__item:active {
+  background: var(--bg);
+}
+.bfh-settingslist__item svg {
+  flex: none;
+  color: var(--ink3);
+}
+
+/* ==========================================================================
+   Business — identity row and settings grid
+   ========================================================================== */
+
+.bfh-identity {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.bfh-identity__avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: none;
+}
+
+/* 72px, not a drop zone. The picture is a detail, not the subject of the page. */
+.bfh-avatarcircle {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: 50%;
+  background: var(--bg);
+  overflow: hidden;
+}
+.bfh-avatarcircle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bfh-avatarcircle__initials {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: var(--weight-medium);
+  color: var(--ink2);
+}
+
+.bfh-identity__change,
+.bfh-identity__remove {
+  margin-top: 6px;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+  text-align: center;
+  cursor: pointer;
+  transition: color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-identity__change:hover,
+.bfh-identity__remove:hover {
+  color: var(--ink);
+}
+.bfh-identity__remove {
+  margin-top: 2px;
+}
+
+.bfh-identity__name {
+  flex: 1;
+  min-width: 0;
+}
+
+.bfh-fieldhint {
+  margin-top: 4px;
+  font-size: 10px;
+  line-height: 1.45;
+  color: var(--ink3);
+}
+
+/* ---- The settings pairs -------------------------------------------------- */
+
+.bfh-settingsgrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* A derived value, shown but not for typing in. */
+.bfh-readonlyfield,
+.bfh-prefixfield {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.bfh-readonlyfield input,
+.bfh-prefixfield input {
+  width: 100%;
+  min-width: 0;
+}
+.bfh-readonlyfield input {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.bfh-readonlyfield__tag {
+  position: absolute;
+  right: 9px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+  pointer-events: none;
+}
+
+/* The symbol sits inside the field so the number reads as money. */
+.bfh-prefixfield__symbol {
+  position: absolute;
+  left: 10px;
+  font-size: 13px;
+  color: var(--ink2);
+  pointer-events: none;
+}
+.bfh-prefixfield input {
+  padding-left: 26px;
+}
+
+/* The button no longer needs a rule above it or a gulf below. */
+.bfh-settings__foot--tight {
+  margin-top: 8px;
+  padding-top: 0;
+  border-top: 0;
+}
+
+@media (max-width: 767px) {
+  .bfh-identity {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .bfh-identity__avatar {
+    align-self: center;
+  }
+  .bfh-settingsgrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* The peso sign is the reason this field looked like it said "P": Geist Mono
+   draws U+20B1 with a single hairline bar that disappears at 13px, and the
+   read-only dimming finished the job. The sans face draws it unambiguously,
+   and the dimming lifts just enough to keep the stroke. */
+.bfh-readonlyfield input,
+.bfh-prefixfield__symbol {
+  font-family: var(--font-sans);
+}
+.bfh-readonlyfield input {
+  opacity: 0.75;
+}
