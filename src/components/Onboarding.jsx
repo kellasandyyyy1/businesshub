@@ -117,7 +117,7 @@ export default function Onboarding({ onDone }) {
                 id="onboard-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Broadheader"
+                placeholder="Your business"
                 autoFocus
               />
               {error && <span className="bfh-formerror">{error}</span>}
