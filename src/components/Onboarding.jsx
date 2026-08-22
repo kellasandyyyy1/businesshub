@@ -92,6 +92,16 @@ export default function Onboarding({ onDone }) {
     <div className="bfh-onboard" role="dialog" aria-modal="true" aria-label="Set up your business">
       <div className="bfh-onboard__inner" ref={trapRef}>
         <header className="bfh-onboard__head">
+          {/* The same mark the installed app and the browser tab carry, so the
+              first screen already looks like the icon they tapped. Decorative:
+              the wordmark underneath says the name. */}
+          <img
+            className="bfh-onboard__logo"
+            src="/favicon.svg"
+            alt=""
+            width="140"
+            height="140"
+          />
           <div className="bfh-logo">BFH</div>
           <div className="bfh-micro bfh-logo__tag">Finance Hub</div>
         </header>

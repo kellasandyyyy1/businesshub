@@ -80,6 +80,17 @@
   gap: 2px;
 }
 
+/* The logomark is a self-contained badge — dark card, light artwork — so it
+   needs no theme treatment: it reads on the light surface as a solid shape and
+   on the dark one through its own chart glyph and hairline edge. Square, and
+   sized to sit above the wordmark without competing with it. */
+.bfh-onboard__logo {
+  display: block;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 10px;
+}
+
 /* Numbered, em-dashed step markers — the section-header convention. */
 .bfh-onboard__steps {
   display: flex;
