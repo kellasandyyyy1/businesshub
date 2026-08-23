@@ -30,7 +30,7 @@ form filled in), installable as a PWA, and optional push notifications.
 React 18 · Vite 8 · Dexie (IndexedDB) · Tailwind for layout only · Tabler icons ·
 Groq for the assistant · `vite-plugin-pwa` for the service worker
 
-No component library. The monochrome *bryl-minimal* design system is hand-built:
+No component library. The monochrome design system is hand-built:
 hairlines, one inverted chip per screen as the entire emphasis budget, mono
 micro-labels, no colour anywhere.
 
