@@ -1,5 +1,5 @@
 import Dexie from 'dexie'
-import { seedDefaults } from './defaults'
+import { PERSONAL_CATEGORIES, seedDefaults } from './defaults'
 
 /**
  * Business Finance Hub — local-only database.
@@ -93,6 +93,50 @@ db.version(4)
     if (onboarded?.value !== true) {
       await settings.where('key').anyOf(['businessName', 'invoicePrefix']).delete()
     }
+  })
+
+/**
+ * v5 splits the database into two profiles: business and personal.
+ *
+ * Every row that can belong to one side or the other gains a `profile` field,
+ * and two tables arrive for the personal side to build on. Everything that
+ * existed before this point was business data, so that is what it is tagged.
+ *
+ * Each store string below repeats the indexes the table already had. Dexie
+ * replaces a table's schema wholesale when a version re-declares it, so an
+ * index left out here would be dropped — including invoices' unique
+ * `&invoiceNumber`, which InvoiceEditor both queries and relies on to catch
+ * duplicate numbers.
+ *
+ * `settings` is not re-declared: it holds one row per key for the whole app,
+ * not per profile, and its `&key` uniqueness is load-bearing for putSetting.
+ */
+db.version(5)
+  .stores({
+    transactions: '++id, date, type, category, clientId, status, paymentMethod, profile, createdAt',
+    clients: '++id, name, email, company, profile, createdAt',
+    invoices: '++id, clientId, &invoiceNumber, status, dueDate, profile, createdAt, sentAt, paidAt',
+    budgets: '++id, name, category, period, profile, createdAt',
+    categories: '++id, name, type, profile, createdAt',
+
+    // { id, name, target, current, deadline, notes, profile, createdAt }
+    goals: '++id, name, deadline, profile, createdAt',
+
+    // { id, type: asset|liability, name, amount, notes, profile, updatedAt }
+    netWorth: '++id, type, name, profile, updatedAt',
+  })
+  .upgrade(async (tx) => {
+    for (const name of ['transactions', 'clients', 'invoices', 'budgets', 'categories']) {
+      await tx.table(name).toCollection().modify({ profile: 'business' })
+    }
+
+    // The personal chart of accounts, so the profile is usable the moment it is
+    // switched to. A database created after this version gets the same list
+    // from seedDefaults instead — an upgrade never runs on a fresh one.
+    const createdAt = new Date().toISOString()
+    await tx
+      .table('categories')
+      .bulkAdd(PERSONAL_CATEGORIES.map((c) => ({ ...c, profile: 'personal', createdAt })))
   })
 
 /** Enum-ish constants so pages and forms never hand-write these strings. */

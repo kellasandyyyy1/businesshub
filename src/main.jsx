@@ -5,6 +5,7 @@ import './index.css'
 import App from './App.jsx'
 import { AssistantActionsProvider } from './context/AssistantActionsContext.jsx'
 import { BreakpointProvider } from './context/BreakpointContext.jsx'
+import { ProfileProvider } from './context/ProfileContext.jsx'
 import { initDb } from './db/db.js'
 
 // Open IndexedDB (writing first-run defaults if new) before the app paints, so pages
@@ -16,11 +17,13 @@ initDb()
   .finally(() => {
     createRoot(document.getElementById('root')).render(
       <StrictMode>
-        <BreakpointProvider>
-          <AssistantActionsProvider>
-            <App />
-          </AssistantActionsProvider>
-        </BreakpointProvider>
+        <ProfileProvider>
+          <BreakpointProvider>
+            <AssistantActionsProvider>
+              <App />
+            </AssistantActionsProvider>
+          </BreakpointProvider>
+        </ProfileProvider>
       </StrictMode>,
     )
   })

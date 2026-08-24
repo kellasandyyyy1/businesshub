@@ -4,6 +4,10 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { db } from '../db/db'
+import { BUSINESS_PROFILE, ofProfile } from '../db/queries'
+
+/** Built before the profile split, so it reads the business side. */
+const inProfile = ofProfile(BUSINESS_PROFILE)
 
 const KEY = 'bfh-howto-dismissed'
 
@@ -23,7 +27,7 @@ export default function HowToBanner() {
     }
   })
 
-  const count = useLiveQuery(() => db.transactions.count(), [], null)
+  const count = useLiveQuery(() => db.transactions.filter(inProfile).count(), [], null)
 
   // `null` means the count has not come back yet; showing the banner before
   // then would flash it at someone who already has data.

@@ -1,6 +1,10 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 
 import { db } from '../db/db'
+import { BUSINESS_PROFILE, ofProfile } from '../db/queries'
+
+/** Built before the profile split, so it reads the business side. */
+const inProfile = ofProfile(BUSINESS_PROFILE)
 
 /** The default payment methods every business starts with. */
 export const DEFAULT_PAYMENT_METHODS = [
@@ -19,8 +23,8 @@ export function useSettingsData() {
   return useLiveQuery(async () => {
     const [settings, categories, transactions] = await Promise.all([
       db.settings.toArray(),
-      db.categories.orderBy('name').toArray(),
-      db.transactions.toArray(),
+      db.categories.orderBy('name').filter(inProfile).toArray(),
+      db.transactions.filter(inProfile).toArray(),
     ])
 
     const map = Object.fromEntries(settings.map((s) => [s.key, s.value]))

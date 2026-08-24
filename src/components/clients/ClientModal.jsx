@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 import { db } from '../../db/db'
+import { BUSINESS_PROFILE, addClient } from '../../db/queries'
 import useFocusTrap from '../../hooks/useFocusTrap'
 
 const emptyClient = () => ({ name: '', company: '', email: '', phone: '', address: '', notes: '' })
@@ -46,7 +47,7 @@ export default function ClientModal({ client, onClose, onSaved }) {
       await db.clients.update(client.id, record)
       onSaved?.(client.id)
     } else {
-      const id = await db.clients.add({ ...record, createdAt: new Date().toISOString() })
+      const id = await addClient(BUSINESS_PROFILE, record)
       onSaved?.(id)
     }
     onClose()

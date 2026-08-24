@@ -3,7 +3,11 @@ import { useEffect, useRef, useState } from 'react'
 
 import { AiError, AiLoading } from './AiStatus'
 import { db } from '../../db/db'
+import { BUSINESS_PROFILE, ofProfile } from '../../db/queries'
 import { MODEL_FAST, callGroq, hasApiKey, parseJsonLoose } from '../../lib/ai'
+
+/** Built before the profile split, so it reads the business side. */
+const inProfile = ofProfile(BUSINESS_PROFILE)
 
 /** Confirmed categorisations, newest first, for few-shot prompting. */
 export async function recentExamples(limit = 20) {
@@ -12,7 +16,7 @@ export async function recentExamples(limit = 20) {
 
   // A fresh install has no confirmations yet, but the ledger itself is full of
   // decisions the user already made.
-  const fallback = await db.transactions.orderBy('date').reverse().limit(limit).toArray()
+  const fallback = await db.transactions.orderBy('date').reverse().filter(inProfile).limit(limit).toArray()
   return [
     ...history,
     ...fallback.map((t) => ({

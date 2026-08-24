@@ -1,7 +1,11 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 
 import { db } from '../db/db'
+import { BUSINESS_PROFILE, ofProfile } from '../db/queries'
 import { shiftDays } from '../lib/format'
+
+/** Built before the profile split, so it reads the business side. */
+const inProfile = ofProfile(BUSINESS_PROFILE)
 
 export const DATE_RANGES = [
   { id: 'all', label: 'All time', days: null },
@@ -15,9 +19,9 @@ export const DATE_RANGES = [
 export function useTransactionsData() {
   return useLiveQuery(async () => {
     const [transactions, categories, clients] = await Promise.all([
-      db.transactions.orderBy('date').reverse().toArray(),
-      db.categories.orderBy('name').toArray(),
-      db.clients.orderBy('name').toArray(),
+      db.transactions.orderBy('date').reverse().filter(inProfile).toArray(),
+      db.categories.orderBy('name').filter(inProfile).toArray(),
+      db.clients.orderBy('name').filter(inProfile).toArray(),
     ])
 
     return {

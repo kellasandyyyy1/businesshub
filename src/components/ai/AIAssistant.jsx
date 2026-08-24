@@ -7,10 +7,14 @@ import { useNavigate } from 'react-router-dom'
 
 import { useAssistantActions } from '../../context/AssistantActionsContext'
 import { db } from '../../db/db'
+import { BUSINESS_PROFILE, ofProfile } from '../../db/queries'
 import { buildFinancialContext, callGroq, MODEL_DEFAULT } from '../../lib/ai'
 import { normalizeAction } from '../../lib/assistantAction'
 import { parseAIResponse } from '../../lib/parseAIResponse'
 import useFocusTrap from '../../hooks/useFocusTrap'
+
+/** Built before the profile split, so it reads the business side. */
+const inProfile = ofProfile(BUSINESS_PROFILE)
 
 const SUGGESTIONS = [
   'How much did I spend this month?',
@@ -121,7 +125,7 @@ export default function AIAssistant({ onClose }) {
   const navigate = useNavigate()
   const { triggerAction } = useAssistantActions()
   // The model can only pick a category that exists, so it gets the real list.
-  const categories = useLiveQuery(() => db.categories.orderBy('name').toArray(), [], [])
+  const categories = useLiveQuery(() => db.categories.orderBy('name').filter(inProfile).toArray(), [], [])
   const categoryNames = useMemo(
     () => ({
       expense: categories.filter((c) => c.type === 'expense').map((c) => c.name),

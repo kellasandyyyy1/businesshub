@@ -1,7 +1,11 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 
 import { db } from '../db/db'
+import { BUSINESS_PROFILE, ofProfile } from '../db/queries'
 import { balanceOf, effectiveStatus } from '../lib/invoice'
+
+/** Built before the profile split, so it reads the business side. */
+const inProfile = ofProfile(BUSINESS_PROFILE)
 
 export const STATUS_TABS = ['all', 'draft', 'sent', 'paid', 'overdue']
 
@@ -10,8 +14,8 @@ export function useInvoicesData() {
   return useLiveQuery(async () => {
     const today = new Date().toISOString().slice(0, 10)
     const [invoices, clients] = await Promise.all([
-      db.invoices.orderBy('createdAt').reverse().toArray(),
-      db.clients.orderBy('name').toArray(),
+      db.invoices.orderBy('createdAt').reverse().filter(inProfile).toArray(),
+      db.clients.orderBy('name').filter(inProfile).toArray(),
     ])
 
     return {

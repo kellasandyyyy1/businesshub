@@ -11,10 +11,14 @@
  */
 
 import { db } from '../db/db'
+import { BUSINESS_PROFILE, ofProfile } from '../db/queries'
 import { balanceOf, effectiveStatus } from './invoice'
 import { budgetWindow, spendFor } from './budget'
 import { detectRecurring } from './cashflow'
 import { shiftDays } from './format'
+
+/** Built before the profile split, so it reads the business side. */
+const inProfile = ofProfile(BUSINESS_PROFILE)
 
 export const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions'
 
@@ -218,16 +222,16 @@ export async function buildFinancialContext(months = 3) {
   const from = shiftDays(today, -Math.round(months * 30.4))
 
   const [transactions, clients, invoices, budgets, settings, categories] = await Promise.all([
-    db.transactions.where('date').between(from, today, true, true).toArray(),
-    db.clients.toArray(),
-    db.invoices.toArray(),
-    db.budgets.toArray(),
+    db.transactions.where('date').between(from, today, true, true).filter(inProfile).toArray(),
+    db.clients.filter(inProfile).toArray(),
+    db.invoices.filter(inProfile).toArray(),
+    db.budgets.filter(inProfile).toArray(),
     db.settings.toArray(),
-    db.categories.toArray(),
+    db.categories.filter(inProfile).toArray(),
   ])
 
   const settingsMap = Object.fromEntries(settings.map((s) => [s.key, s.value]))
-  const allCleared = await db.transactions.where('status').equals('cleared').toArray()
+  const allCleared = await db.transactions.where('status').equals('cleared').filter(inProfile).toArray()
   const currentCash =
     Number(settingsMap.openingBalance ?? 0) +
     allCleared
@@ -297,7 +301,7 @@ export async function buildFinancialContext(months = 3) {
   lines.push('')
 
   // ---- Budgets
-  const allTransactions = await db.transactions.toArray()
+  const allTransactions = await db.transactions.filter(inProfile).toArray()
   lines.push('BUDGETS (name, category, period, budgeted, spent this period):')
   for (const budget of budgets) {
     const spent = spendFor(allTransactions, budget.category, budgetWindow(budget.period, today))
@@ -346,13 +350,13 @@ export async function buildFinancialContext(months = 3) {
  */
 export async function dataFingerprint() {
   const [transactions, invoices, clients, budgets] = await Promise.all([
-    db.transactions.count(),
-    db.invoices.count(),
-    db.clients.count(),
-    db.budgets.count(),
+    db.transactions.filter(inProfile).count(),
+    db.invoices.filter(inProfile).count(),
+    db.clients.filter(inProfile).count(),
+    db.budgets.filter(inProfile).count(),
   ])
-  const latest = await db.transactions.orderBy('createdAt').last()
-  const latestInvoice = await db.invoices.orderBy('createdAt').last()
+  const latest = await db.transactions.orderBy('createdAt').filter(inProfile).last()
+  const latestInvoice = await db.invoices.orderBy('createdAt').filter(inProfile).last()
   return [
     transactions,
     invoices,

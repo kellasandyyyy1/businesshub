@@ -1,7 +1,11 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 
 import { db } from '../db/db'
+import { BUSINESS_PROFILE, ofProfile } from '../db/queries'
 import { budgetWindow, spendFor } from '../lib/budget'
+
+/** Built before the profile split, so it reads the business side. */
+const inProfile = ofProfile(BUSINESS_PROFILE)
 
 /**
  * Budgets with their live spend. Each budget is measured over its own calendar
@@ -12,9 +16,9 @@ export function useBudgetsData() {
   return useLiveQuery(async () => {
     const today = new Date().toISOString().slice(0, 10)
     const [budgets, transactions, categories] = await Promise.all([
-      db.budgets.orderBy('name').toArray(),
-      db.transactions.toArray(),
-      db.categories.orderBy('name').toArray(),
+      db.budgets.orderBy('name').filter(inProfile).toArray(),
+      db.transactions.filter(inProfile).toArray(),
+      db.categories.orderBy('name').filter(inProfile).toArray(),
     ])
 
     const rows = budgets.map((budget) => {

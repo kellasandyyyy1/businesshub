@@ -1,19 +1,28 @@
 import {
+  IconArrowsExchange,
   IconBolt,
   IconBriefcase,
   IconBuilding,
   IconBuildingBank,
   IconCar,
   IconCash,
+  IconCreditCard,
   IconDeviceDesktop,
   IconDeviceLaptop,
+  IconDeviceTv,
+  IconDots,
+  IconHeartRateMonitor,
+  IconHome,
   IconPercentage,
+  IconPigMoney,
+  IconPlus,
   IconReceiptTax,
   IconRepeat,
   IconScale,
   IconSpeakerphone,
   IconToolsKitchen2,
   IconTransfer,
+  IconTrendingUp,
   IconUsers,
   IconWifi,
 } from '@tabler/icons-react'
@@ -39,6 +48,17 @@ const ICONS = {
   'device-desktop': IconDeviceDesktop,
   'building-bank': IconBuildingBank,
   scale: IconScale,
+
+  // Personal profile.
+  'trending-up': IconTrendingUp,
+  'arrows-exchange': IconArrowsExchange,
+  plus: IconPlus,
+  home: IconHome,
+  'heart-rate-monitor': IconHeartRateMonitor,
+  'device-tv': IconDeviceTv,
+  'pig-money': IconPigMoney,
+  'credit-card': IconCreditCard,
+  dots: IconDots,
 }
 
 export function categoryIcon(iconName) {

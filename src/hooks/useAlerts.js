@@ -1,6 +1,10 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 
 import { db } from '../db/db'
+import { BUSINESS_PROFILE, ofProfile } from '../db/queries'
+
+/** Built before the profile split, so it reads the business side. */
+const inProfile = ofProfile(BUSINESS_PROFILE)
 
 /**
  * What needs attention right now: invoices past their due date, and
@@ -13,13 +17,13 @@ export function useAlerts() {
       const today = new Date().toISOString().slice(0, 10)
 
       const [overdue, dueSoon, pending] = await Promise.all([
-        db.invoices.where('status').equals('overdue').count(),
+        db.invoices.where('status').equals('overdue').filter(inProfile).count(),
         db.invoices
           .where('status')
           .anyOf('sent', 'viewed')
           .filter((i) => i.dueDate < today)
           .count(),
-        db.transactions.where('status').equals('pending').count(),
+        db.transactions.where('status').equals('pending').filter(inProfile).count(),
       ])
 
       // An invoice can be past due before anything has re-stamped its status,

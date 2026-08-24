@@ -3,6 +3,7 @@ import { useState } from 'react'
 
 import ICONS, { categoryIcon } from '../../config/categoryIcons'
 import { db } from '../../db/db'
+import { BUSINESS_PROFILE, addCategory } from '../../db/queries'
 
 const ICON_NAMES = Object.keys(ICONS)
 
@@ -22,12 +23,11 @@ export default function CategoriesSection({ categories, categoryUse }) {
       return setError('That category already exists')
     }
 
-    await db.categories.add({
+    await addCategory(BUSINESS_PROFILE, {
       name: trimmed,
       type: tab,
       icon,
       custom: true,
-      createdAt: new Date().toISOString(),
     })
     setName('')
     setError(null)

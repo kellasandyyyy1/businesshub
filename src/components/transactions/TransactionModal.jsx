@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import CategorySuggestion, { recordCategorization } from '../ai/CategorySuggestion'
 import useFocusTrap from '../../hooks/useFocusTrap'
 import { TRANSACTION_STATUSES, TRANSACTION_TYPES, db } from '../../db/db'
+import { BUSINESS_PROFILE, addTransaction } from '../../db/queries'
 
 const TODAY = () => new Date().toISOString().slice(0, 10)
 
@@ -98,10 +99,9 @@ export default function TransactionModal({
     if (isEdit) {
       await db.transactions.update(transaction.id, record)
     } else {
-      await db.transactions.add({
+      await addTransaction(BUSINESS_PROFILE, {
         ...record,
         receiptUrl: null,
-        createdAt: new Date().toISOString(),
       })
     }
     // Every save is a confirmed categorisation, whether the user accepted a

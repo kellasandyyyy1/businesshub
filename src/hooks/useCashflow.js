@@ -1,8 +1,12 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 
 import { db } from '../db/db'
+import { BUSINESS_PROFILE, ofProfile } from '../db/queries'
 import { buildEvents, buildProjection } from '../lib/cashflow'
 import { shiftDays } from '../lib/format'
+
+/** Built before the profile split, so it reads the business side. */
+const inProfile = ofProfile(BUSINESS_PROFILE)
 
 /**
  * Cash today, what is expected to land, and the balance that follows.
@@ -16,8 +20,8 @@ export function useCashflowData(days) {
     const today = new Date().toISOString().slice(0, 10)
 
     const [transactions, invoices, settings] = await Promise.all([
-      db.transactions.toArray(),
-      db.invoices.toArray(),
+      db.transactions.filter(inProfile).toArray(),
+      db.invoices.filter(inProfile).toArray(),
       db.settings.toArray(),
     ])
 

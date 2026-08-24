@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 import { BUDGET_PERIODS, db } from '../../db/db'
+import { BUSINESS_PROFILE, addBudget } from '../../db/queries'
 import useFocusTrap from '../../hooks/useFocusTrap'
 
 const emptyBudget = () => ({ name: '', category: '', amount: '', period: 'monthly' })
@@ -54,7 +55,7 @@ export default function BudgetModal({ budget, categories, onClose }) {
     }
 
     if (isEdit) await db.budgets.update(budget.id, record)
-    else await db.budgets.add({ ...record, createdAt: new Date().toISOString() })
+    else await addBudget(BUSINESS_PROFILE, record)
     onClose()
   }
 

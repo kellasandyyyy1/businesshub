@@ -1,6 +1,10 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 
 import { db } from '../db/db'
+import { BUSINESS_PROFILE, ofProfile } from '../db/queries'
+
+/** Built before the profile split, so it reads the business side. */
+const inProfile = ofProfile(BUSINESS_PROFILE)
 
 /**
  * Every income transaction on record, plus the lookups the page needs to name
@@ -13,9 +17,9 @@ import { db } from '../db/db'
 export function useIncomeData() {
   return useLiveQuery(async () => {
     const [income, categories, clients] = await Promise.all([
-      db.transactions.where('type').equals('income').toArray(),
-      db.categories.orderBy('name').toArray(),
-      db.clients.orderBy('name').toArray(),
+      db.transactions.where('type').equals('income').filter(inProfile).toArray(),
+      db.categories.orderBy('name').filter(inProfile).toArray(),
+      db.clients.orderBy('name').filter(inProfile).toArray(),
     ])
 
     income.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))

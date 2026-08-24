@@ -1,9 +1,13 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 
 import { db } from '../db/db'
+import { BUSINESS_PROFILE, ofProfile } from '../db/queries'
 import { usePeriod } from '../context/PeriodContext'
 import { PERIOD_WORD, budgetWindow } from '../lib/budget'
 import { daysBetween, formatDayMonth, formatMonth, shiftDays } from '../lib/format'
+
+/** Built before the profile split, so it reads the business side. */
+const inProfile = ofProfile(BUSINESS_PROFILE)
 
 /* -------------------------------------------------------------------------
    Helpers
@@ -133,14 +137,14 @@ export function useDashboardData() {
     const prevEnd = shiftDays(startDate, -1)
 
     const [current, previous, earlier, invoices, budgets, categories, recent] = await Promise.all([
-      db.transactions.where('date').between(startDate, endDate, true, true).toArray(),
-      db.transactions.where('date').between(prevStart, prevEnd, true, true).toArray(),
+      db.transactions.where('date').between(startDate, endDate, true, true).filter(inProfile).toArray(),
+      db.transactions.where('date').between(prevStart, prevEnd, true, true).filter(inProfile).toArray(),
       // Everything up to the start of the window, for the opening balance.
-      db.transactions.where('date').below(startDate).toArray(),
-      db.invoices.toArray(),
-      db.budgets.toArray(),
-      db.categories.toArray(),
-      db.transactions.orderBy('date').reverse().limit(8).toArray(),
+      db.transactions.where('date').below(startDate).filter(inProfile).toArray(),
+      db.invoices.filter(inProfile).toArray(),
+      db.budgets.filter(inProfile).toArray(),
+      db.categories.filter(inProfile).toArray(),
+      db.transactions.orderBy('date').reverse().filter(inProfile).limit(8).toArray(),
     ])
 
     const revenue = sumBy(current, 'income')
@@ -173,7 +177,7 @@ export function useDashboardData() {
     const budgetStatus = await Promise.all(
       budgets.map(async (budget) => {
         const [from, to] = budgetWindow(budget.period, today)
-        const rows = await db.transactions.where('date').between(from, to, true, true).toArray()
+        const rows = await db.transactions.where('date').between(from, to, true, true).filter(inProfile).toArray()
         const spent = rows
           .filter((r) => r.type === 'expense' && r.category === budget.category)
           .reduce((t, r) => t + r.amount, 0)

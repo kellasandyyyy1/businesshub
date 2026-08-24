@@ -2,6 +2,7 @@ import { IconArrowLeft, IconTrash, IconX } from '@tabler/icons-react'
 import { useEffect, useMemo, useState } from 'react'
 
 import { db } from '../../db/db'
+import { BUSINESS_PROFILE, addInvoice } from '../../db/queries'
 import { formatCurrency } from '../../lib/format'
 import { computeTotals, issueDateOf, lineTotal, ratesOf } from '../../lib/invoice'
 
@@ -132,7 +133,7 @@ export default function InvoiceEditor({
 
     try {
       if (isNew) {
-        await db.invoices.add({
+        await addInvoice(BUSINESS_PROFILE, {
           ...record,
           createdAt: now,
           sentAt: status === 'sent' ? now : null,

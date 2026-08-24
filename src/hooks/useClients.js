@@ -1,8 +1,12 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 
 import { db } from '../db/db'
+import { BUSINESS_PROFILE, ofProfile } from '../db/queries'
 import { balanceOf, effectiveStatus } from '../lib/invoice'
 import { formatMonth } from '../lib/format'
+
+/** Built before the profile split, so it reads the business side. */
+const inProfile = ofProfile(BUSINESS_PROFILE)
 
 /** First day of the month `offset` months from `iso`. */
 function monthStart(iso, offset = 0) {
@@ -34,10 +38,10 @@ export function useClientsData() {
     const today = new Date().toISOString().slice(0, 10)
 
     const [clients, transactions, invoices, categories] = await Promise.all([
-      db.clients.orderBy('name').toArray(),
-      db.transactions.orderBy('date').reverse().toArray(),
-      db.invoices.orderBy('createdAt').reverse().toArray(),
-      db.categories.toArray(),
+      db.clients.orderBy('name').filter(inProfile).toArray(),
+      db.transactions.orderBy('date').reverse().filter(inProfile).toArray(),
+      db.invoices.orderBy('createdAt').reverse().filter(inProfile).toArray(),
+      db.categories.filter(inProfile).toArray(),
     ])
 
     const enriched = clients.map((client) => {
