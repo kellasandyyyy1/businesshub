@@ -4,6 +4,7 @@ import { useState } from 'react'
 import NotificationsMenu from './NotificationsMenu'
 
 import { PERIODS, usePeriod } from '../context/PeriodContext'
+import { useProfile } from '../context/ProfileContext'
 import useAlerts from '../hooks/useAlerts'
 import useSettings from '../hooks/useSettings'
 
@@ -19,6 +20,7 @@ export default function Topbar({ onOpenMenu, onAsk }) {
   const settings = useSettings()
   const alerts = useAlerts()
   const { periodId, setPeriodId } = usePeriod()
+  const { isPersonal } = useProfile()
 
   const now = new Date()
   const dateLabel = now.toLocaleDateString(settings.locale, {
@@ -44,8 +46,10 @@ export default function Topbar({ onOpenMenu, onAsk }) {
           <div className="bfh-greeting">
             {greetingFor(now)}, {settings.businessName}
           </div>
+          {/* The greeting stays personal to the owner either way; the sub line
+              is what says which set of books is on screen. */}
           <div className="bfh-micro bfh-greeting__sub">
-            {dateLabel} · {settings.businessName}
+            {dateLabel} · {isPersonal ? 'Personal' : settings.businessName}
           </div>
         </div>
       </div>

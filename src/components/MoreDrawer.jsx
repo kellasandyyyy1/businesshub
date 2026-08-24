@@ -11,10 +11,11 @@ import {
 import { useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 
+import { useProfile } from '../context/ProfileContext'
 import useFocusTrap from '../hooks/useFocusTrap'
 
 /** Everything the bottom bar has no room for. */
-const ITEMS = [
+const BUSINESS_ITEMS = [
   { to: '/income', label: 'Income', icon: IconTrendingUp },
   { to: '/expenses', label: 'Expenses', icon: IconTrendingDown },
   { to: '/budgets', label: 'Budgets', icon: IconTargetArrow },
@@ -25,8 +26,17 @@ const ITEMS = [
   { to: '/settings', label: 'Settings', icon: IconSettings },
 ]
 
+const PERSONAL_ITEMS = [
+  { to: '/personal/income', label: 'Income', icon: IconTrendingUp },
+  { to: '/personal/expenses', label: 'Expenses', icon: IconTrendingDown },
+  { to: '/personal/reports', label: 'Reports', icon: IconReportAnalytics },
+  { to: '/settings', label: 'Settings', icon: IconSettings },
+]
+
 export default function MoreDrawer({ onClose }) {
   const trapRef = useFocusTrap()
+  const { isPersonal } = useProfile()
+  const ITEMS = isPersonal ? PERSONAL_ITEMS : BUSINESS_ITEMS
 
   useEffect(() => {
     const onKeyDown = (e) => {

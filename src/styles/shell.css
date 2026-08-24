@@ -159,6 +159,142 @@
 
 /* ---- Nav ----------------------------------------------------------------- */
 
+/* ---- Profile switcher --------------------------------------------------- */
+
+.bfh-profileswitch {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  /* Sits inside the padded head, so it aligns to that padding rather than
+     insetting itself a second time. */
+  margin: 12px 0 0;
+  padding: 4px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 10px;
+  background: var(--bg);
+}
+
+.bfh-profileswitch__option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 8px;
+  border: var(--hairline) solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--duration-micro) var(--ease-out-soft);
+}
+
+.bfh-profileswitch__option:hover {
+  background: var(--b2);
+}
+
+/* The selected row lifts onto the card surface; the hairline is what separates
+   it from the well behind it, since there is no colour to do the job. */
+.bfh-profileswitch__option[data-active='true'] {
+  border-color: var(--b);
+  background: var(--card);
+}
+
+.bfh-profileswitch__icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--ink2);
+}
+
+.bfh-profileswitch__option[data-active='true'] .bfh-profileswitch__icon {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.bfh-profileswitch__text {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.bfh-profileswitch__label {
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  color: var(--ink);
+}
+
+.bfh-profileswitch__sub {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+}
+
+.bfh-profileswitch__dot {
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+/* On the 56px rail there is no room for words, so the two icons stack and the
+   filled one is the whole signal — the same treatment the nav rows get. */
+.bfh-sidebar[data-collapsed='true'] .bfh-profileswitch {
+  margin: 10px 0 0;
+  padding: 3px;
+  gap: 3px;
+}
+
+.bfh-sidebar[data-collapsed='true'] .bfh-profileswitch__option {
+  justify-content: center;
+  padding: 3px;
+}
+
+.bfh-sidebar[data-collapsed='true'] .bfh-profileswitch__text,
+.bfh-sidebar[data-collapsed='true'] .bfh-profileswitch__dot {
+  display: none;
+}
+
+.bfh-sidebar[data-collapsed='true'] .bfh-profileswitch__icon {
+  border-radius: 50%;
+}
+
+/* ---- Navigation --------------------------------------------------------- */
+
+/* The rows are swapped wholesale when the profile changes, so they arrive
+   rather than snap in. Keyed on the profile, so it only runs on a switch. */
+.bfh-nav__profile {
+  animation: bfh-navfade 150ms var(--ease-out-soft) both;
+}
+
+@keyframes bfh-navfade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bfh-nav__profile {
+    animation: none;
+  }
+}
+
 .bfh-nav {
   flex: 1;
   min-height: 0;

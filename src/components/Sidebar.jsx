@@ -1,9 +1,11 @@
 import { IconDotsVertical, IconInfoCircle, IconPlus, IconSettings } from '@tabler/icons-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 
-import { NAV_GROUPS } from '../config/nav'
+import { navGroupsFor } from '../config/nav'
+import { useProfile } from '../context/ProfileContext'
 import useAlerts from '../hooks/useAlerts'
 import useSettings from '../hooks/useSettings'
+import ProfileSwitcher from './ProfileSwitcher'
 
 /** "Broadheader" → "BR", "Reyes Creative" → "RC". */
 function initials(name) {
@@ -42,6 +44,8 @@ export default function Sidebar({ collapsed, open, onNavigate, onAddTransaction 
   const navigate = useNavigate()
   const settings = useSettings()
   const alerts = useAlerts()
+  const { profile } = useProfile()
+  const groups = navGroupsFor(profile)
 
   return (
     <aside
@@ -66,6 +70,8 @@ export default function Sidebar({ collapsed, open, onNavigate, onAddTransaction 
           <span className="bfh-logo__short">BFH</span>
         </div>
 
+        <ProfileSwitcher onNavigate={onNavigate} />
+
         <button
           type="button"
           className="bfh-btn-primary mt-3"
@@ -78,19 +84,24 @@ export default function Sidebar({ collapsed, open, onNavigate, onAddTransaction 
       </div>
 
       <nav className="bfh-nav">
-        {NAV_GROUPS.map((group) => (
-          <div className="bfh-nav__group" key={group.label}>
-            <div className="bfh-micro bfh-nav__label">{group.label}</div>
-            {group.items.map((item) => (
-              <NavItem
-                key={item.to}
-                item={item}
-                badgeCount={item.badge ? alerts[item.badge] : 0}
-                onNavigate={onNavigate}
-              />
-            ))}
-          </div>
-        ))}
+        {/* Keyed on the profile so React replaces the whole block on a switch
+            rather than reconciling row by row, which is what lets the fade
+            run and what stops a stale badge riding across. */}
+        <div className="bfh-nav__profile" key={profile}>
+          {groups.map((group) => (
+            <div className="bfh-nav__group" key={group.label}>
+              <div className="bfh-micro bfh-nav__label">{group.label}</div>
+              {group.items.map((item) => (
+                <NavItem
+                  key={item.to}
+                  item={item}
+                  badgeCount={item.badge ? alerts[item.badge] : 0}
+                  onNavigate={onNavigate}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
 
         <div className="bfh-nav__divider" role="separator" />
 
