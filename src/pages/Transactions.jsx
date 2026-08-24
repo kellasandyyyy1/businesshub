@@ -9,6 +9,7 @@ import TransactionTable from '../components/transactions/TransactionTable'
 import { db } from '../db/db'
 import { useAssistantActions } from '../context/AssistantActionsContext'
 import { usePeriod } from '../context/PeriodContext'
+import { useProfile } from '../context/ProfileContext'
 import useDebounced from '../hooks/useDebounced'
 import useSettings from '../hooks/useSettings'
 import { shiftDays } from '../lib/format'
@@ -17,7 +18,10 @@ import { DATE_RANGES, filterTransactions, summarise, useTransactionsData } from 
 const PAGE_SIZE = 25
 
 export default function Transactions() {
-  const data = useTransactionsData()
+  // The page is the same for both profiles; the profile decides which rows it
+  // reads. That is what lets /personal/transactions render this component.
+  const { profile } = useProfile()
+  const data = useTransactionsData(profile)
   const { symbol } = useSettings()
   const { periodId } = usePeriod()
   const { pendingAction, clearAction } = useAssistantActions()

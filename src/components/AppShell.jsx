@@ -4,6 +4,7 @@ import { Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-
 
 import { useAssistantActions } from '../context/AssistantActionsContext'
 import { PeriodProvider } from '../context/PeriodContext'
+import { useProfile } from '../context/ProfileContext'
 import { useDevice } from '../context/BreakpointContext'
 import { useIsCompact, useIsMobile } from '../hooks/useMediaQuery'
 import { useNotifications } from '../hooks/useNotifications'
@@ -29,6 +30,10 @@ export default function AppShell() {
   // longer opens; "More" covers what the five slots cannot.
   const { isDesktop } = useDevice()
   const { assistantOpen, openAssistant, closeAssistant, toggleAssistant } = useAssistantActions()
+  // The form lives on whichever transactions page belongs to the open profile;
+  // sending a personal user to /transactions would only bounce them back.
+  const { isPersonal } = useProfile()
+  const addTransactionPath = isPersonal ? '/personal/transactions?new=1' : '/transactions?new=1'
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
 
@@ -42,7 +47,7 @@ export default function AppShell() {
   useEffect(() => {
     if (params.get('action') !== 'add-transaction') return
     setParams({}, { replace: true })
-    navigate('/transactions?new=1', { replace: true })
+    navigate(addTransactionPath, { replace: true })
   }, [params, setParams, navigate])
 
   // Tapping a notification while the app is already open should move the app,
@@ -87,7 +92,7 @@ export default function AppShell() {
 
       if (meta && e.key.toLowerCase() === 'n') {
         e.preventDefault()
-        navigate('/transactions?new=1')
+        navigate(addTransactionPath)
         return
       }
 
@@ -125,7 +130,7 @@ export default function AppShell() {
           // The form lives on the transactions page; ?new=1 opens it there.
           onAddTransaction={() => {
             setDrawerOpen(false)
-            navigate('/transactions?new=1')
+            navigate(addTransactionPath)
           }}
         />
 
@@ -163,7 +168,7 @@ export default function AppShell() {
         </button>
 
         <BottomNav onOpenMore={() => setMoreOpen(true)} moreOpen={moreOpen} />
-        <FAB onClick={() => navigate('/transactions?new=1')} />
+        <FAB onClick={() => navigate(addTransactionPath)} />
 
         {moreOpen && <MoreDrawer onClose={() => setMoreOpen(false)} />}
         {assistantOpen && <AIAssistant onClose={closeAssistant} />}

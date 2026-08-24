@@ -9,6 +9,7 @@ import LedgerTable from '../components/common/LedgerTable'
 import PeriodSwitcher from '../components/common/PeriodSwitcher'
 import RevenueBreakdown from '../components/income/RevenueBreakdown'
 import { usePeriod } from '../context/PeriodContext'
+import { useProfile } from '../context/ProfileContext'
 import { db } from '../db/db'
 import useDebounced from '../hooks/useDebounced'
 import useIncomeData from '../hooks/useIncome'
@@ -21,7 +22,8 @@ import { buildSeries, groupTotals, inRange, periodBounds } from '../lib/ledger'
 const PAGE_SIZE = 20
 
 export default function Income() {
-  const data = useIncomeData()
+  const { profile, isPersonal } = useProfile()
+  const data = useIncomeData(profile)
   const { symbol } = useSettings()
   const { periodId, period } = usePeriod()
 
@@ -113,12 +115,18 @@ export default function Income() {
         )
       },
     },
-    {
-      key: 'client',
-      header: 'Client',
-      className: 'bfh-cell-client',
-      render: (tx) => clientOf(tx) || '—',
-    },
+    // Personal income has no client behind it, so the column would be a row of
+    // em dashes taking up a fifth of the table.
+    ...(isPersonal
+      ? []
+      : [
+          {
+            key: 'client',
+            header: 'Client',
+            className: 'bfh-cell-client',
+            render: (tx) => clientOf(tx) || '—',
+          },
+        ]),
     {
       key: 'amount',
       header: 'Amount',
@@ -158,7 +166,14 @@ export default function Income() {
           series={series}
           symbol={symbol}
         />
-        <RevenueBreakdown byCategory={byCategory} byClient={byClient} symbol={symbol} />
+        {/* Personal income has no clients to break down by, so that tab is
+            dropped rather than shown empty. */}
+        <RevenueBreakdown
+          byCategory={byCategory}
+          byClient={byClient}
+          showClients={!isPersonal}
+          symbol={symbol}
+        />
       </div>
 
       <div className="bfh-block">
@@ -175,7 +190,11 @@ export default function Income() {
           amountOf={(tx) => formatCurrency(tx.amount, symbol)}
           emptyIcon={IconTrendingUp}
           emptyHeading="No income in this period"
-          emptyBody="Add an income transaction to start tracking revenue."
+          emptyBody={
+            isPersonal
+              ? 'Add an income transaction to start tracking what comes in.'
+              : 'Add an income transaction to start tracking revenue.'
+          }
           emptyAction="Add income"
           noMatchLabel="No income matches that search."
           onAdd={() => setEditing({ type: 'income' })}

@@ -1,14 +1,12 @@
+import Income from '../Income'
+
 /**
- * Placeholder. The personal profile's navigation and routing land first so
- * the shell is real to move around in; this page fills in later.
+ * The personal income page is the business one.
+ *
+ * The page reads its rows for whichever profile is active, and this route
+ * only renders under PersonalOnly, so mounting it here is the whole
+ * difference. Keeping one component means the two sides cannot drift.
  */
 export default function PersonalIncome() {
-  return (
-    <div className="bfh-page">
-      <div className="bfh-block">
-        <h1 className="bfh-pagetitle">Income</h1>
-        <p className="bfh-empty">Salary, freelance work and anything else coming in. Not built yet.</p>
-      </div>
-    </div>
-  )
+  return <Income />
 }

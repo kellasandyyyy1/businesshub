@@ -4,9 +4,6 @@ import { db } from '../db/db'
 import { BUSINESS_PROFILE, ofProfile } from '../db/queries'
 import { shiftDays } from '../lib/format'
 
-/** Built before the profile split, so it reads the business side. */
-const inProfile = ofProfile(BUSINESS_PROFILE)
-
 export const DATE_RANGES = [
   { id: 'all', label: 'All time', days: null },
   { id: '7d', label: 'Last 7 days', days: 7 },
@@ -16,8 +13,13 @@ export const DATE_RANGES = [
 ]
 
 /** Everything the page needs from Dexie, live. Filtering happens in memory. */
-export function useTransactionsData() {
+/**
+ * Which profile's rows to read. Defaults to business so any caller that has not
+ * been given a profile behaves exactly as it did before the split.
+ */
+export function useTransactionsData(profile = BUSINESS_PROFILE) {
   return useLiveQuery(async () => {
+    const inProfile = ofProfile(profile)
     const [transactions, categories, clients] = await Promise.all([
       db.transactions.orderBy('date').reverse().filter(inProfile).toArray(),
       db.categories.orderBy('name').filter(inProfile).toArray(),
@@ -32,7 +34,9 @@ export function useTransactionsData() {
       categoryIcons: Object.fromEntries(categories.map((c) => [c.name, c.icon])),
       paymentMethods: [...new Set(transactions.map((t) => t.paymentMethod).filter(Boolean))].sort(),
     }
-  }, [])
+    // Re-runs on a profile switch; without this the previous profile's rows
+    // would stay on screen until something else invalidated the query.
+  }, [profile])
 }
 
 /**

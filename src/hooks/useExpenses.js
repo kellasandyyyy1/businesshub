@@ -3,9 +3,6 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/db'
 import { BUSINESS_PROFILE, ofProfile } from '../db/queries'
 
-/** Built before the profile split, so it reads the business side. */
-const inProfile = ofProfile(BUSINESS_PROFILE)
-
 /**
  * Every expense on record, plus budgets and the category lookups the page needs.
  *
@@ -14,8 +11,13 @@ const inProfile = ofProfile(BUSINESS_PROFILE)
  * measures the current calendar month, neither of which follows the period
  * switcher. The period filter is applied in memory afterwards.
  */
-export function useExpensesData() {
+/**
+ * Which profile's rows to read. Defaults to business so any caller that has not
+ * been given a profile behaves exactly as it did before the split.
+ */
+export function useExpensesData(profile = BUSINESS_PROFILE) {
   return useLiveQuery(async () => {
+    const inProfile = ofProfile(profile)
     const [expenses, categories, budgets, clients] = await Promise.all([
       db.transactions.where('type').equals('expense').filter(inProfile).toArray(),
       db.categories.orderBy('name').filter(inProfile).toArray(),
@@ -34,7 +36,7 @@ export function useExpensesData() {
       categoryIcons: Object.fromEntries(categories.map((c) => [c.name, c.icon])),
       paymentMethods: [...new Set(expenses.map((t) => t.paymentMethod).filter(Boolean))].sort(),
     }
-  }, [])
+  }, [profile])
 }
 
 export default useExpensesData

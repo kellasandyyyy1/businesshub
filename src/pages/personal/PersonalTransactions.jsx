@@ -1,14 +1,12 @@
+import Transactions from '../Transactions'
+
 /**
- * Placeholder. The personal profile's navigation and routing land first so
- * the shell is real to move around in; this page fills in later.
+ * The personal transactions page is the business one.
+ *
+ * The page reads its rows for whichever profile is active, and this route
+ * only renders under PersonalOnly, so mounting it here is the whole
+ * difference. Keeping one component means the two sides cannot drift.
  */
 export default function PersonalTransactions() {
-  return (
-    <div className="bfh-page">
-      <div className="bfh-block">
-        <h1 className="bfh-pagetitle">Transactions</h1>
-        <p className="bfh-empty">Every peso in and out of your personal accounts. Not built yet.</p>
-      </div>
-    </div>
-  )
+  return <Transactions />
 }

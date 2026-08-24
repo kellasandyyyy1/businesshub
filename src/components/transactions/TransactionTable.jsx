@@ -167,7 +167,7 @@ export default function TransactionTable({
           <EmptyState
             icon={IconArrowsExchange}
             heading="No transactions yet"
-            body="Every payment in and out of the business is recorded here."
+            body="Every payment in and out is recorded here."
             actionLabel="Add first transaction"
             onAction={onAdd}
           />

@@ -2,8 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 
 import CategorySuggestion, { recordCategorization } from '../ai/CategorySuggestion'
 import useFocusTrap from '../../hooks/useFocusTrap'
+import { useProfile } from '../../context/ProfileContext'
 import { TRANSACTION_STATUSES, TRANSACTION_TYPES, db } from '../../db/db'
-import { BUSINESS_PROFILE, addTransaction } from '../../db/queries'
+import { addTransaction } from '../../db/queries'
 
 const TODAY = () => new Date().toISOString().slice(0, 10)
 
@@ -42,6 +43,10 @@ export default function TransactionModal({
   paymentMethods,
   onClose,
 }) {
+  // A household has no clients to bill, so that field is not shown and the
+  // saved row carries no client id. The profile also decides which set of
+  // books the transaction lands in.
+  const { profile, isPersonal } = useProfile()
   const [form, setForm] = useState(() => toForm(transaction))
   const [errors, setErrors] = useState({})
   const [saving, setSaving] = useState(false)
@@ -49,6 +54,11 @@ export default function TransactionModal({
   const trapRef = useFocusTrap()
 
   const isEdit = Boolean(transaction?.id)
+  const title = isEdit
+    ? 'Edit transaction'
+    : isPersonal
+      ? 'Add personal transaction'
+      : 'Add transaction'
 
   useEffect(() => {
     firstField.current?.focus()
@@ -90,7 +100,7 @@ export default function TransactionModal({
       type: form.type,
       category: form.category,
       date: form.date,
-      clientId: form.clientId ? Number(form.clientId) : null,
+      clientId: isPersonal || !form.clientId ? null : Number(form.clientId),
       paymentMethod: form.paymentMethod.trim(),
       notes: form.notes.trim(),
       status: form.status,
@@ -99,7 +109,7 @@ export default function TransactionModal({
     if (isEdit) {
       await db.transactions.update(transaction.id, record)
     } else {
-      await addTransaction(BUSINESS_PROFILE, {
+      await addTransaction(profile, {
         ...record,
         receiptUrl: null,
       })
@@ -115,13 +125,13 @@ export default function TransactionModal({
       className="bfh-modal"
       role="dialog"
       aria-modal="true"
-      aria-label={isEdit ? 'Edit transaction' : 'Add transaction'}
+      aria-label={title}
     >
       <button type="button" className="bfh-modal__backdrop" aria-label="Close" onClick={onClose} />
 
       <form className="bfh-modal__panel" ref={trapRef} onSubmit={onSubmit}>
         <header className="bfh-modal__head">
-          <h2 className="bfh-panel__title">{isEdit ? 'Edit transaction' : 'Add transaction'}</h2>
+          <h2 className="bfh-panel__title">{title}</h2>
           <span className="bfh-micro">{isEdit ? `#${transaction.id}` : 'New entry'}</span>
         </header>
 
@@ -201,17 +211,19 @@ export default function TransactionModal({
             </div>
           )}
 
-          <label className="bfh-formfield">
-            <span className="bfh-micro">Client (optional)</span>
-            <select value={form.clientId} onChange={set('clientId')}>
-              <option value="">None</option>
-              {clients.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.company}
-                </option>
-              ))}
-            </select>
-          </label>
+          {!isPersonal && (
+            <label className="bfh-formfield">
+              <span className="bfh-micro">Client (optional)</span>
+              <select value={form.clientId} onChange={set('clientId')}>
+                <option value="">None</option>
+                {clients.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.company}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
 
           <label className="bfh-formfield">
             <span className="bfh-micro">Payment method</span>

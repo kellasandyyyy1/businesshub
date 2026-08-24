@@ -11,6 +11,7 @@ import DetailPanel from '../components/transactions/DetailPanel'
 import TransactionModal from '../components/transactions/TransactionModal'
 import { categoryIcon } from '../config/categoryIcons'
 import { usePeriod } from '../context/PeriodContext'
+import { useProfile } from '../context/ProfileContext'
 import { db } from '../db/db'
 import useDebounced from '../hooks/useDebounced'
 import useExpensesData from '../hooks/useExpenses'
@@ -27,7 +28,8 @@ import { buildSeries, groupTotals, inRange, periodBounds } from '../lib/ledger'
 const PAGE_SIZE = 20
 
 export default function Expenses() {
-  const data = useExpensesData()
+  const { profile } = useProfile()
+  const data = useExpensesData(profile)
   const { symbol } = useSettings()
   const { periodId, period } = usePeriod()
 
