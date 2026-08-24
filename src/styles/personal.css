@@ -126,3 +126,256 @@
   display: inline-block;
   font-size: 10px;
 }
+
+/* ---- Goals page --------------------------------------------------------- */
+
+/* The head puts the action opposite the title; the dashboard's head is a title
+   alone, so the row only spreads when there is something to spread to. */
+.bfh-personalhead {
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.bfh-goalgrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .bfh-goalgrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.bfh-goalcard {
+  position: relative;
+  padding: 16px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 12px;
+  background: var(--card);
+}
+
+/* The card opens the editor, but a card is not a button and cannot contain the
+   contribute control if it were one. A transparent layer takes the click and
+   sits below the controls, which raise themselves above it. */
+.bfh-goalcard__open {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.bfh-goalcard__open:hover {
+  background: var(--b2);
+  opacity: 0.35;
+}
+
+.bfh-goalcard__body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+
+/* Only the real controls take the pointer back. */
+.bfh-goalcard__body button,
+.bfh-goalcard__body input,
+.bfh-goalcard__body form {
+  pointer-events: auto;
+}
+
+.bfh-goalcard__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.bfh-goalcard__name {
+  margin: 0;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  color: var(--ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bfh-goalcard__status {
+  flex: none;
+  padding: 3px 7px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+  white-space: nowrap;
+}
+
+.bfh-goalcard__track {
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  height: 6px;
+  margin: 12px 0;
+  border-radius: 3px;
+  background: var(--b);
+}
+
+.bfh-goalcard__fill {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--ink);
+}
+
+.bfh-goalcard__amounts {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.bfh-goalcard__current {
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+
+.bfh-goalcard__target {
+  font-size: 13px;
+  color: var(--ink2);
+}
+
+.bfh-goalcard__foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+}
+
+.bfh-goalcard__due {
+  flex: none;
+}
+
+/* On a pointer device the control waits until the card is under the cursor;
+   on touch there is no hover to wait for, so it is simply always there. */
+.bfh-goalcard__contribute {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  align-self: flex-start;
+  margin-top: 12px;
+  padding: 5px 9px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 999px;
+  background: var(--bg);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink2);
+  cursor: pointer;
+}
+
+.bfh-goalcard__contribute:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .bfh-goalcard__contribute {
+    opacity: 0;
+    transition: opacity var(--duration-micro) var(--ease-out-soft);
+  }
+  .bfh-goalcard:hover .bfh-goalcard__contribute,
+  .bfh-goalcard__contribute:focus-visible {
+    opacity: 1;
+  }
+}
+
+/* A narrow screen shows it outright. The query above should already have let
+   it through on touch, but a phone that reports a fine pointer would hide the
+   control behind a hover that never happens; width is the one thing a phone
+   cannot misreport. */
+@media (max-width: 900px) {
+  .bfh-goalcard__contribute {
+    opacity: 1;
+  }
+}
+
+.bfh-goalcard__add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+/* ---- Money input -------------------------------------------------------- */
+
+.bfh-moneyfield {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.bfh-moneyfield__symbol {
+  flex: none;
+  font-size: 12px;
+  color: var(--ink3);
+}
+
+.bfh-moneyfield input {
+  width: 100%;
+  min-width: 0;
+}
+
+.bfh-moneyfield--sm input {
+  width: 96px;
+}
+
+.bfh-formhint {
+  margin-top: 4px;
+  font-size: 10px;
+  line-height: 1.4;
+  color: var(--ink3);
+}
+
+.bfh-goalform__deadline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bfh-checkline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--ink2);
+  cursor: pointer;
+}
+
+.bfh-btn--dashed {
+  border-style: dashed;
+}
