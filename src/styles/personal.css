@@ -1,0 +1,128 @@
+/* ==========================================================================
+   Personal dashboard
+   ========================================================================== */
+
+.bfh-personalhead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bfh-personalhead__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+/* ---- Goals strip -------------------------------------------------------- */
+
+.bfh-goals {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.bfh-goals__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bfh-goals__title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+/* Goals are a list to scan sideways, not a grid to read down: they are all the
+   same shape, and the ones past the fold are not more important than the rest. */
+.bfh-goals__rail {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  padding: 0 0 4px;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  overscroll-behavior-x: contain;
+}
+
+.bfh-goal {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 6px;
+  width: 200px;
+  padding: 12px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-md);
+  background: var(--card);
+}
+
+.bfh-goal__name {
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  color: var(--ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bfh-goal__track {
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--b);
+}
+
+.bfh-goal__fill {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--ink);
+}
+
+.bfh-goal__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.bfh-goal__amounts {
+  overflow: hidden;
+  font-size: 11px;
+  color: var(--ink2);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bfh-goal__pct {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink3);
+}
+
+.bfh-goal__due {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+}
+
+/* With nothing set yet the section is one line, not a card. */
+.bfh-goals__prompt {
+  display: inline-block;
+  font-size: 10px;
+}

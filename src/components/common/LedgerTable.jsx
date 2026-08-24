@@ -22,6 +22,7 @@ export default function LedgerTable({
   onSearch,
   searchPlaceholder,
   searchLabel,
+  headerAction,
   mobileMeta,
   amountOf,
   emptyIcon,
@@ -51,16 +52,23 @@ export default function LedgerTable({
       <header className="bfh-ledger__head">
         <h2 className="bfh-panel__title">{title}</h2>
 
-        <div className="bfh-search bfh-search--sm">
-          <IconSearch size={14} stroke={1.5} aria-hidden="true" />
-          <input
-            type="search"
-            value={search}
-            onChange={(e) => onSearch(e.target.value)}
-            placeholder={searchPlaceholder}
-            aria-label={searchLabel}
-          />
-        </div>
+        {/* A table showing a fixed slice — the dashboard's last eight — has
+            nothing to search, so it puts a link through to the full list in
+            the same slot instead. */}
+        {onSearch ? (
+          <div className="bfh-search bfh-search--sm">
+            <IconSearch size={14} stroke={1.5} aria-hidden="true" />
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => onSearch(e.target.value)}
+              placeholder={searchPlaceholder}
+              aria-label={searchLabel}
+            />
+          </div>
+        ) : (
+          headerAction ?? null
+        )}
       </header>
 
       {rows.length === 0 ? (
