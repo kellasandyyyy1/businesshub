@@ -379,3 +379,153 @@
 .bfh-btn--dashed {
   border-style: dashed;
 }
+
+/* ---- Net worth ---------------------------------------------------------- */
+
+.bfh-nwsummary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+}
+
+.bfh-nwsummary__value {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.bfh-nwsummary__figure {
+  font-size: 28px;
+  font-weight: var(--weight-medium);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+}
+
+.bfh-nwsummary__updated {
+  margin-bottom: 4px;
+}
+
+/* The two totals sit inside the card, so the strip drops the outer frame the
+   standalone version carries and keeps only the hairline between them. */
+.bfh-nwsummary__split {
+  margin-top: 8px;
+  border: 0;
+  border-top: var(--hairline) solid var(--b);
+  border-radius: 0;
+}
+
+.bfh-nwsplit {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  align-items: start;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .bfh-nwsplit {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.bfh-nwcol {
+  padding: 16px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-md);
+  background: var(--card);
+}
+
+.bfh-nwcol__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bfh-nwcol__title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.bfh-nwgroup__label {
+  padding: 8px 0 4px;
+}
+
+.bfh-nwlist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bfh-nwrow + .bfh-nwrow {
+  border-top: var(--hairline) solid var(--b);
+}
+
+/* The whole row opens the editor. It is a button so the keyboard reaches it
+   the same way the pointer does. */
+.bfh-nwrow__open {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.bfh-nwrow__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  color: var(--ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bfh-nwrow__amount {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+
+.bfh-nwrow__edit {
+  flex: none;
+  color: var(--ink3);
+}
+
+/* The pencil is a hint, not a control — the row already is one. It waits for
+   the cursor where there is one, and stays put where there is not. */
+@media (hover: hover) and (pointer: fine) {
+  .bfh-nwrow__edit {
+    opacity: 0;
+    transition: opacity var(--duration-micro) var(--ease-out-soft);
+  }
+  .bfh-nwrow__open:hover .bfh-nwrow__edit,
+  .bfh-nwrow__open:focus-visible .bfh-nwrow__edit {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 900px) {
+  .bfh-nwrow__edit {
+    opacity: 1;
+  }
+}
+
+.bfh-nwgroup__subtotal {
+  padding: 4px 0 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink3);
+  text-align: right;
+}

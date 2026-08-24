@@ -122,7 +122,7 @@ db.version(5)
     // { id, name, target, current, deadline, notes, profile, createdAt }
     goals: '++id, name, deadline, profile, createdAt',
 
-    // { id, type: asset|liability, name, amount, notes, profile, updatedAt }
+    // { id, type: asset|liability, name, category, amount, notes, profile, updatedAt }
     netWorth: '++id, type, name, profile, updatedAt',
   })
   .upgrade(async (tx) => {

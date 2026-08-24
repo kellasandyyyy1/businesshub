@@ -1,14 +1,120 @@
-/**
- * Placeholder. The personal profile's navigation and routing land first so
- * the shell is real to move around in; this page fills in later.
- */
+import { IconPlus, IconScale } from '@tabler/icons-react'
+import { useMemo, useState } from 'react'
+
+import EmptyState from '../../components/EmptyState'
+import NetWorthColumn from '../../components/personal/NetWorthColumn'
+import NetWorthModal from '../../components/personal/NetWorthModal'
+import useNetWorthItems from '../../hooks/useNetWorth'
+import useSettings from '../../hooks/useSettings'
+import { formatCurrency, timeAgo } from '../../lib/format'
+import { netWorthSummary, splitByType } from '../../lib/netWorth'
+
 export default function PersonalNetWorth() {
+  const items = useNetWorthItems()
+  const { symbol } = useSettings()
+  // null when closed; otherwise the row being edited, or { type } for a new one.
+  const [editing, setEditing] = useState(null)
+
+  const summary = useMemo(() => netWorthSummary(items ?? []), [items])
+  const split = useMemo(() => splitByType(items ?? []), [items])
+
+  if (!items) return <div className="bfh-page" />
+
+  const open = (type) => setEditing({ type })
+
   return (
     <div className="bfh-page">
-      <div className="bfh-block">
-        <h1 className="bfh-pagetitle">Net Worth</h1>
-        <p className="bfh-empty">What you own against what you owe. Not built yet.</p>
+      <div className="bfh-block bfh-personalhead">
+        <h1 className="bfh-personalhead__title">Net Worth</h1>
+        <button
+          type="button"
+          className="bfh-btn-primary bfh-btn-primary--inline"
+          onClick={() => open('asset')}
+        >
+          <IconPlus size={14} stroke={1.75} aria-hidden="true" />
+          Add item
+        </button>
       </div>
+
+      {items.length === 0 ? (
+        <div className="bfh-block">
+          <EmptyState
+            icon={IconScale}
+            heading="Track your net worth"
+            body="Add your assets and liabilities to see your financial picture."
+            actionLabel="Get started"
+            onAction={() => open('asset')}
+          />
+        </div>
+      ) : (
+        <>
+          <div className="bfh-block">
+            <section className="bfh-card bfh-nwsummary">
+              <span className="bfh-micro">Net worth</span>
+
+              <div className="bfh-nwsummary__value">
+                <span className="bfh-nwsummary__figure">
+                  {formatCurrency(summary.net, symbol)}
+                </span>
+                {/* Owing more than you own is a fact, not an error — it reads
+                    in the same ink as any other figure, with a word to say
+                    which way round it is. */}
+                {summary.net < 0 && <span className="bfh-micro">(deficit)</span>}
+              </div>
+
+              <span className="bfh-micro bfh-nwsummary__updated">
+                Updated {timeAgo(summary.updatedAt)}
+              </span>
+
+              <div className="bfh-summary bfh-nwsummary__split">
+                <div className="bfh-summary__cell">
+                  <span className="bfh-micro">Total assets</span>
+                  <span className="bfh-summary__value">
+                    {formatCurrency(summary.assets, symbol)}
+                  </span>
+                </div>
+                <div className="bfh-summary__cell">
+                  <span className="bfh-micro">Total liabilities</span>
+                  <span className="bfh-summary__value">
+                    {formatCurrency(summary.liabilities, symbol)}
+                  </span>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <div className="bfh-block bfh-nwsplit">
+            <NetWorthColumn
+              title="Assets"
+              type="asset"
+              items={split.assets}
+              symbol={symbol}
+              addLabel="+ Add asset"
+              onAdd={() => open('asset')}
+              onEdit={setEditing}
+            />
+            <NetWorthColumn
+              title="Liabilities"
+              type="liability"
+              items={split.liabilities}
+              symbol={symbol}
+              addLabel="+ Add liability"
+              onAdd={() => open('liability')}
+              onEdit={setEditing}
+            />
+          </div>
+        </>
+      )}
+
+      {editing && (
+        <NetWorthModal
+          key={editing.id ?? `new-${editing.type}`}
+          item={editing.id ? editing : null}
+          defaultType={editing.type}
+          symbol={symbol}
+          onClose={() => setEditing(null)}
+        />
+      )}
     </div>
   )
 }

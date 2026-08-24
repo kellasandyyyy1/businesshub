@@ -383,19 +383,9 @@ export async function writeAiCache(key, value, dataHash) {
   return row
 }
 
-/** "4 minutes ago" — the freshness line under a cached result. */
-export function timeAgo(iso) {
-  if (!iso) return 'never'
-  const minutes = Math.round((Date.now() - new Date(iso).getTime()) / 60_000)
-  if (minutes < 1) return 'just now'
-  if (minutes === 1) return '1 minute ago'
-  if (minutes < 60) return `${minutes} minutes ago`
-  const hours = Math.round(minutes / 60)
-  if (hours === 1) return '1 hour ago'
-  if (hours < 24) return `${hours} hours ago`
-  const days = Math.round(hours / 24)
-  return days === 1 ? '1 day ago' : `${days} days ago`
-}
+/** Re-exported: it is a plain date formatter, and pages that have nothing to
+ * do with the model need it too. */
+export { timeAgo } from './format'
 
 export const CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000
 
