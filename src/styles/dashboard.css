@@ -407,8 +407,9 @@
   background: transparent;
   font-family: var(--font-mono);
   font-size: 9px;
+  font-weight: var(--weight-medium);
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: var(--tracking-micro);
   line-height: 1.5;
   color: var(--ink3);
   white-space: nowrap;

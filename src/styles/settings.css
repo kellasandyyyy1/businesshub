@@ -635,10 +635,10 @@
   }
 }
 
-/* The peso sign is the reason this field looked like it said "P": Geist Mono
-   draws U+20B1 with a single hairline bar that disappears at 13px, and the
-   read-only dimming finished the job. The sans face draws it unambiguously,
-   and the dimming lifts just enough to keep the stroke. */
+/* The peso sign is the reason this field looked like it said "P": the label
+   face has no U+20B1 of its own, so it was being substituted at 13px and the
+   read-only dimming finished the job. Asking for the sans outright draws it
+   unambiguously, and the dimming lifts just enough to keep the stroke. */
 .bfh-readonlyfield input,
 .bfh-prefixfield__symbol {
   font-family: var(--font-sans);

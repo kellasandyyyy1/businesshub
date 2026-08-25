@@ -115,6 +115,7 @@
   border-radius: var(--radius-xs);
   font-family: var(--font-mono);
   font-size: 9px;
+  font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   color: var(--ink3);
@@ -133,8 +134,9 @@
   margin-bottom: 4px;
   font-family: var(--font-mono);
   font-size: 9px;
+  font-weight: var(--weight-medium);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--tracking-micro);
   color: var(--ink3);
 }
 
@@ -214,8 +216,9 @@
   gap: 6px;
   font-family: var(--font-mono);
   font-size: 9px;
+  font-weight: var(--weight-medium);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--tracking-micro);
   color: var(--ink3);
 }
 
@@ -278,6 +281,7 @@
   margin-top: 2px;
   font-family: var(--font-mono);
   font-size: 9px;
+  font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   color: var(--ink3);
@@ -465,6 +469,7 @@
   border-radius: 20px;
   font-family: var(--font-mono);
   font-size: 9px;
+  font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   color: var(--ink3);
@@ -476,6 +481,7 @@
   background: transparent;
   font-family: var(--font-mono);
   font-size: 9px;
+  font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   color: var(--ink3);

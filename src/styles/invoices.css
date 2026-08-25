@@ -146,11 +146,12 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 1px 8px;
+  padding: 1px 9px;
   border: var(--hairline) solid var(--b2);
   border-radius: var(--radius-pill);
   font-family: var(--font-mono);
   font-size: 9px;
+  font-weight: var(--weight-medium);
   line-height: 1.7;
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);

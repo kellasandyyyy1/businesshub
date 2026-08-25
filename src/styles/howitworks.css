@@ -30,7 +30,7 @@
   font-family: var(--font-mono);
   font-size: 9px;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--tracking-micro);
   line-height: 1.4;
   color: var(--ink3);
 }

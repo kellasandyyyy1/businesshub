@@ -54,8 +54,13 @@
 
   /* ---- Typography ------------------------------------------------------ */
   --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
-  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-  --font-display: 'Geist Pixel', 'Geist Mono', ui-monospace, monospace;
+  /* Proportional, not monospaced — the name is kept because every label,
+     tag, timestamp and axis in the app reaches for it by this token.
+     Geist sits behind it deliberately: Sora has no U+20B1, so the peso in
+     "₱284,500" is substituted, and Geist draws it in the app's own voice
+     rather than leaving it to whatever system-ui happens to be. */
+  --font-mono: 'Sora', 'Geist', system-ui, sans-serif;
+  --font-display: 'Geist Pixel', 'Sora', 'Geist', system-ui, sans-serif;
   --font-serif: 'Source Serif 4', Georgia, serif;
 
   /* Compact scale — base UI text is 15px, not 16px */
@@ -75,7 +80,10 @@
   --leading-longform: 1.75;
 
   --tracking-heading: -0.02em;
-  --tracking-micro: 1px; /* wide tracking on uppercase mono labels */
+  /* Tracking on the uppercase micro-labels. The wide 1px was compensating for
+     a monospaced face's fixed advance; a proportional one needs less, and an
+     em keeps it proportional across the 9/10/11px sizes that share it. */
+  --tracking-micro: 0.06em;
 
   --weight-regular: 400;
   --weight-medium: 500;

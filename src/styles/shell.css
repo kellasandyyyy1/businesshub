@@ -38,6 +38,9 @@
 .bfh-micro {
   font-family: var(--font-mono);
   font-size: 9px;
+  /* A proportional face has a lighter stroke than the mono it replaced; the
+     extra weight is what keeps these readable at 9px. */
+  font-weight: var(--weight-medium);
   line-height: 1.4;
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
