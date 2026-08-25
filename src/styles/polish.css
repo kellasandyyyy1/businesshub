@@ -130,14 +130,30 @@
 
 .bfh-onboard__actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   padding-top: 6px;
 }
+
+/* Both button styles carry width: 100% from their base class, which in a row
+   means each one asks for the whole width. The ghost was also pinned against
+   shrinking, so on the last step it took the full card and ran out past the
+   primary. They size to their own labels here, and wrap when two will not fit. */
+.bfh-onboard__actions > button {
+  flex: 0 1 auto;
+  width: auto;
+}
+
 .bfh-onboard__actions .bfh-btn-ghost {
-  flex: 0 0 auto;
   border-style: solid;
   border-color: var(--b);
+}
+
+/* Two equally weighted choices: side by side while both fit, and each on its
+   own full-width row once the card is too narrow to hold them. */
+.bfh-onboard__actions--pair > button {
+  flex: 1 1 150px;
 }
 
 .bfh-onboard__summary {

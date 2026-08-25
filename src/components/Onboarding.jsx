@@ -489,7 +489,11 @@ export default function Onboarding({ onDone }) {
               )}
             </dl>
 
-            <div className="bfh-onboard__actions">
+            <div
+              className={`bfh-onboard__actions${
+                mode === 'both' ? ' bfh-onboard__actions--pair' : ''
+              }`}
+            >
               {mode === 'both' ? (
                 <>
                   <button
