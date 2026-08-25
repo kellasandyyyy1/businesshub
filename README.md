@@ -1,13 +1,29 @@
 # Dual Finance
 
-A financial command centre for small businesses, freelancers and agencies.
+Business and personal finance, in one place.
+
 Everything lives in the browser — no accounts, no cloud, no backend for the
 core features. Open it, and your books are already there.
 
 Built for Philippine small businesses (₱, 12% VAT, BIR-shaped reports), but the
 currency and financial year are configurable.
 
+## Two modes
+
+Dual keeps two sets of books that never mix. Setup asks which you want, and you
+can change your mind later in **Settings → Appearance** — turning a mode off
+hides it, nothing is deleted.
+
+- **Business** — for a company, freelance practice or agency
+- **Personal** — for your own spending, savings and net worth
+- **Both** — switch between them from the sidebar, or by tapping your name on a
+  phone
+
+Each mode keeps its own transactions, categories, reports and AI context.
+
 ## What it does
+
+### Business
 
 | | |
 | --- | --- |
@@ -17,13 +33,32 @@ currency and financial year are configurable.
 | **Invoices** | Create, send, track paid/unpaid/overdue, print |
 | **Clients** | A profile per client with their full history |
 | **Budgets** | Per-category limits with warnings at 80% |
-| **Cash Flow** | Current position projected 30/60/90 days out |
+| **Cash Flow** | Current position projected 30/60/90 days, 6 or 12 months out |
 | **Reports** | Profit and loss, expense and revenue breakdowns, as PDF or Excel |
 | **Insights** | Plain-English reading of the numbers |
 | **Export** | Nine spreadsheet exports, CSV or XLSX |
 
-Plus an AI assistant (ask questions, or say *"add 500 sa truck"* and it opens the
-form filled in), installable as a PWA, and optional push notifications.
+### Personal
+
+| | |
+| --- | --- |
+| **Dashboard** | Money in, money out, what is left, and where it went |
+| **Transactions** | The same ledger, kept separately from the business one |
+| **Income / Expenses** | Take-home pay and spending by category and merchant |
+| **Goals** | Savings targets with progress and what it takes to get there |
+| **Net Worth** | Assets against liabilities, tracked over time |
+| **Reports** | Spending, income, savings rate, subscriptions and monthly trend |
+
+### Across both
+
+| | |
+| --- | --- |
+| **Overview** | Business and personal side by side, and your combined net worth |
+| **Owner draw** | Pay yourself from the business and have it land in personal, as one entry |
+
+Plus an AI assistant that answers for whichever mode you are in and never mixes
+the two (ask questions, or say *"add 500 sa truck"* and it opens the form filled
+in), installable as a PWA, and optional push notifications.
 
 ## Stack
 
@@ -44,8 +79,9 @@ cp .env.example .env     # add your Groq key for the assistant
 npm run dev              # http://localhost:5173
 ```
 
-A new install starts empty. The first run collects your business name, currency
-and opening balance, and sets up a starting list of categories — nothing else.
+A new install starts empty. The first run asks which modes you want, then the
+name, currency and opening balance for each one, and sets up a starting list of
+categories — nothing else.
 
 `npm run dev` also starts the push server if `server/` is set up; without it the
 app runs fine and the push toggle reads "Not supported".
@@ -92,10 +128,11 @@ service-worker cache headers and the assistant proxy.
 
 ## Your data
 
-Transactions, invoices, clients and settings live in IndexedDB on the device and
-are never uploaded. The assistant is the one exception: the question and a
-summary of the relevant figures go to Groq to be answered. Export or back up
-everything from Settings → Data at any time.
+Transactions, invoices, clients, goals, net worth and settings — business and
+personal alike — live in IndexedDB on the device and are never uploaded. The
+assistant is the one exception: the question and a summary of the relevant
+figures go to Groq to be answered. Export or back up everything from
+Settings → Data at any time.
 
 ---
 
