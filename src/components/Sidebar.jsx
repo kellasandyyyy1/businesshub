@@ -61,19 +61,27 @@ export default function Sidebar({ collapsed, open, onNavigate, onAddTransaction 
       aria-label="Primary"
     >
       <div className="bfh-sidebar__section bfh-sidebar__head">
-        {/* The wordmark already reads "Business Finance Hub", so the tagline
+        {/* The wordmark already reads "Dual Finance", so the tagline
             that used to sit under it would only say it a second time. The short
             mark stands in on the 56px rail, where a 220×56 lockup could only be
             squashed to something unreadable. */}
+        {/* Set rather than drawn. The old lockup was a bitmap with the
+            previous name baked into it, which no rename can reach — and text
+            costs nothing, scales to any screen and inverts with the theme on
+            its own. The favicon mark carries the shape. */}
         <div className="bfh-logo">
           <img
             className="bfh-logo__mark"
-            src="/badge-72.png"
-            alt="Business Finance Hub"
-            width="220"
-            height="56"
+            src="/favicon.svg"
+            alt=""
+            width="140"
+            height="140"
           />
-          <span className="bfh-logo__short">BFH</span>
+          <span className="bfh-logo__word">
+            <span className="bfh-logo__name">Dual</span>
+            <span className="bfh-logo__tag">Finance</span>
+          </span>
+          <span className="bfh-logo__short">Dual</span>
         </div>
 
         <ProfileSwitcher onNavigate={onNavigate} />

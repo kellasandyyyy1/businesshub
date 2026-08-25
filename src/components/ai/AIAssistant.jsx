@@ -30,7 +30,7 @@ const SUGGESTIONS = [
  * still goes through a renderer as a second line of defence.
  */
 const systemPrompt = (context, categories) =>
-  `You are a financial assistant built into Business Finance Hub, a finance tracking app for small Philippine businesses.
+  `You are a financial assistant built into Dual Finance, a business and personal finance app for small Philippine businesses and households.
 
 You have access to the user's real financial data provided below. Answer every question using only that data — never guess or make up numbers.
 
@@ -116,7 +116,7 @@ function AiLabel() {
   return (
     <span className="bfh-assist__who">
       <IconSparkles size={11} stroke={1.5} aria-hidden="true" />
-      BFH
+      Dual
     </span>
   )
 }
@@ -243,7 +243,7 @@ export default function AIAssistant({ onClose }) {
      identity transform behind, which would otherwise become this fixed
      overlay's containing block. */
   return createPortal(
-    <div className="bfh-assist" role="dialog" aria-modal="true" aria-label="Ask BFH">
+    <div className="bfh-assist" role="dialog" aria-modal="true" aria-label="Ask Dual">
       <button type="button" className="bfh-assist__scrim" aria-label="Close" onClick={onClose} />
 
       <div className="bfh-assist__panel" ref={trapRef}>
@@ -252,7 +252,7 @@ export default function AIAssistant({ onClose }) {
         <header className="bfh-assist__head">
           <span className="bfh-assist__title">
             <IconSparkles size={14} stroke={1.5} aria-hidden="true" />
-            Ask BFH
+            Ask Dual
           </span>
 
           <span className="bfh-assist__headright">

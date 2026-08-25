@@ -1,4 +1,4 @@
-# Business Finance Hub
+# Dual Finance
 
 A financial command centre for small businesses, freelancers and agencies.
 Everything lives in the browser — no accounts, no cloud, no backend for the

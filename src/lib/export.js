@@ -145,9 +145,9 @@ function triggerDownload(blob, filename) {
   URL.revokeObjectURL(url)
 }
 
-/** "bfh-transaction-log-2026-08-2026-08-21.csv" */
+/** "dual-transaction-log-2026-08-2026-08-21.csv" */
 export function exportFilename(typeId, slug, extension, today) {
-  return `bfh-${typeId}-${slug}-${today}.${extension}`
+  return `dual-${typeId}-${slug}-${today}.${extension}`
 }
 
 export function downloadCSV(rows, columns, filename) {

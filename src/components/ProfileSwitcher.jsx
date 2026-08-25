@@ -5,8 +5,8 @@ import { PROFILE_HOME } from '../config/nav'
 import { useProfile } from '../context/ProfileContext'
 
 const OPTIONS = [
-  { id: 'business', label: 'Business', sub: 'Finance Hub', Icon: IconBuilding },
-  { id: 'personal', label: 'Personal', sub: 'Finance', Icon: IconUser },
+  { id: 'business', label: 'Business', sub: 'Company', Icon: IconBuilding },
+  { id: 'personal', label: 'Personal', sub: 'Household', Icon: IconUser },
 ]
 
 /**

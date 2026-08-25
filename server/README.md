@@ -1,6 +1,6 @@
-# BFH push server
+# Dual push server
 
-Delivers Web Push notifications for Business Finance Hub. It is deliberately
+Delivers Web Push notifications for Dual Finance. It is deliberately
 small: one Express app, one SQLite file, two tables.
 
 ## What it stores

@@ -48,4 +48,4 @@ app.use((err, req, res, next) => {
 })
 
 const PORT = process.env.PORT || 3001
-app.listen(PORT, () => console.log(`BFH push server running on ${PORT}`))
+app.listen(PORT, () => console.log(`Dual push server running on ${PORT}`))

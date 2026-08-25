@@ -1,4 +1,4 @@
-/* Business Finance Hub — push delivery only.
+/* Dual Finance — push delivery only.
    No caching, no offline shell: the app already runs entirely from IndexedDB,
    and a stale cached bundle would be a liability rather than a feature. */
 
@@ -12,7 +12,7 @@ self.addEventListener('push', (event) => {
   try {
     data = event.data.json()
   } catch {
-    data = { title: 'Business Finance Hub', body: event.data.text() }
+    data = { title: 'Dual Finance', body: event.data.text() }
   }
 
   event.waitUntil(

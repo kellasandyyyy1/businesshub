@@ -6,6 +6,7 @@ import { useAssistantActions } from '../context/AssistantActionsContext'
 import { PeriodProvider } from '../context/PeriodContext'
 import { useProfile } from '../context/ProfileContext'
 import { useDevice } from '../context/BreakpointContext'
+import useDocumentTitle from '../hooks/useDocumentTitle'
 import { useIsCompact, useIsMobile } from '../hooks/useMediaQuery'
 import { useNotifications } from '../hooks/useNotifications'
 import { useThemeSync } from '../hooks/useTheme'
@@ -24,6 +25,8 @@ export default function AppShell() {
   const [params, setParams] = useSearchParams()
   // Keeps the stored theme on <html> for the whole app.
   useThemeSync()
+  // Names the browser tab after whichever page is open.
+  useDocumentTitle()
   const isCompact = useIsCompact()
   const isMobile = useIsMobile()
   // Below 1024px the bottom bar is the navigation, so the sidebar drawer no
@@ -161,8 +164,8 @@ export default function AppShell() {
           type="button"
           className="bfh-ai-fab"
           onClick={openAssistant}
-          aria-label="Ask BFH"
-          title="Ask BFH (Ctrl+K)"
+          aria-label="Ask Dual"
+          title="Ask Dual (Ctrl+K)"
         >
           <IconMessageCircle size={19} stroke={1.5} aria-hidden="true" />
         </button>

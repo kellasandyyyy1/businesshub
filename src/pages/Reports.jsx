@@ -42,7 +42,7 @@ export default function Reports() {
   const exportExcel = () => {
     const slug = report.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')
     const { columns, rows } = asRows()
-    downloadXLSX(rows, columns, `bfh-${slug}-${from}-to-${to}.xlsx`, report.title)
+    downloadXLSX(rows, columns, `dual-${slug}-${from}-to-${to}.xlsx`, report.title)
   }
 
   const exportCsv = () => {

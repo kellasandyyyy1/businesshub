@@ -105,7 +105,14 @@ export async function seedDefaults(db) {
     const missing = ALL_CATEGORIES.filter((c) => !seen.has(`${c.profile}|${c.name}`))
 
     if (missing.length) await db.categories.bulkAdd(missing.map((c) => ({ ...c, createdAt })))
-    await db.settings.bulkAdd(DEFAULT_SETTINGS)
+
+    // Settings the same way. `key` is a unique index, so re-adding one that
+    // already exists throws a ConstraintError that aborts the whole
+    // transaction — taking the categories above down with it.
+    const settings = await db.settings.toArray()
+    const keys = new Set(settings.map((row) => row.key))
+    const newSettings = DEFAULT_SETTINGS.filter((row) => !keys.has(row.key))
+    if (newSettings.length) await db.settings.bulkAdd(newSettings)
   })
 }
 

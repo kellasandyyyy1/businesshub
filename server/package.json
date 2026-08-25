@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "commonjs",
-  "description": "Push delivery for Business Finance Hub. Stores subscriptions only — never financial data.",
+  "description": "Push delivery for Dual Finance. Stores subscriptions only — never financial data.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

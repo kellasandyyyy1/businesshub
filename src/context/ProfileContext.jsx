@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useMemo, useState } from 'react
 
 export const PROFILES = ['business', 'personal']
 
-const STORAGE_KEY = 'bfh-active-profile'
+const STORAGE_KEY = 'dual-active-profile'
 
 /**
  * Private browsing and locked-down storage settings make localStorage throw on

@@ -28,7 +28,7 @@ import { PROFILE_HOME } from '../config/nav'
 import { useProfile } from '../context/ProfileContext'
 
 /**
- * The plain-language explainer for someone opening BFH for the first time.
+ * The plain-language explainer for someone opening Dual for the first time.
  *
  * It reads nothing from Dexie and writes nothing back, so it renders the same
  * whether the database is full or empty. The only live thing on it is the
@@ -71,7 +71,7 @@ const BUSINESS_SECTIONS = [
   {
     icon: IconChartPie,
     name: 'Budgets',
-    body: "Set a spending limit per category. BFH warns you when you're getting close so you don't overspend.",
+    body: "Set a spending limit per category. Dual warns you when you're getting close so you don't overspend.",
   },
   {
     icon: IconWaveSine,
@@ -86,7 +86,7 @@ const BUSINESS_SECTIONS = [
   {
     icon: IconBulb,
     name: 'Insights',
-    body: 'BFH reads your data and tells you what it means in plain English. Client concentration risk, margin trends, spending patterns.',
+    body: 'Dual reads your data and tells you what it means in plain English. Client concentration risk, margin trends, spending patterns.',
   },
   {
     icon: IconTableExport,
@@ -119,7 +119,7 @@ const PERSONAL_SECTIONS = [
   {
     icon: IconTarget,
     name: 'Goals',
-    body: 'Set savings targets — emergency fund, vacation, gadget, anything. BFH tracks progress and tells you how much to save per month to hit your deadline.',
+    body: 'Set savings targets — emergency fund, vacation, gadget, anything. Dual tracks progress and tells you how much to save per month to hit your deadline.',
   },
   {
     icon: IconScale,
@@ -153,11 +153,11 @@ const TIPS = [
   },
   {
     title: 'Add your last 30 days of business transactions',
-    body: 'The more history you add, the smarter BFH gets. Start with this month and work backwards.',
+    body: 'The more history you add, the smarter Dual gets. Start with this month and work backwards.',
   },
   {
     title: 'Create your first invoice',
-    body: "If you bill clients, create an invoice now. BFH tracks when it's paid and adds it to your cash flow projections.",
+    body: "If you bill clients, create an invoice now. Dual tracks when it's paid and adds it to your cash flow projections.",
   },
   {
     title: 'Switch to Personal and set your goals',
@@ -214,7 +214,7 @@ export default function HowItWorks() {
           One app for your business and personal finances.
         </h1>
         <p className="bfh-howto__subline">
-          BFH tracks where your money comes from, where it goes, and tells you what it means — for
+          Dual tracks where your money comes from, where it goes, and tells you what it means — for
           both your business and your life.
         </p>
 
@@ -296,9 +296,9 @@ export default function HowItWorks() {
       {/* ---- AI assistant ---- */}
       <section className="bfh-block">
         <span className="bfh-howto__tag">AI assistant</span>
-        <h2 className="bfh-howto__subtitle">Ask BFH anything. In English or Filipino.</h2>
+        <h2 className="bfh-howto__subtitle">Ask Dual anything. In English or Filipino.</h2>
         <p className="bfh-howto__body">
-          BFH has a built-in AI that knows your finances. Ask questions, get plain-language answers,
+          Dual has a built-in AI that knows your finances. Ask questions, get plain-language answers,
           or just say &lsquo;add 500 sa food ko&rsquo; and it opens the form for you.
         </p>
 
@@ -339,7 +339,7 @@ export default function HowItWorks() {
           Pay yourself from the business — recorded on both sides.
         </h2>
         <p className="bfh-howto__body">
-          When you pay yourself an owner draw or salary from the business, BFH records it as an
+          When you pay yourself an owner draw or salary from the business, Dual records it as an
           expense on the business side and income on your personal side — automatically. No double
           entry.
         </p>
@@ -359,7 +359,7 @@ export default function HowItWorks() {
           />
 
           <div className="bfh-howto__flowbox bfh-howto__flowbox--invert">
-            <span className="bfh-howto__flowlabel">BFH</span>
+            <span className="bfh-howto__flowlabel">Dual</span>
             <span className="bfh-howto__flowvalue">Auto-links</span>
             <span className="bfh-howto__flownote">both sides</span>
           </div>

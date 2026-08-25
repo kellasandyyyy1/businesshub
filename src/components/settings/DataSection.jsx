@@ -100,7 +100,7 @@ export default function DataSection({ settings }) {
   const onExport = async () => {
     const payload = await exportAll(db)
     const stamp = new Date().toISOString().slice(0, 10)
-    downloadJson(`business-finance-hub-${stamp}.json`, payload)
+    downloadJson(`dual-finance-${stamp}.json`, payload)
     await putSetting('lastExport', new Date().toISOString())
     setStatus({ text: 'Backup downloaded' })
   }

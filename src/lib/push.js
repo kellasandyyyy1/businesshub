@@ -8,8 +8,8 @@
 
 const BACKEND = import.meta.env.VITE_PUSH_BACKEND_URL
 
-const DEVICE_KEY = 'bfh-device-id'
-const ENABLED_KEY = 'bfh-push-enabled'
+const DEVICE_KEY = 'dual-device-id'
+const ENABLED_KEY = 'dual-push-enabled'
 
 /** Push needs all three: a worker to receive it, a manager to subscribe, and permission to show it. */
 export function isPushSupported() {

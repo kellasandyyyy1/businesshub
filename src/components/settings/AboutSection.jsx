@@ -23,7 +23,7 @@ export default function AboutSection({ version }) {
       <h2 className="bfh-panel__title">About</h2>
 
       <div className="bfh-about__head">
-        <div className="bfh-about__name">Business Finance Hub</div>
+        <div className="bfh-about__name">Dual Finance</div>
         <span className="bfh-chip">v{version}</span>
       </div>
 

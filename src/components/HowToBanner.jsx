@@ -9,7 +9,7 @@ import { BUSINESS_PROFILE, ofProfile } from '../db/queries'
 /** Built before the profile split, so it reads the business side. */
 const inProfile = ofProfile(BUSINESS_PROFILE)
 
-const KEY = 'bfh-howto-dismissed'
+const KEY = 'dual-howto-dismissed'
 
 /**
  * The first-run nudge at the top of the dashboard.
@@ -45,7 +45,7 @@ export default function HowToBanner() {
   return (
     <div className="bfh-howtobanner">
       <span className="bfh-howtobanner__text">
-        Welcome to BFH.{' '}
+        Welcome to Dual.{' '}
         <Link to="/how-it-works" className="bfh-howtobanner__link">
           Learn how it works →
         </Link>

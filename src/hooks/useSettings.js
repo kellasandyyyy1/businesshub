@@ -3,7 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/db'
 
 const FALLBACKS = {
-  businessName: 'Business Finance Hub',
+  businessName: 'Dual Finance',
   currency: 'PHP',
   symbol: '₱',
   locale: 'en-PH',

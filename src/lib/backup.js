@@ -14,7 +14,7 @@ export async function exportAll(db) {
 
   return {
     meta: {
-      app: 'Business Finance Hub',
+      app: 'Dual Finance',
       backupVersion: BACKUP_VERSION,
       exportedAt: new Date().toISOString(),
       counts: Object.fromEntries(TABLES.map((name) => [name, data[name].length])),

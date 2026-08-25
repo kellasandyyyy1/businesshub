@@ -111,12 +111,41 @@
    sidebar, so it scales down to fit and is never asked to scale up past its own
    pixels, which would only make it soft. The ratio is declared so the row holds
    its height before the file has loaded. */
+.bfh-logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
 .bfh-logo__mark {
   display: block;
-  width: 100%;
-  max-width: 164px;
-  height: auto;
-  aspect-ratio: 220 / 56;
+  flex: none;
+  width: 26px;
+  height: 26px;
+}
+
+.bfh-logo__word {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.bfh-logo__name {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: var(--weight-medium);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.bfh-logo__tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
 }
 
 /* Only the collapsed rail needs the short mark. */
@@ -393,6 +422,7 @@
   display: block;
 }
 
+.bfh-sidebar[data-collapsed='true'] .bfh-logo__word,
 .bfh-sidebar[data-collapsed='true'] .bfh-nav__text,
 .bfh-sidebar[data-collapsed='true'] .bfh-badge,
 .bfh-sidebar[data-collapsed='true'] .bfh-logo__tag,
@@ -746,20 +776,8 @@
 /* The supplied wordmark is white artwork on a transparent background, so on the
    light sidebar it disappears into the surface and only the chart glyph shows.
    Inverting it there paints the same mark in ink; dark mode already suits it. */
-:root:not(.dark) .bfh-logo__mark {
-  filter: invert(1);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) .bfh-logo__mark {
-    filter: none;
-  }
-}
-:root.dark .bfh-logo__mark {
-  filter: none;
-}
-:root.light .bfh-logo__mark {
-  filter: invert(1);
-}
+/* The mark is a self-contained badge — dark card, light artwork — so it
+   needs no per-theme inversion the way the old bitmap did. */
 
 /* ---- Notifications menu ------------------------------------------------------ */
 

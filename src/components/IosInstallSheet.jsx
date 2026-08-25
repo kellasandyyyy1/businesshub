@@ -18,7 +18,7 @@ const STEPS = [
   {
     icon: IconCheck,
     label: "Tap 'Add'",
-    sub: 'BFH will appear on your home screen like a native app.',
+    sub: 'Dual will appear on your home screen like a native app.',
   },
 ]
 
@@ -63,7 +63,7 @@ export default function IosInstallSheet({ onClose }) {
           </header>
 
           <p className="bfh-settings__note">
-            Add BFH to your home screen for the best experience.
+            Add Dual to your home screen for the best experience.
           </p>
 
           <ol className="bfh-iossheet__steps">

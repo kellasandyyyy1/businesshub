@@ -2,13 +2,20 @@ import Dexie from 'dexie'
 import { OWNER_DRAW_CATEGORY, PERSONAL_CATEGORIES, seedDefaults } from './defaults'
 
 /**
- * Business Finance Hub — local-only database.
+ * Dual Finance — local-only database.
  *
  * Everything lives in IndexedDB via Dexie; there is no backend. Only the
  * fields listed in each store string are indexed — every record still carries
  * the full shape documented alongside it.
  */
-export const db = new Dexie('business-finance-hub')
+/**
+ * The database the app was called before the rebrand. Kept as a constant
+ * because the one-time migration below is the only thing that still needs it,
+ * and it has to be exactly right — a typo here silently abandons real data.
+ */
+const LEGACY_DB_NAME = 'business-finance-hub'
+
+export const db = new Dexie('dual-finance')
 
 db.version(1).stores({
   // { id, date, description, amount, type: income|expense|transfer, category,
@@ -206,10 +213,119 @@ export async function putSetting(key, value) {
  * Safe to call more than once, and skipped after Settings → Data → clear all,
  * which leaves an `initialized` marker behind.
  */
+/** Storage keys that carried the old prefix, and what they are called now. */
+const LEGACY_STORAGE_KEYS = {
+  // Left side is the old name and must stay that way — it is the only record
+  // of what these were called before the rename.
+  'bfh-active-profile': 'dual-active-profile',
+  'bfh-push-enabled': 'dual-push-enabled',
+  'bfh-device-id': 'dual-device-id',
+  'bfh-install-dismissed': 'dual-install-dismissed',
+  'bfh-ai-hint-dismissed': 'dual-ai-hint-dismissed',
+  'bfh-open-count': 'dual-open-count',
+  'bfh-howto-dismissed': 'dual-howto-dismissed',
+}
+
+const MIGRATED_FLAG = 'dual-db-migrated'
+
+function migrateStorageKeys() {
+  try {
+    for (const [before, after] of Object.entries(LEGACY_STORAGE_KEYS)) {
+      const value = localStorage.getItem(before)
+      if (value === null) continue
+      // Never overwrite a newer choice with the value it replaced.
+      if (localStorage.getItem(after) === null) localStorage.setItem(after, value)
+      localStorage.removeItem(before)
+    }
+  } catch {
+    // A browser refusing storage keeps its defaults; nothing here is essential.
+  }
+}
+
+/**
+ * Reads everything out of the pre-rebrand database, once.
+ *
+ * Renaming a Dexie database does not move the data — it opens a different,
+ * empty one and leaves the original sitting there. So the rows are lifted out
+ * before the new database is opened, and written in after, which also means
+ * the first-run defaults never fire on top of a migrated set.
+ *
+ * The old schema is read rather than declared: Dexie opens an existing
+ * database in dynamic mode when no versions are given, so this keeps working
+ * whatever version the device happened to be on.
+ */
+async function readLegacyDatabase() {
+  let migrated = null
+  try {
+    migrated = localStorage.getItem(MIGRATED_FLAG)
+  } catch {
+    return null
+  }
+  if (migrated) return null
+
+  try {
+    if (!(await Dexie.exists(LEGACY_DB_NAME))) return null
+
+    const legacy = new Dexie(LEGACY_DB_NAME)
+    await legacy.open()
+
+    const payload = {}
+    for (const table of legacy.tables) {
+      const rows = await table.toArray()
+      if (rows.length) payload[table.name] = rows
+    }
+    legacy.close()
+    return payload
+  } catch (err) {
+    // A database that cannot be read is not worth blocking startup over, but
+    // the flag is left unset so a later load can try again.
+    console.warn('Dual: could not read the previous database —', err?.message)
+    return null
+  }
+}
+
+/**
+ * Opens the database, writing the default categories and settings the first
+ * time it is created, and carrying across anything left in the pre-rebrand
+ * database before either happens.
+ */
 export async function initDb() {
+  const legacy = await readLegacyDatabase()
+
   await db.open()
-  const count = await db.settings.count()
-  if (count === 0) await seedDefaults(db)
+
+  if (legacy) {
+    try {
+      for (const [name, rows] of Object.entries(legacy)) {
+        if (!db.tables.some((t) => t.name === name)) continue
+        // put rather than add: the rows keep their ids, so a re-run cannot
+        // duplicate them.
+        await db.table(name).bulkPut(rows)
+      }
+      migrateStorageKeys()
+      localStorage.setItem(MIGRATED_FLAG, 'true')
+      console.info('Dual: carried your data over from the previous version.')
+    } catch (err) {
+      console.warn('Dual: migration incomplete —', err?.message)
+    }
+  } else {
+    migrateStorageKeys()
+    try {
+      localStorage.setItem(MIGRATED_FLAG, 'true')
+    } catch {
+      // Nothing to remember on a browser without storage.
+    }
+  }
+
+  // Categories are checked as well as settings: a database carried over from
+  // a device that somehow held one without the other would otherwise open with
+  // nothing to file a transaction under. seedDefaults only adds what is
+  // missing, so this is safe to reach on a full database.
+  const [settingsCount, categoryCount] = await Promise.all([
+    db.settings.count(),
+    db.categories.count(),
+  ])
+  if (settingsCount === 0 || categoryCount === 0) await seedDefaults(db)
   return db
 }
 

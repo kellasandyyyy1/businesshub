@@ -69,8 +69,8 @@ function useNeedsOnboarding() {
 function useOpenCount() {
   useEffect(() => {
     try {
-      const count = Number(localStorage.getItem('bfh-open-count') ?? '0')
-      localStorage.setItem('bfh-open-count', String(count + 1))
+      const count = Number(localStorage.getItem('dual-open-count') ?? '0')
+      localStorage.setItem('dual-open-count', String(count + 1))
     } catch {
       // A browser refusing storage simply never shows the hints.
     }

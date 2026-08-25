@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 import { usePWAInstall } from '../hooks/usePWAInstall'
 
-const DISMISSED = 'bfh-install-dismissed'
+const DISMISSED = 'dual-install-dismissed'
 
 /**
  * The one inverted call to action in the app, and only while it can actually do
@@ -35,7 +35,7 @@ export default function InstallBanner() {
     <div className="bfh-install">
       <span className="bfh-install__body">
         <IconDownload size={14} stroke={1.5} aria-hidden="true" />
-        <span className="bfh-install__text">Install BFH on this device for quick access.</span>
+        <span className="bfh-install__text">Install Dual on this device for quick access.</span>
       </span>
 
       <span className="bfh-install__actions">

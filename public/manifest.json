@@ -1,7 +1,7 @@
 {
-  "name": "Business Finance Hub",
-  "short_name": "BFH",
-  "description": "financial command center for businesses.",
+  "name": "Dual Finance",
+  "short_name": "Dual",
+  "description": "Business and personal finance tracking in one app.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -76,14 +76,14 @@
       "sizes": "1280x800",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Business Finance Hub Dashboard"
+      "label": "Dual Finance Dashboard"
     },
     {
       "src": "/screenshots/mobile.png",
       "sizes": "390x844",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "BFH on mobile"
+      "label": "Dual on mobile"
     }
   ],
   "categories": [

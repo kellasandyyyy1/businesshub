@@ -102,8 +102,8 @@ export default function Onboarding({ onDone }) {
             width="140"
             height="140"
           />
-          <div className="bfh-logo">BFH</div>
-          <div className="bfh-micro bfh-logo__tag">Finance Hub</div>
+          <div className="bfh-logo">Dual</div>
+          <div className="bfh-micro bfh-logo__tag">Dual Finance</div>
         </header>
 
         <ol className="bfh-onboard__steps">
@@ -190,9 +190,9 @@ export default function Onboarding({ onDone }) {
         {step === 2 && (
           <div className="bfh-onboard__panel">
             <span className="bfh-micro">AI assistant</span>
-            <h1 className="bfh-onboard__title bfh-onboard__title--tight">Ask BFH anything.</h1>
+            <h1 className="bfh-onboard__title bfh-onboard__title--tight">Ask Dual anything.</h1>
             <p className="bfh-onboard__note bfh-onboard__note--wide">
-              BFH has a built-in AI that knows your finances. Ask it questions, get instant answers,
+              Dual has a built-in AI that knows your finances. Ask it questions, get instant answers,
               or just say &lsquo;add 500 for food&rsquo; and it opens the form for you.
             </p>
 
