@@ -4,15 +4,18 @@ import {
   IconBuilding,
   IconBulb,
   IconChartPie,
+  IconCheck,
   IconDeviceLaptop,
   IconDownload,
   IconFileInvoice,
   IconKeyboard,
   IconLayoutDashboard,
   IconMessageCircle,
+  IconPalette,
   IconPlus,
   IconReportAnalytics,
   IconScale,
+  IconSettings,
   IconSparkles,
   IconTableExport,
   IconTarget,
@@ -190,9 +193,29 @@ function SectionList({ rows }) {
   )
 }
 
+const ADD_STEPS = (other) => [
+  {
+    Icon: IconSettings,
+    action: 'Open Settings',
+    detail: 'In the sidebar, or under More in the bottom bar on a phone.',
+  },
+  {
+    Icon: IconPalette,
+    action: 'Go to Appearance',
+    detail: 'Find the Appearance section in Settings.',
+  },
+  {
+    Icon: IconCheck,
+    action: `Select ${other} or Both`,
+    detail: `Under Active modes, pick ${other} or Both. ${
+      other === 'Business' ? 'Enter your business name.' : 'Enter your name.'
+    }`,
+  },
+]
+
 export default function HowItWorks() {
   const navigate = useNavigate()
-  const { switchProfile, isPersonal } = useProfile()
+  const { switchProfile, isPersonal, activeMode } = useProfile()
 
   // Arriving in a profile beats reading about it, so the button does both.
   const go = (profile) => {
@@ -278,6 +301,53 @@ export default function HowItWorks() {
       </section>
 
       <hr className="bfh-howto__rule" />
+
+      {/* ---- Adding the other side, for anyone who set up only one ---- */}
+      {activeMode !== 'both' && (
+        <>
+          <section className="bfh-block">
+            <span className="bfh-howto__tag">Want to use both?</span>
+            <h2 className="bfh-howto__subtitle">You can add the other mode anytime.</h2>
+            <p className="bfh-howto__body">
+              {activeMode === 'personal'
+                ? 'You set up Personal finance. If you also run a business or do freelance work, you can add Business mode — it takes 30 seconds.'
+                : 'You set up Business finance. If you also want to track your personal spending and savings, you can add Personal mode anytime.'}
+            </p>
+
+            <ol className="bfh-addsteps">
+              {ADD_STEPS(activeMode === 'personal' ? 'Business' : 'Personal').map((step, i) => (
+                <li className="bfh-addstep" key={step.action}>
+                  <span className="bfh-addstep__num" aria-hidden="true">
+                    {i + 1}
+                  </span>
+                  <span className="bfh-addstep__body">
+                    <span className="bfh-addstep__action">{step.action}</span>
+                    <span className="bfh-addstep__detail">{step.detail}</span>
+                  </span>
+                  <step.Icon
+                    size={14}
+                    stroke={1.5}
+                    aria-hidden="true"
+                    className="bfh-addstep__icon"
+                  />
+                </li>
+              ))}
+            </ol>
+
+            <div className="bfh-howto__actions">
+              <button
+                type="button"
+                className="bfh-btn-primary bfh-btn-primary--inline"
+                onClick={() => navigate('/settings?section=appearance')}
+              >
+                Go to Settings now →
+              </button>
+            </div>
+          </section>
+
+          <hr className="bfh-howto__rule" />
+        </>
+      )}
 
       {/* ---- What each section does ---- */}
       <section className="bfh-block">

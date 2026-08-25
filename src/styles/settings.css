@@ -850,3 +850,77 @@
 .bfh-modesetting .bfh-modepick {
   margin-top: 12px;
 }
+
+.bfh-modesetting__lede {
+  margin: 6px 0 16px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ink2);
+}
+
+/* Says what the choice will do, before it does it. */
+.bfh-modeconfirm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.bfh-modeconfirm__head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+
+.bfh-modeconfirm__head svg {
+  flex: none;
+  color: var(--ink3);
+}
+
+.bfh-modeconfirm__body {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--ink2);
+}
+
+.bfh-modeconfirm__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bfh-modeconfirm__actions .bfh-link {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.bfh-modedone {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 12px 14px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 8px;
+  background: var(--bg);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.bfh-modedone svg {
+  flex: none;
+}
+
+/* Sits beside Cancel, so it takes only the width of its label. */
+.bfh-modeconfirm__actions .bfh-btn-primary {
+  width: auto;
+}

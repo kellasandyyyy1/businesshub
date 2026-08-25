@@ -11,6 +11,7 @@ import { navGroupsFor } from '../config/nav'
 import { useProfile } from '../context/ProfileContext'
 import useAlerts from '../hooks/useAlerts'
 import useSettings from '../hooks/useSettings'
+import ModeHint from './ModeHint'
 import ProfileSwitcher from './ProfileSwitcher'
 
 /** "Broadheader" → "BR", "Reyes Creative" → "RC". */
@@ -153,6 +154,10 @@ export default function Sidebar({ collapsed, open, onNavigate, onAddTransaction 
           onNavigate={onNavigate}
         />
       </nav>
+
+      {/* Above the profile row, where it is the last thing read rather than
+          something to scroll past. */}
+      <ModeHint />
 
       <div className="bfh-sidebar__foot">
         {/* The card describes the business, so it opens where the business is
