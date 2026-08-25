@@ -39,6 +39,14 @@ const TOGGLES = [
     note: 'Show a recap of the week the first time the app opens on a Monday.',
     fallback: false,
   },
+  {
+    key: 'voiceInput',
+    label: 'Voice input',
+    // Says where the audio goes, because this is the one part of the app that
+    // leaves the device without the reader having typed anything.
+    note: 'Show a microphone in the assistant. Your browser transcribes what you say, which on most browsers means sending the audio to its maker.',
+    fallback: true,
+  },
 ]
 
 /* Shown only after someone actually tries the toggle, never while the section

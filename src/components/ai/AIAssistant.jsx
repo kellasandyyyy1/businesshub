@@ -1,4 +1,13 @@
-import { IconArrowRight, IconArrowUp, IconBuilding, IconSparkles, IconUser, IconX } from '@tabler/icons-react'
+import {
+  IconAlertCircle,
+  IconArrowRight,
+  IconArrowUp,
+  IconBuilding,
+  IconMicrophone,
+  IconSparkles,
+  IconUser,
+  IconX,
+} from '@tabler/icons-react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
@@ -13,6 +22,12 @@ import { buildFinancialContext, callGroq, MODEL_DEFAULT } from '../../lib/ai'
 import { normalizeAction } from '../../lib/assistantAction'
 import { parseAIResponse } from '../../lib/parseAIResponse'
 import useFocusTrap from '../../hooks/useFocusTrap'
+import useSettings from '../../hooks/useSettings'
+import useSpeechRecognition from '../../hooks/useSpeechRecognition'
+
+/* A phrase committed and then this long of nothing is someone who has
+   finished the question, not someone mid-sentence. */
+const SILENCE_MS = 1500
 
 const SUGGESTIONS = {
   business: [
@@ -170,9 +185,14 @@ export default function AIAssistant({ onClose }) {
     [categories],
   )
 
+  const settings = useSettings()
+
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [voiceError, setVoiceError] = useState('')
+  // True while the recogniser is still revising the tail of the sentence.
+  const [interim, setInterim] = useState(false)
 
   const inputRef = useRef(null)
   const scrollRef = useRef(null)
@@ -287,6 +307,70 @@ export default function AIAssistant({ onClose }) {
       e.preventDefault()
       ask(input)
     }
+  }
+
+  /* ---- Dictation ---------------------------------------------------------
+     A question asked out loud should land the same way a typed one does, so
+     the transcript fills the same field and goes on the wire once the speaker
+     stops. The pause is what ends the turn — a phrase committed and then a
+     second and a half of nothing is someone who has finished talking. */
+
+  const askRef = useRef(ask)
+  askRef.current = ask
+  const silenceRef = useRef(null)
+  const transcriptRef = useRef('')
+
+  const voice = useSpeechRecognition({
+    enabled: settings.voiceInput ?? true,
+    onResult: ({ interim: pending, final, transcript }) => {
+      transcriptRef.current = transcript
+      setInput(transcript)
+      setInterim(Boolean(pending))
+      if (!final) return
+      clearTimeout(silenceRef.current)
+      silenceRef.current = setTimeout(() => {
+        voiceRef.current?.stop()
+        const text = transcriptRef.current.trim()
+        if (text) askRef.current(text)
+      }, SILENCE_MS)
+    },
+    onEnd: () => {
+      setInterim(false)
+      clearTimeout(silenceRef.current)
+      inputRef.current?.focus()
+    },
+    onError: (message) => {
+      clearTimeout(silenceRef.current)
+      setInterim(false)
+      setVoiceError(message)
+    },
+  })
+
+  // The callbacks above are created before `voice` exists, so they reach it
+  // through a ref rather than closing over an undefined binding.
+  const voiceRef = useRef(voice)
+  voiceRef.current = voice
+
+  useEffect(() => () => clearTimeout(silenceRef.current), [])
+
+  // Long enough to read, short enough not to sit under a later answer.
+  useEffect(() => {
+    if (!voiceError) return undefined
+    const timer = setTimeout(() => setVoiceError(''), 4000)
+    return () => clearTimeout(timer)
+  }, [voiceError])
+
+  const toggleVoice = () => {
+    setVoiceError('')
+    if (voice.listening) {
+      voice.stop()
+      return
+    }
+    // Starting from a focused field would raise the keyboard over the panel on
+    // a phone, which is the one place the microphone is most use.
+    inputRef.current?.blur()
+    setInput('')
+    voice.start()
   }
 
   const empty = messages.length === 0
@@ -432,12 +516,29 @@ export default function AIAssistant({ onClose }) {
           <input
             ref={inputRef}
             className="bfh-assist__input"
+            data-interim={interim ? 'true' : 'false'}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder="Ask anything about your finances…"
+            placeholder={voice.listening ? 'Listening…' : 'Ask anything about your finances…'}
             aria-label="Ask anything about your finances"
           />
+
+          {/* Absent rather than disabled where the browser has no recogniser:
+              a dead microphone invites a tap that can never work. */}
+          {voice.supported && (
+            <button
+              type="button"
+              className="bfh-assist__mic"
+              data-listening={voice.listening ? 'true' : 'false'}
+              onClick={toggleVoice}
+              aria-pressed={voice.listening}
+              aria-label={voice.listening ? 'Stop listening' : 'Ask by voice'}
+            >
+              <IconMicrophone size={13} stroke={2} aria-hidden="true" />
+              {voice.listening && <span className="bfh-assist__micring" aria-hidden="true" />}
+            </button>
+          )}
 
           <button
             type="button"
@@ -449,6 +550,13 @@ export default function AIAssistant({ onClose }) {
             <IconArrowUp size={13} stroke={2} aria-hidden="true" />
           </button>
         </div>
+
+        {voiceError && (
+          <p className="bfh-assist__voiceerror" role="status">
+            <IconAlertCircle size={12} stroke={1.5} aria-hidden="true" />
+            {voiceError}
+          </p>
+        )}
       </div>
     </div>,
     document.body,
