@@ -1,0 +1,461 @@
+/* ==========================================================================
+   Personal reports
+   ========================================================================== */
+
+.bfh-preports__controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.bfh-preports__custom {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bfh-preports__grid {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  width: 100%;
+}
+
+/* ---- Report list: a column on a desktop, a tab row on a phone ------------ */
+
+.bfh-preportnav {
+  display: flex;
+  flex-direction: column;
+  padding-right: 10px;
+  border-right: var(--hairline) solid var(--b);
+}
+
+.bfh-preportnav__item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
+  font-size: 13px;
+  text-align: left;
+  color: var(--ink2);
+  cursor: pointer;
+}
+
+.bfh-preportnav__item + .bfh-preportnav__item {
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-preportnav__item[aria-current='true'] {
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+
+.bfh-preportnav__dot {
+  flex: none;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.bfh-preportnav__item[aria-current='true'] .bfh-preportnav__dot {
+  background: var(--ink);
+}
+
+.bfh-preportnav__short {
+  display: none;
+}
+
+/* ---- The report itself --------------------------------------------------- */
+
+.bfh-preport {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+}
+
+.bfh-preport__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bfh-preport__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.bfh-preport__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.bfh-preport__strip {
+  width: 100%;
+}
+
+.bfh-preport__heading {
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.bfh-preport__note {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+}
+
+.bfh-preport__sentence {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.bfh-preport__muted {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink3);
+}
+
+/* A wide table stays wide and scrolls. Squeezing columns makes figures
+   unreadable, which is the one thing a report cannot afford. */
+.bfh-preport__tablewrap {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.bfh-preport__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bfh-preport__table th {
+  padding: 0 10px 6px 0;
+  border-bottom: var(--hairline) solid var(--b);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: var(--weight-regular);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.bfh-preport__table th.bfh-cell-amount,
+.bfh-preport__table td.bfh-cell-amount {
+  text-align: right;
+}
+
+.bfh-preport__table td {
+  padding: 8px 10px 8px 0;
+  border-bottom: var(--hairline) solid var(--b);
+  font-size: 13px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.bfh-preport__table tr[data-current='true'] td {
+  font-weight: var(--weight-medium);
+}
+
+.bfh-preport__name {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.bfh-preport__amountcell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+  font-family: var(--font-mono);
+  font-weight: var(--weight-medium);
+}
+
+.bfh-minibar {
+  display: block;
+  overflow: hidden;
+  flex: none;
+  width: 40px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--b);
+}
+
+.bfh-minibar__fill {
+  display: block;
+  height: 100%;
+  background: var(--ink);
+}
+
+/* ---- Ranked lists: merchants, recurring ---------------------------------- */
+
+.bfh-preport__rank {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bfh-preport__rankrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+}
+
+.bfh-preport__rankrow + .bfh-preport__rankrow {
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-preport__ranknum {
+  flex: none;
+  width: 28px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink3);
+}
+
+.bfh-preport__rankbody {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bfh-preport__rankname {
+  overflow: hidden;
+  font-size: 13px;
+  color: var(--ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bfh-preport__rankmeta {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+}
+
+.bfh-preport__rankright {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.bfh-preport__rankvalue {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink);
+}
+
+/* ---- 50/30/20 ------------------------------------------------------------ */
+
+.bfh-bucketlist {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bfh-bucket__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+.bfh-bucket__name {
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.bfh-bucket__figures {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink);
+}
+
+.bfh-bucket__track {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--b);
+}
+
+.bfh-bucket__fill {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--ink);
+}
+
+/* Where the guideline sits, so overshooting it is visible rather than implied. */
+.bfh-bucket__target {
+  position: absolute;
+  top: -2px;
+  width: var(--hairline);
+  height: 10px;
+  background: var(--ink3);
+}
+
+.bfh-preport__sharebar {
+  margin-top: 6px;
+}
+
+/* ---- Daily heatmap ------------------------------------------------------- */
+
+.bfh-heatmap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bfh-heatmap__head,
+.bfh-heatmap__week {
+  display: grid;
+  grid-template-columns: repeat(7, 32px);
+  gap: 4px;
+}
+
+.bfh-heatmap__head span {
+  text-align: center;
+}
+
+.bfh-heatmap__day {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 4px;
+  background: var(--bg);
+}
+
+.bfh-heatmap__day[data-empty='true'] {
+  border-color: transparent;
+  background: transparent;
+}
+
+.bfh-heatmap__fill {
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  background: var(--ink);
+}
+
+.bfh-heatmap__num {
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--ink3);
+}
+
+.bfh-preport__monthpick {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bfh-preport__monthname {
+  font-size: 20px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+
+.bfh-preport__picker {
+  max-width: 260px;
+}
+
+.bfh-preport__split {
+  margin-top: 4px;
+}
+
+/* ---- Narrow screens ------------------------------------------------------ */
+
+@media (max-width: 900px) {
+  .bfh-preports__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .bfh-preportnav {
+    flex-direction: row;
+    gap: 4px;
+    padding: 0 0 2px;
+    border-right: 0;
+    border-bottom: var(--hairline) solid var(--b);
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .bfh-preportnav__item {
+    flex: none;
+    padding: 8px 10px;
+    border-top: 0;
+    border-bottom: 1.5px solid transparent;
+    white-space: nowrap;
+  }
+
+  .bfh-preportnav__item + .bfh-preportnav__item {
+    border-top: 0;
+  }
+
+  .bfh-preportnav__item[aria-current='true'] {
+    border-bottom-color: var(--ink);
+  }
+
+  .bfh-preportnav__dot,
+  .bfh-preportnav__full {
+    display: none;
+  }
+
+  .bfh-preportnav__short {
+    display: inline;
+  }
+
+  /* Weekends drop off the heatmap: five columns fit a phone, seven do not. */
+  .bfh-heatmap__head,
+  .bfh-heatmap__week {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .bfh-heatmap__day {
+    width: auto;
+  }
+
+  .bfh-heatmap__day[data-weekend='true'],
+  .bfh-heatmap__head span[data-weekend='true'] {
+    display: none;
+  }
+}
