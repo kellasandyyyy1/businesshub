@@ -309,3 +309,238 @@
 .bfh-howto__foot .bfh-link:hover {
   color: var(--ink);
 }
+
+/* ---- Mode pills (hero) --------------------------------------------------- */
+
+.bfh-howto__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.bfh-howto__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: 20px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink2);
+}
+
+/* ---- Two modes ----------------------------------------------------------- */
+
+.bfh-howto__modes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
+
+.bfh-howto__mode {
+  padding: 20px;
+  border-radius: 12px;
+}
+
+/* The single inverted surface on the page. Its text is painted in --bg rather
+   than left to inherit, so it stays legible in either theme: both tokens flip
+   together, and the pair is always opposed. */
+.bfh-howto__mode--invert {
+  border: 0;
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.bfh-howto__modeicon {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--ink2);
+}
+
+.bfh-howto__mode--invert .bfh-howto__modeicon {
+  color: var(--bg);
+  opacity: 0.7;
+}
+
+.bfh-howto__modetitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.bfh-howto__mode--invert .bfh-howto__modetitle {
+  color: var(--bg);
+}
+
+.bfh-howto__modebody {
+  margin: 6px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ink2);
+}
+
+.bfh-howto__mode--invert .bfh-howto__modebody {
+  color: var(--bg);
+  opacity: 0.7;
+}
+
+.bfh-howto__modelist {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 11px;
+  line-height: 1.9;
+  color: var(--ink3);
+}
+
+.bfh-howto__modelist li::before {
+  content: '· ';
+}
+
+.bfh-howto__mode--invert .bfh-howto__modelist {
+  color: var(--bg);
+  opacity: 0.5;
+}
+
+/* ---- Small asides -------------------------------------------------------- */
+
+.bfh-howto__aside {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--ink2);
+}
+
+.bfh-howto__aside svg {
+  flex: none;
+  color: var(--ink3);
+}
+
+.bfh-howto__note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 12px 0 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+}
+
+.bfh-howto__note svg {
+  flex: none;
+}
+
+.bfh-howto__sublabel {
+  display: block;
+  margin: 16px 0 8px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+}
+
+.bfh-howto__sublabel--gap {
+  margin-top: 24px;
+}
+
+/* ---- Transfer flow ------------------------------------------------------- */
+
+.bfh-howto__flow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.bfh-howto__flowbox {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 14px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.bfh-howto__flowbox--invert {
+  border-color: var(--ink);
+  background: var(--ink);
+}
+
+.bfh-howto__flowlabel {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+}
+
+.bfh-howto__flowbox--invert .bfh-howto__flowlabel {
+  color: var(--bg);
+  opacity: 0.6;
+}
+
+.bfh-howto__flowvalue {
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+
+.bfh-howto__flowbox--invert .bfh-howto__flowvalue {
+  color: var(--bg);
+}
+
+.bfh-howto__flownote {
+  font-size: 10px;
+  color: var(--ink3);
+}
+
+.bfh-howto__flowbox--invert .bfh-howto__flownote {
+  color: var(--bg);
+  opacity: 0.6;
+}
+
+.bfh-howto__flowarrow {
+  flex: none;
+  color: var(--ink3);
+}
+
+/* ---- Narrow screens ------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  .bfh-howto__modes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* The flow becomes a column, so the arrows have to point down it. */
+  .bfh-howto__flow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .bfh-howto__flowarrow {
+    align-self: center;
+    transform: rotate(90deg);
+  }
+
+  .bfh-howto__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
