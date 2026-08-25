@@ -1,4 +1,4 @@
-import { IconArrowRight, IconArrowUp, IconSparkles, IconX } from '@tabler/icons-react'
+import { IconArrowRight, IconArrowUp, IconBuilding, IconSparkles, IconUser, IconX } from '@tabler/icons-react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
@@ -7,21 +7,29 @@ import { useNavigate } from 'react-router-dom'
 
 import { useAssistantActions } from '../../context/AssistantActionsContext'
 import { db } from '../../db/db'
-import { BUSINESS_PROFILE, ofProfile } from '../../db/queries'
+import { useProfile } from '../../context/ProfileContext'
+import { ofProfile } from '../../db/queries'
 import { buildFinancialContext, callGroq, MODEL_DEFAULT } from '../../lib/ai'
 import { normalizeAction } from '../../lib/assistantAction'
 import { parseAIResponse } from '../../lib/parseAIResponse'
 import useFocusTrap from '../../hooks/useFocusTrap'
 
-/** Built before the profile split, so it reads the business side. */
-const inProfile = ofProfile(BUSINESS_PROFILE)
+const SUGGESTIONS = {
+  business: [
+    'How much did I spend this month?',
+    'Which client owes me the most?',
+    'What does my cash runway look like?',
+    'Show me my top expense categories.',
+  ],
+  personal: [
+    "What's my savings rate this month?",
+    'How am I tracking on my goals?',
+    'Where am I spending the most?',
+    "What's my current net worth?",
+  ],
+}
 
-const SUGGESTIONS = [
-  'How much did I spend this month?',
-  'Which client owes me the most?',
-  'What does my cash runway look like?',
-  'Show me my top expense categories.',
-]
+const MODE_LABEL = { business: 'Business data', personal: 'Personal data' }
 
 /**
  * The model writes for a reader, not for a parser. The formatting rules are
@@ -29,10 +37,11 @@ const SUGGESTIONS = [
  * literal symbols, so the prompt now forbids markdown outright and the answer
  * still goes through a renderer as a second line of defence.
  */
-const systemPrompt = (context, categories) =>
+const systemPrompt = (context, categories, profile) =>
   `You are a financial assistant built into Dual Finance, a business and personal finance app for small Philippine businesses and households.
 
-You have access to the user's real financial data provided below. Answer every question using only that data — never guess or make up numbers.
+The user is currently viewing their ${profile === 'personal' ? 'PERSONAL' : 'BUSINESS'} finances, and the data below is that profile only.
+Answer every question using only that data — never guess, never make up numbers, and never mix business and personal figures.
 
 STRICT FORMATTING RULES:
 - Write in short, clean sentences. Plain English only.
@@ -75,9 +84,29 @@ Expense categories: ${categories.expense.join(', ')}
 Income categories: ${categories.income.join(', ')}
 Use only these exact names. If none fit, use an empty string.
 
+Every action is recorded against the profile that is loaded: ${profile}.
+
+Personal phrasings that mean an expense: gastos ko, binayad ko, nag bayad ako, nautang ko.
+Personal phrasings that mean income: sweldo, natanggap ko, kita ko, freelance payment.
+
 If no action needed, omit the action key. Never invent an action for a question
 that is only asking about existing data.
 Always reply in English. Keep the reply to one sentence for actions.
+
+CROSS-PROFILE QUESTIONS:
+Business-only subjects: invoices, clients, revenue, profit and loss, receivables,
+payroll, VAT, cash runway, retainers.
+Personal-only subjects: savings rate, net worth, savings goals, household spending,
+debt payments, emergency fund.
+
+You have ${profile} data loaded. If the question is about a subject belonging to
+the other profile, do not answer it from the data you have and do not guess.
+Say which data you have, name what they asked about, and tell them to switch:
+"I have your ${profile} data loaded. [What they asked about] is in your ${profile === 'personal' ? 'Business' : 'Personal'} data. Switch to ${profile === 'personal' ? 'Business' : 'Personal'} mode to see it."
+Return no action for those questions.
+
+If a figure is genuinely zero or empty, say so as a fact rather than as a missing
+feature — "you have not recorded any income this month yet", not "no data available".
 
 LANGUAGE: Understand English, Filipino, and Taglish equally.
 Examples:
@@ -124,8 +153,15 @@ function AiLabel() {
 export default function AIAssistant({ onClose }) {
   const navigate = useNavigate()
   const { triggerAction } = useAssistantActions()
+  // Which books are loaded. Everything below follows from it: the data, the
+  // prompt, the suggestions, and the pill that tells the user which it is.
+  const { profile, switchProfile } = useProfile()
   // The model can only pick a category that exists, so it gets the real list.
-  const categories = useLiveQuery(() => db.categories.orderBy('name').filter(inProfile).toArray(), [], [])
+  const categories = useLiveQuery(
+    () => db.categories.orderBy('name').filter(ofProfile(profile)).toArray(),
+    [profile],
+    [],
+  )
   const categoryNames = useMemo(
     () => ({
       expense: categories.filter((c) => c.type === 'expense').map((c) => c.name),
@@ -151,6 +187,22 @@ export default function AIAssistant({ onClose }) {
   // Read inside `ask` without making it depend on every keystroke.
   const messagesRef = useRef(messages)
   messagesRef.current = messages
+
+  // Switching profiles mid-conversation invalidates everything said so far:
+  // the answers above were about the other set of books, and the digest the
+  // model was given describes money this profile does not have. The thread is
+  // cleared and the switch is stated, rather than leaving stale figures on
+  // screen for the next question to be read against.
+  const firstProfile = useRef(profile)
+  useEffect(() => {
+    if (firstProfile.current === profile) return
+    firstProfile.current = profile
+    contextRef.current = null
+    setInput('')
+    setMessages([
+      { role: 'system', content: `Switched to ${profile === 'personal' ? 'Personal' : 'Business'} data.` },
+    ])
+  }, [profile])
 
   useEffect(() => {
     inputRef.current?.focus()
@@ -183,14 +235,14 @@ export default function AIAssistant({ onClose }) {
     setLoading(true)
 
     try {
-      if (!contextRef.current) contextRef.current = await buildFinancialContext(3)
+      if (!contextRef.current) contextRef.current = await buildFinancialContext(profile, 3)
 
       const controller = new AbortController()
       abortRef.current = controller
 
       const raw = await callGroq({
         model: MODEL_DEFAULT,
-        system: systemPrompt(contextRef.current, categoryNames),
+        system: systemPrompt(contextRef.current, categoryNames, profile),
         // The model only ever sees role and content; the parsed extras are ours.
         messages: history.map(({ role, content }) => ({ role, content })),
         temperature: 0.3,
@@ -256,6 +308,26 @@ export default function AIAssistant({ onClose }) {
           </span>
 
           <span className="bfh-assist__headright">
+            {/* Says which books are loaded before a question is even typed —
+                the one thing that stops a right answer being read as a wrong
+                one. */}
+            <span className="bfh-assist__mode">
+              {profile === 'personal' ? (
+                <IconUser size={11} stroke={1.5} aria-hidden="true" />
+              ) : (
+                <IconBuilding size={11} stroke={1.5} aria-hidden="true" />
+              )}
+              {MODE_LABEL[profile] ?? MODE_LABEL.business}
+            </span>
+
+            <button
+              type="button"
+              className="bfh-assist__switch"
+              onClick={() => switchProfile(profile === 'personal' ? 'business' : 'personal')}
+            >
+              Switch →
+            </button>
+
             <span className="bfh-assist__esc" aria-hidden="true">
               Esc
             </span>
@@ -273,7 +345,7 @@ export default function AIAssistant({ onClose }) {
         {empty ? (
           <div className="bfh-assist__suggest">
             <span className="bfh-assist__eyebrow">Try asking</span>
-            {SUGGESTIONS.map((question) => (
+            {(SUGGESTIONS[profile] ?? SUGGESTIONS.business).map((question) => (
               <button
                 key={question}
                 type="button"
@@ -288,7 +360,12 @@ export default function AIAssistant({ onClose }) {
         ) : (
           <div className="bfh-assist__thread" ref={scrollRef}>
             {messages.map((message, index) =>
-              message.role === 'user' ? (
+              message.role === 'system' ? (
+                // eslint-disable-next-line react/no-array-index-key
+                <p className="bfh-assist__system" key={index}>
+                  — {message.content} —
+                </p>
+              ) : message.role === 'user' ? (
                 // eslint-disable-next-line react/no-array-index-key
                 <p className="bfh-assist__ask" key={index}>
                   {message.content}

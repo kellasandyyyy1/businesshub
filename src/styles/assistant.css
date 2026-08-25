@@ -453,3 +453,55 @@
     display: none;
   }
 }
+
+/* ---- Which books are loaded --------------------------------------------- */
+
+.bfh-assist__mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: 20px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+  white-space: nowrap;
+}
+
+.bfh-assist__switch {
+  border: 0;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+  cursor: pointer;
+}
+
+.bfh-assist__switch:hover {
+  color: var(--ink);
+}
+
+/* The pill is the part that must survive a narrow panel; the switch link has
+   the sidebar switcher behind it and can go. */
+@media (max-width: 520px) {
+  .bfh-assist__switch {
+    display: none;
+  }
+}
+
+/* A system line belongs to neither side of the conversation, so it is not a
+   bubble — it sits centred between the turns it separates. */
+.bfh-assist__system {
+  margin: 8px auto;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+  text-align: center;
+}

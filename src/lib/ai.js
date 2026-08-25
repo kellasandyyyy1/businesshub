@@ -214,10 +214,178 @@ export function splitAnswerAndMeta(text) {
 const money = (n) => Math.round(Number(n) || 0)
 
 /**
- * A compact, structured text digest of the books. Amounts are plain numbers —
- * currency symbols only confuse the arithmetic the model has to do.
+ * Trims the row detail to fit, never the shape above it.
+ *
+ * The header carries the totals and the structure; the individual rows are the
+ * part a model can lose without losing the answer. So the cut lands there, and
+ * says how much it dropped rather than trailing off.
  */
-export async function buildFinancialContext(months = 3) {
+function capContext(header, rows) {
+  const detail = []
+  let used = header.length
+
+  for (const line of rows) {
+    if (used + line.length > CONTEXT_CHAR_LIMIT) {
+      detail.push(`… ${rows.length - detail.length} older transactions omitted for length`)
+      break
+    }
+    used += line.length + 1
+    detail.push(line)
+  }
+
+  return `${header}\n${detail.join('\n')}`
+}
+
+/**
+ * A compact, structured text digest of one profile's books.
+ *
+ * Amounts are plain numbers — currency symbols only confuse the arithmetic the
+ * model has to do. The two profiles get different digests because they are
+ * different questions: a business is asked about clients, invoices and runway,
+ * a household about savings rate, goals and net worth. Nothing from the other
+ * side is included, which is what stops the model answering with the wrong
+ * money.
+ */
+export async function buildFinancialContext(profile = BUSINESS_PROFILE, months = 3) {
+  return profile === 'personal'
+    ? personalContext(months)
+    : businessContext(months)
+}
+
+/** Everything the household side can be asked about. */
+async function personalContext(months) {
+  const today = new Date().toISOString().slice(0, 10)
+  const from = shiftDays(today, -Math.round(months * 30.4))
+  const ofPersonal = ofProfile('personal')
+
+  const [transactions, categories, goals, netWorth, settings] = await Promise.all([
+    db.transactions.where('date').between(from, today, true, true).filter(ofPersonal).toArray(),
+    db.categories.filter(ofPersonal).toArray(),
+    db.goals.filter(ofPersonal).toArray(),
+    db.netWorth.filter(ofPersonal).toArray(),
+    db.settings.toArray(),
+  ])
+
+  const settingsMap = Object.fromEntries(settings.map((row) => [row.key, row.value]))
+  const totalOf = (type) =>
+    transactions.filter((t) => t.type === type).reduce((total, t) => total + t.amount, 0)
+
+  const income = totalOf('income')
+  const expenses = totalOf('expense')
+  const saved = Math.max(income - expenses, 0)
+
+  const assets = netWorth
+    .filter((n) => n.type !== 'liability')
+    .reduce((total, n) => total + (Number(n.amount) || 0), 0)
+  const liabilities = netWorth
+    .filter((n) => n.type === 'liability')
+    .reduce((total, n) => total + (Number(n.amount) || 0), 0)
+
+  const lines = []
+  lines.push('PROFILE: Personal')
+  lines.push(`CURRENCY: ${settingsMap.currency ?? 'PHP'} (all amounts are plain numbers)`)
+  lines.push(`TODAY: ${today}`)
+  lines.push(`PERIOD: last ${months} months (${from} to ${today})`)
+  lines.push('')
+
+  lines.push('TOTALS FOR THE PERIOD:')
+  lines.push(`income, ${money(income)}`)
+  lines.push(`expenses, ${money(expenses)}`)
+  lines.push(`saved, ${money(saved)}`)
+  // Undefined rather than zero when nothing came in: a rate needs something to
+  // be a rate of, and 0% would read as "saved none of your income".
+  lines.push(`savings rate, ${income > 0 ? `${((saved / income) * 100).toFixed(1)}%` : 'no income recorded'}`)
+  lines.push('')
+
+  const byMonth = new Map()
+  for (const t of transactions) {
+    if (t.type === 'transfer') continue
+    const month = t.date.slice(0, 7)
+    const entry = byMonth.get(month) ?? { income: 0, expenses: 0 }
+    if (t.type === 'income') entry.income += t.amount
+    else entry.expenses += t.amount
+    byMonth.set(month, entry)
+  }
+  lines.push('MONTHLY TOTALS (month, income, expenses, net):')
+  for (const [month, v] of [...byMonth.entries()].sort()) {
+    lines.push(`${month}, ${money(v.income)}, ${money(v.expenses)}, ${money(v.income - v.expenses)}`)
+  }
+  lines.push('')
+
+  const byCategory = new Map()
+  for (const t of transactions) {
+    if (t.type !== 'expense') continue
+    byCategory.set(t.category, (byCategory.get(t.category) ?? 0) + t.amount)
+  }
+  lines.push('EXPENSE TOTALS BY CATEGORY (category, amount):')
+  for (const [name, amount] of [...byCategory.entries()].sort((a, b) => b[1] - a[1])) {
+    lines.push(`${name}, ${money(amount)}`)
+  }
+  lines.push('')
+
+  const bySource = new Map()
+  for (const t of transactions) {
+    if (t.type !== 'income') continue
+    bySource.set(t.category, (bySource.get(t.category) ?? 0) + t.amount)
+  }
+  lines.push('INCOME BY SOURCE (source, amount):')
+  for (const [name, amount] of [...bySource.entries()].sort((a, b) => b[1] - a[1])) {
+    lines.push(`${name}, ${money(amount)}`)
+  }
+  lines.push('')
+
+  lines.push('NET WORTH:')
+  if (netWorth.length === 0) {
+    lines.push('none recorded')
+  } else {
+    lines.push(`assets, ${money(assets)}`)
+    lines.push(`liabilities, ${money(liabilities)}`)
+    lines.push(`net worth, ${money(assets - liabilities)}`)
+    for (const item of netWorth) {
+      lines.push(`${item.type}, ${item.name}, ${item.category ?? 'Other'}, ${money(item.amount)}`)
+    }
+  }
+  lines.push('')
+
+  lines.push('GOALS (name, saved, target, percent, deadline):')
+  if (goals.length === 0) {
+    lines.push('none set')
+  } else {
+    for (const goal of goals) {
+      const target = Number(goal.target) || 0
+      const current = Number(goal.current) || 0
+      const pct = target > 0 ? Math.round((current / target) * 100) : 0
+      lines.push(`${goal.name}, ${money(current)}, ${money(target)}, ${pct}%, ${goal.deadline ?? 'no deadline'}`)
+    }
+  }
+  lines.push('')
+
+  const recurring = detectRecurring(
+    await db.transactions.filter(ofPersonal).toArray(),
+    today,
+  )
+  if (recurring.length) {
+    lines.push('DETECTED RECURRING EXPENSES (description, amount, every N days):')
+    for (const item of recurring) {
+      lines.push(`${item.description}, ${money(item.amount)}, ${item.cadence}`)
+    }
+    lines.push('')
+  }
+
+  lines.push('AVAILABLE CATEGORIES: ' + categories.map((c) => c.name).join('; '))
+  lines.push('')
+
+  lines.push('TRANSACTIONS (date, description, amount, category, type) — newest first:')
+  const sorted = [...transactions].sort((a, b) => b.date.localeCompare(a.date))
+  const header = lines.join('\n')
+  const rows = sorted.map(
+    (t) => `${t.date}, ${t.description}, ${money(t.amount)}, ${t.category}, ${t.type}`,
+  )
+  return capContext(header, rows)
+}
+
+/** Everything the business side can be asked about. */
+async function businessContext(months) {
   const today = new Date().toISOString().slice(0, 10)
   const from = shiftDays(today, -Math.round(months * 30.4))
 
@@ -241,7 +409,8 @@ export async function buildFinancialContext(months = 3) {
   const clientNames = Object.fromEntries(clients.map((c) => [c.id, c.company]))
   const lines = []
 
-  lines.push(`BUSINESS: ${settingsMap.businessName ?? 'Unnamed'}`)
+  lines.push('PROFILE: Business')
+  lines.push(`BUSINESS NAME: ${settingsMap.businessName ?? 'Unnamed'}`)
   lines.push(`CURRENCY: ${settingsMap.currency ?? 'PHP'} (all amounts are plain numbers)`)
   lines.push(`TODAY: ${today}`)
   lines.push(`CURRENT CASH: ${money(currentCash)}`)
@@ -327,21 +496,10 @@ export async function buildFinancialContext(months = 3) {
   // ---- Individual transactions last, so truncation drops detail, not shape.
   lines.push('TRANSACTIONS (date, description, amount, category, type) — newest first:')
   const sorted = [...transactions].sort((a, b) => b.date.localeCompare(a.date))
-  const header = lines.join('\n')
-  const detail = []
-  let used = header.length
-
-  for (const t of sorted) {
-    const line = `${t.date}, ${t.description}, ${money(t.amount)}, ${t.category}, ${t.type}`
-    if (used + line.length > CONTEXT_CHAR_LIMIT) {
-      detail.push(`… ${sorted.length - detail.length} older transactions omitted for length`)
-      break
-    }
-    used += line.length + 1
-    detail.push(line)
-  }
-
-  return `${header}\n${detail.join('\n')}`
+  return capContext(
+    lines.join('\n'),
+    sorted.map((t) => `${t.date}, ${t.description}, ${money(t.amount)}, ${t.category}, ${t.type}`),
+  )
 }
 
 /**

@@ -71,7 +71,7 @@ export function useAiInsights() {
     setState((s) => ({ ...s, status: 'loading' }))
 
     try {
-      const context = await buildFinancialContext(6)
+      const context = await buildFinancialContext('business', 6)
       const raw = await callGroq({
         model: MODEL_DEFAULT,
         system: SYSTEM,
