@@ -1,4 +1,10 @@
-import { IconDotsVertical, IconInfoCircle, IconPlus, IconSettings } from '@tabler/icons-react'
+import {
+  IconDotsVertical,
+  IconInfoCircle,
+  IconLayoutGrid,
+  IconPlus,
+  IconSettings,
+} from '@tabler/icons-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 
 import { navGroupsFor } from '../config/nav'
@@ -84,6 +90,14 @@ export default function Sidebar({ collapsed, open, onNavigate, onAddTransaction 
       </div>
 
       <nav className="bfh-nav">
+        {/* Above the groups and outside the keyed block: it belongs to neither
+            profile, so it neither changes nor fades when one is swapped. */}
+        <NavLink to="/overview" className="bfh-nav__item bfh-nav__overview" title="Overview" onClick={onNavigate}>
+          <span className="bfh-nav__dot" aria-hidden="true" />
+          <IconLayoutGrid className="bfh-nav__icon" size={16} stroke={1.5} aria-hidden="true" />
+          <span className="bfh-nav__text">Overview</span>
+        </NavLink>
+
         {/* Keyed on the profile so React replaces the whole block on a switch
             rather than reconciling row by row, which is what lets the fade
             run and what stops a stale badge riding across. */}

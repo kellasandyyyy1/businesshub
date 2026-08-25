@@ -529,3 +529,68 @@
   color: var(--ink3);
   text-align: right;
 }
+
+/* ---- Combined overview -------------------------------------------------- */
+
+.bfh-overview__sub {
+  margin: 2px 0 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--ink2);
+}
+
+.bfh-snapshot {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+}
+
+.bfh-snapshot__title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.bfh-snapshot__list {
+  margin: 0;
+}
+
+.bfh-snapshot__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+}
+
+.bfh-snapshot__row + .bfh-snapshot__row {
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-snapshot__value {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+
+.bfh-snapshot__action {
+  align-self: flex-start;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.bfh-overview__transfers {
+  margin: 0;
+}
+
+/* The overview sits above the group labels, so it carries the gap the first
+   label would otherwise have provided. */
+.bfh-nav__overview {
+  margin-bottom: 10px;
+}

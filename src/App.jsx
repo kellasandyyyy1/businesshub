@@ -4,6 +4,7 @@ import { BrowserRouter, Navigate, Outlet, Routes, Route } from 'react-router-dom
 
 import AppShell from './components/AppShell'
 import Onboarding from './components/Onboarding'
+import Overview from './pages/Overview'
 import { PROFILE_HOME } from './config/nav'
 import { useProfile } from './context/ProfileContext'
 import Budgets from './pages/Budgets'
@@ -148,6 +149,7 @@ export default function App() {
           </Route>
 
           {/* Neither profile owns these; both need them. */}
+          <Route path="/overview" element={<Overview />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/settings" element={<Settings />} />
           {/* An unknown path would otherwise render nothing at all — not even
