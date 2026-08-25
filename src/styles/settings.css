@@ -840,3 +840,13 @@
   background: transparent;
   cursor: pointer;
 }
+
+.bfh-modesetting {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-modesetting .bfh-modepick {
+  margin-top: 12px;
+}

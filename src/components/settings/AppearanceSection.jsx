@@ -1,3 +1,4 @@
+import ModesSection from './ModesSection'
 import { THEMES, setTheme } from '../../hooks/useTheme'
 
 const LABELS = {
@@ -35,6 +36,8 @@ export default function AppearanceSection({ theme }) {
           </button>
         ))}
       </div>
+
+      <ModesSection />
     </div>
   )
 }

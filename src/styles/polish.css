@@ -418,3 +418,100 @@
     text-align: left;
   }
 }
+
+/* ---- Onboarding: what the app is for ------------------------------------ */
+
+.bfh-modepick {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.bfh-modepick__card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  /* The selected card gains a heavier border rather than a different box, so
+     nothing shifts by a pixel when the choice moves. */
+  border: var(--hairline) solid var(--b);
+  border-radius: 12px;
+  background: var(--bg);
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    border-color var(--duration-micro) var(--ease-out-soft),
+    background var(--duration-micro) var(--ease-out-soft);
+}
+
+.bfh-modepick__card:hover {
+  border-color: var(--b2);
+  background: var(--card);
+}
+
+.bfh-modepick__card[data-selected='true'] {
+  border: 1.5px solid var(--ink);
+  padding: calc(16px - 1px);
+  background: var(--card);
+}
+
+.bfh-modepick__circle {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  border: 1.5px solid var(--b2);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--bg);
+}
+
+.bfh-modepick__card[data-selected='true'] .bfh-modepick__circle {
+  border-color: var(--ink);
+  background: var(--ink);
+}
+
+.bfh-modepick__icon {
+  flex: none;
+  margin-top: 2px;
+  color: var(--ink2);
+}
+
+.bfh-modepick__body {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.bfh-modepick__title {
+  font-size: 14px;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.bfh-modepick__desc {
+  margin-top: 3px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink2);
+}
+
+.bfh-modepick__tag {
+  align-self: flex-start;
+  margin-top: 5px;
+  padding: 1px 6px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: 20px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+}

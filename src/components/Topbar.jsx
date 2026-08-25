@@ -23,7 +23,7 @@ export default function Topbar({ onOpenMenu, onAsk }) {
   const settings = useSettings()
   const alerts = useAlerts()
   const { periodId, setPeriodId } = usePeriod()
-  const { isPersonal } = useProfile()
+  const { isPersonal, showSwitcher } = useProfile()
   const { greeting, mode } = useGreeting()
   const isMobile = useIsMobile()
   // The sidebar carries the switcher on a desktop; on a phone that sidebar is
@@ -53,7 +53,7 @@ export default function Topbar({ onOpenMenu, onAsk }) {
         {/* One row, two behaviours: a heading on a desktop, and the mode
             control on a phone. A button either way would put a control in the
             page's first heading slot where there is nothing to control. */}
-        {isMobile ? (
+        {isMobile && showSwitcher ? (
           <button
             type="button"
             className="bfh-greetingtap"

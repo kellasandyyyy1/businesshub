@@ -50,7 +50,7 @@ export default function Sidebar({ collapsed, open, onNavigate, onAddTransaction 
   const navigate = useNavigate()
   const settings = useSettings()
   const alerts = useAlerts()
-  const { profile } = useProfile()
+  const { profile, showSwitcher } = useProfile()
   const groups = navGroupsFor(profile)
 
   return (
@@ -84,13 +84,17 @@ export default function Sidebar({ collapsed, open, onNavigate, onAddTransaction 
           <span className="bfh-logo__short">Dual</span>
         </div>
 
-        <ProfileSwitcher onNavigate={onNavigate} />
+        {/* A one-sided setup has nothing to switch to, so the control is not
+            offered — the app simply is that one side. */}
+        {showSwitcher && <ProfileSwitcher onNavigate={onNavigate} />}
 
         {/* Names the choice just made above it, so the switcher reads as a
             control and this as its current state. */}
+        {showSwitcher && (
         <span className="bfh-micro bfh-viewing">
           Viewing {profile === 'personal' ? 'Personal' : 'Business'}
         </span>
+        )}
 
         <button
           type="button"
@@ -105,12 +109,16 @@ export default function Sidebar({ collapsed, open, onNavigate, onAddTransaction 
 
       <nav className="bfh-nav">
         {/* Above the groups and outside the keyed block: it belongs to neither
-            profile, so it neither changes nor fades when one is swapped. */}
+            profile, so it neither changes nor fades when one is swapped. It is
+            also the combined view, so it only means anything when there are two
+            sides to combine. */}
+        {showSwitcher && (
         <NavLink to="/overview" className="bfh-nav__item bfh-nav__overview" title="Overview" onClick={onNavigate}>
           <span className="bfh-nav__dot" aria-hidden="true" />
           <IconLayoutGrid className="bfh-nav__icon" size={16} stroke={1.5} aria-hidden="true" />
           <span className="bfh-nav__text">Overview</span>
         </NavLink>
+        )}
 
         {/* Keyed on the profile so React replaces the whole block on a switch
             rather than reconciling row by row, which is what lets the fade
