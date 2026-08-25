@@ -1,10 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 
+import { IconArrowsExchange } from '@tabler/icons-react'
+
 import CategorySuggestion, { recordCategorization } from '../ai/CategorySuggestion'
 import useFocusTrap from '../../hooks/useFocusTrap'
+import useSettings from '../../hooks/useSettings'
 import { useProfile } from '../../context/ProfileContext'
 import { TRANSACTION_STATUSES, TRANSACTION_TYPES, db } from '../../db/db'
-import { addTransaction } from '../../db/queries'
+import { OWNER_DRAW_CATEGORY } from '../../db/defaults'
+import { addTransaction, addTransactionWithDraw, updateTransactionWithDraw } from '../../db/queries'
+import { formatCurrency } from '../../lib/format'
 
 const TODAY = () => new Date().toISOString().slice(0, 10)
 
@@ -47,7 +52,11 @@ export default function TransactionModal({
   // saved row carries no client id. The profile also decides which set of
   // books the transaction lands in.
   const { profile, isPersonal } = useProfile()
+  const { symbol } = useSettings()
   const [form, setForm] = useState(() => toForm(transaction))
+  // Off unless asked for. Recording money twice by accident is a worse mistake
+  // than having to tick a box.
+  const [alsoPersonal, setAlsoPersonal] = useState(false)
   const [errors, setErrors] = useState({})
   const [saving, setSaving] = useState(false)
   const firstField = useRef(null)
@@ -75,6 +84,11 @@ export default function TransactionModal({
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }))
 
   // A transfer belongs to neither ledger, so it may pick from any category.
+  // A draw is a business expense booked to the owner-draw category. Personal
+  // mode has no business to draw from, and an edit is left alone.
+  const showDrawToggle =
+    !isPersonal && !isEdit && form.type === 'expense' && form.category === OWNER_DRAW_CATEGORY
+
   const options =
     form.type === 'transfer' ? categories : categories.filter((c) => c.type === form.type)
 
@@ -107,7 +121,10 @@ export default function TransactionModal({
     }
 
     if (isEdit) {
-      await db.transactions.update(transaction.id, record)
+      // Keeps the personal half in step when this row is part of a pair.
+      await updateTransactionWithDraw(transaction.id, record)
+    } else if (showDrawToggle && alsoPersonal) {
+      await addTransactionWithDraw({ ...record, receiptUrl: null }, { alsoPersonal: true })
     } else {
       await addTransaction(profile, {
         ...record,
@@ -254,6 +271,32 @@ export default function TransactionModal({
             <span className="bfh-micro">Notes</span>
             <textarea rows={3} value={form.notes} onChange={set('notes')} />
           </label>
+
+          {/* Paying yourself is the one business expense that is also personal
+              income. Offered only on that category, and only on a new row —
+              an existing pair is already linked, and one that is not should
+              not gain a second record retrospectively. */}
+          {showDrawToggle && (
+            <div className="bfh-formfield bfh-formfield--wide bfh-drawlink">
+              <button
+                type="button"
+                className="bfh-drawlink__toggle"
+                aria-pressed={alsoPersonal}
+                onClick={() => setAlsoPersonal((on) => !on)}
+              >
+                <span className="bfh-drawlink__dot" aria-hidden="true" />
+                Also record as personal income
+              </button>
+
+              {alsoPersonal && (
+                <p className="bfh-drawlink__note">
+                  <IconArrowsExchange size={12} stroke={1.5} aria-hidden="true" />
+                  This will also add {formatCurrency(Number(form.amount) || 0, symbol)} as income in
+                  Personal Finance.
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
         <footer className="bfh-modal__foot">

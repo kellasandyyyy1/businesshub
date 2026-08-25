@@ -1,5 +1,5 @@
 import Dexie from 'dexie'
-import { PERSONAL_CATEGORIES, seedDefaults } from './defaults'
+import { OWNER_DRAW_CATEGORY, PERSONAL_CATEGORIES, seedDefaults } from './defaults'
 
 /**
  * Business Finance Hub — local-only database.
@@ -131,12 +131,53 @@ db.version(5)
     }
 
     // The personal chart of accounts, so the profile is usable the moment it is
-    // switched to. A database created after this version gets the same list
-    // from seedDefaults instead — an upgrade never runs on a fresh one.
+    // switched to. Guarded because this also runs while a database is being
+    // created, where seedDefaults is about to lay down the same list.
+    const categories = tx.table('categories')
+    const alreadyPersonal = await categories.filter((c) => c.profile === 'personal').count()
+    if (alreadyPersonal > 0) return
+
     const createdAt = new Date().toISOString()
-    await tx
-      .table('categories')
-      .bulkAdd(PERSONAL_CATEGORIES.map((c) => ({ ...c, profile: 'personal', createdAt })))
+    await categories.bulkAdd(
+      PERSONAL_CATEGORIES.map((c) => ({ ...c, profile: 'personal', createdAt })),
+    )
+  })
+
+/**
+ * v6 adds the category an owner draw is booked under.
+ *
+ * Paying yourself is not the same as paying a contractor, and it is the one
+ * business expense that is also personal income — the transfer flow keys off
+ * this category to offer recording both sides at once. A database created
+ * after this version gets it from seedDefaults instead.
+ */
+db.version(6)
+  .stores({})
+  .upgrade(async (tx) => {
+    const categories = tx.table('categories')
+
+    // Repair first. An earlier build let the version upgraders and the
+    // first-run defaults both write the category lists, which left some
+    // databases holding two of everything. Keep the oldest of each.
+    const all = await categories.toArray()
+    const seen = new Set()
+    const duplicates = []
+    for (const row of all.sort((a, b) => a.id - b.id)) {
+      const key = `${row.profile}|${row.name}`
+      if (seen.has(key)) duplicates.push(row.id)
+      else seen.add(key)
+    }
+    if (duplicates.length) await categories.bulkDelete(duplicates)
+
+    if (seen.has(`business|${OWNER_DRAW_CATEGORY}`)) return
+
+    await categories.add({
+      name: OWNER_DRAW_CATEGORY,
+      type: 'expense',
+      icon: 'arrows-exchange',
+      profile: 'business',
+      createdAt: new Date().toISOString(),
+    })
   })
 
 /** Enum-ish constants so pages and forms never hand-write these strings. */

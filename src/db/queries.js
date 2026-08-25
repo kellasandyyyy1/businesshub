@@ -1,4 +1,5 @@
 import { db } from './db'
+import { PERSONAL_DRAW_CATEGORY } from './defaults'
 
 /**
  * Profile-scoped reads and writes.
@@ -184,4 +185,96 @@ export function addNetWorthEntry(profile, data) {
     profile,
     updatedAt: data.updatedAt ?? new Date().toISOString(),
   })
+}
+
+/* -------------------------------------------------------------------------
+   Business → personal transfers
+
+   An owner paying themselves is one event on two sets of books: an expense to
+   the business, income to the household. Recording it twice by hand is where
+   the two drift, so the pair is written together and each row points at the
+   other.
+   ------------------------------------------------------------------------- */
+
+/**
+ * Writes the business expense and, when asked, the matching personal income.
+ *
+ * Both rows go in one Dexie transaction: a half-recorded transfer is worse
+ * than an unrecorded one, because nothing on either side says it is missing.
+ * The ids only exist after the rows do, so the link is closed in a second
+ * pass inside the same transaction.
+ *
+ * Returns the business row's id either way.
+ */
+export async function addTransactionWithDraw(record, { alsoPersonal = false } = {}) {
+  if (!alsoPersonal) return addTransaction(BUSINESS_PROFILE, record)
+
+  return db.transaction('rw', db.transactions, async () => {
+    const businessId = await db.transactions.add(
+      stamped(BUSINESS_PROFILE, { ...record, isOwnerDraw: true }),
+    )
+
+    const personalId = await db.transactions.add(
+      stamped('personal', {
+        date: record.date,
+        description: 'Owner draw from business',
+        amount: record.amount,
+        type: 'income',
+        category: PERSONAL_DRAW_CATEGORY,
+        status: record.status ?? 'cleared',
+        paymentMethod: record.paymentMethod ?? '',
+        notes: 'Auto-recorded from business transfer',
+        clientId: null,
+        receiptUrl: null,
+        linkedTransactionId: businessId,
+      }),
+    )
+
+    await db.transactions.update(businessId, { linkedTransactionId: personalId })
+    return businessId
+  })
+}
+
+/**
+ * Keeps a linked pair in step when the business side is edited.
+ *
+ * Only the facts the two share travel across — what the money was and when it
+ * moved. The personal row's own wording is left alone: it says where the money
+ * came from, which does not change because the business description did.
+ */
+export async function updateTransactionWithDraw(id, record) {
+  await db.transaction('rw', db.transactions, async () => {
+    const existing = await db.transactions.get(id)
+    await db.transactions.update(id, record)
+
+    const linkedId = existing?.linkedTransactionId
+    if (!linkedId) return
+
+    const linked = await db.transactions.get(linkedId)
+    if (!linked) return
+
+    await db.transactions.update(linkedId, { amount: record.amount, date: record.date })
+  })
+}
+
+/**
+ * The most recent transfers, each with the personal row it created.
+ *
+ * A pair whose other half has been deleted is dropped rather than listed with
+ * a blank beside it — the list is there to show what matched.
+ */
+export async function recentTransfers(limit = 5) {
+  const business = await db.transactions
+    .filter((row) => profileOf(row) === BUSINESS_PROFILE && Boolean(row.linkedTransactionId))
+    .toArray()
+
+  business.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
+
+  const pairs = []
+  for (const row of business) {
+    if (pairs.length >= limit) break
+    const personal = await db.transactions.get(row.linkedTransactionId)
+    if (personal) pairs.push({ business: row, personal })
+  }
+  return pairs
 }

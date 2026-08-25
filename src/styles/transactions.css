@@ -583,3 +583,62 @@ td.bfh-cell-amount {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ---- Owner draw: record on both sides ----------------------------------- */
+
+.bfh-drawlink {
+  gap: 6px;
+  padding-top: 4px;
+  border-top: var(--hairline) solid var(--b);
+}
+
+/* A pill that reads as off until it is on, rather than a switch that has to be
+   decoded. The dot fills; nothing else moves. */
+.bfh-drawlink__toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  padding: 6px 12px 6px 9px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 999px;
+  background: transparent;
+  font-size: 12px;
+  color: var(--ink2);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-micro) var(--ease-out-soft),
+    color var(--duration-micro) var(--ease-out-soft);
+}
+
+.bfh-drawlink__toggle:hover {
+  border-color: var(--b2);
+}
+
+.bfh-drawlink__toggle[aria-pressed='true'] {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.bfh-drawlink__dot {
+  width: 9px;
+  height: 9px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: 50%;
+  background: transparent;
+}
+
+.bfh-drawlink__toggle[aria-pressed='true'] .bfh-drawlink__dot {
+  border-color: var(--ink);
+  background: var(--ink);
+}
+
+.bfh-drawlink__note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--ink2);
+}

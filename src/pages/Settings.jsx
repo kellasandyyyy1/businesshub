@@ -8,6 +8,7 @@ import CategoriesSection from '../components/settings/CategoriesSection'
 import DataSection from '../components/settings/DataSection'
 import NotificationsSection from '../components/settings/NotificationsSection'
 import PaymentMethodsSection from '../components/settings/PaymentMethodsSection'
+import TransfersSection from '../components/settings/TransfersSection'
 import useSettingsData from '../hooks/useSettingsData'
 import { useIsMobile } from '../hooks/useMediaQuery'
 import { useThemeSync } from '../hooks/useTheme'
@@ -16,6 +17,7 @@ const SECTIONS = [
   { id: 'business', label: 'Business' },
   { id: 'categories', label: 'Categories' },
   { id: 'methods', label: 'Payment Methods' },
+  { id: 'transfers', label: 'Transfers' },
   { id: 'notifications', label: 'Notifications' },
   { id: 'appearance', label: 'Appearance' },
   { id: 'data', label: 'Data' },
@@ -53,6 +55,7 @@ export default function Settings() {
       {section === 'methods' && (
         <PaymentMethodsSection paymentMethods={data.paymentMethods} methodUse={data.methodUse} />
       )}
+      {section === 'transfers' && <TransfersSection />}
       {section === 'notifications' && <NotificationsSection settings={data.settings} />}
       {section === 'appearance' && <AppearanceSection theme={theme} />}
       {section === 'data' && <DataSection settings={data.settings} />}

@@ -12,6 +12,14 @@
  */
 
 /**
+ * The business category an owner draw is booked under, and the personal one it
+ * arrives as. Named here because the migration, the transaction form and the
+ * transfer list all have to agree on the exact strings.
+ */
+export const OWNER_DRAW_CATEGORY = 'Owner Draw / Salary'
+export const PERSONAL_DRAW_CATEGORY = 'Business Draw'
+
+/**
  * The starting chart of accounts for the business profile. Icon names are bare
  * Tabler names resolved by `config/categoryIcons.js` — no `ti-` prefix.
  */
@@ -29,6 +37,9 @@ export const BUSINESS_CATEGORIES = [
   { name: 'Travel & Transport', type: 'expense', icon: 'car' },
   { name: 'Meals & Entertainment', type: 'expense', icon: 'tools-kitchen-2' },
   { name: 'Salaries & Contractors', type: 'expense', icon: 'users' },
+  // Money the owner takes out for themselves, as opposed to paying a
+  // contractor. It is the one expense that is also personal income.
+  { name: 'Owner Draw / Salary', type: 'expense', icon: 'arrows-exchange' },
   { name: 'Marketing', type: 'expense', icon: 'speakerphone' },
   { name: 'Taxes & Government', type: 'expense', icon: 'receipt-tax' },
   { name: 'Equipment', type: 'expense', icon: 'device-desktop' },
@@ -84,9 +95,16 @@ export const DEFAULT_SETTINGS = [
 export async function seedDefaults(db) {
   await db.transaction('rw', db.categories, db.settings, async () => {
     const createdAt = new Date().toISOString()
-    // Both profiles are laid down at once. The upgrade path adds the personal
-    // list too, but an upgrade never runs on a database created from scratch.
-    await db.categories.bulkAdd(ALL_CATEGORIES.map((c) => ({ ...c, createdAt })))
+
+    // Only what is missing. Dexie runs the version upgraders while creating a
+    // database, so by the time this is reached the categories they add are
+    // already there — writing the list wholesale would file every one of them
+    // a second time.
+    const existing = await db.categories.toArray()
+    const seen = new Set(existing.map((c) => `${c.profile}|${c.name}`))
+    const missing = ALL_CATEGORIES.filter((c) => !seen.has(`${c.profile}|${c.name}`))
+
+    if (missing.length) await db.categories.bulkAdd(missing.map((c) => ({ ...c, createdAt })))
     await db.settings.bulkAdd(DEFAULT_SETTINGS)
   })
 }

@@ -646,3 +646,67 @@
 .bfh-readonlyfield input {
   opacity: 0.75;
 }
+
+/* ---- Business → personal transfers -------------------------------------- */
+
+.bfh-transferlist {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bfh-transferrow + .bfh-transferrow {
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-transferrow__link {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  text-decoration: none;
+}
+
+.bfh-transferrow__date {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink3);
+}
+
+.bfh-transferrow__desc {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  color: var(--ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bfh-transferrow__link:hover .bfh-transferrow__desc {
+  text-decoration: underline;
+}
+
+.bfh-transferrow__amount {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+
+/* The second line is the half that lives on the other set of books. */
+.bfh-transferrow__pair {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+}
