@@ -6,7 +6,18 @@
  */
 
 export const BACKUP_VERSION = 1
-export const TABLES = ['transactions', 'clients', 'invoices', 'budgets', 'categories', 'settings']
+/* Goals and net worth arrived with the personal side and were missing here, so
+   a whole-database backup left them out and "Clear all data" left them behind. */
+export const TABLES = [
+  'transactions',
+  'clients',
+  'invoices',
+  'budgets',
+  'categories',
+  'goals',
+  'netWorth',
+  'settings',
+]
 
 export async function exportAll(db) {
   const data = {}
