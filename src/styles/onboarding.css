@@ -1,0 +1,655 @@
+/* ==========================================================================
+   Onboarding — a single narrow column, three zones.
+
+   Nothing behind this screen is worth showing yet, so it takes the whole
+   viewport and puts one question on it at a time. The column is capped at
+   400px on any screen: the questions are short, and a wide field for a short
+   answer reads as a form to be endured rather than a question to be answered.
+   ========================================================================== */
+
+.bfh-onb {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  overflow-y: auto;
+  background: var(--bg);
+}
+
+.bfh-onb__card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 400px;
+  min-height: 100vh;
+  margin: 0 auto;
+}
+
+/* No frame on a desktop either. The column is the only thing on the screen, so
+   drawing a box around it only says a second time what the empty space around
+   it already says. */
+@media (min-width: 481px) {
+  .bfh-onb__card {
+    min-height: auto;
+    margin: 6vh auto;
+  }
+}
+
+/* ---- Zone 1: header ------------------------------------------------------ */
+
+.bfh-onb__head {
+  flex: none;
+  padding: 36px 24px 0;
+}
+
+.bfh-onb__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+
+.bfh-onb__brand svg,
+.bfh-onb__brand img {
+  display: block;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+}
+
+.bfh-onb__brandtext {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bfh-onb__brandname {
+  font-size: 14px;
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.bfh-onb__brandtag {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink3);
+}
+
+/* ---- Progress ------------------------------------------------------------ */
+
+.bfh-onb__dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.bfh-onb__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--b2);
+}
+
+.bfh-onb__dot[data-state='done'] {
+  background: var(--ink);
+  opacity: 0.4;
+}
+
+/* The step you are on is the only one with a shape: it stretches into a bar
+   so the position reads without counting. */
+.bfh-onb__dot[data-state='current'] {
+  width: 20px;
+  border-radius: 3px;
+  background: var(--ink);
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bfh-onb__dot {
+    transition:
+      width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+      border-radius 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+.bfh-onb__step {
+  display: block;
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink3);
+}
+
+.bfh-onb__title {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.bfh-onb__sub {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink2);
+}
+
+/* ---- Zone 2: body -------------------------------------------------------- */
+
+.bfh-onb__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 24px 24px 0;
+}
+
+.bfh-onb__panel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes bfh-onb-in {
+    from {
+      opacity: 0;
+      transform: translateX(16px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes bfh-onb-in-back {
+    from {
+      opacity: 0;
+      transform: translateX(-16px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  /* Keyed on the step, so React replaces the node and the animation runs
+     again on every move. Going back travels the other way. */
+  .bfh-onb__body {
+    animation: bfh-onb-in 200ms ease both;
+    animation-delay: 50ms;
+  }
+  .bfh-onb__body[data-back='true'] {
+    animation-name: bfh-onb-in-back;
+  }
+}
+
+/* ---- Step 1: the choice -------------------------------------------------- */
+
+.bfh-onb__options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bfh-onb__option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 11px;
+  background: var(--bg);
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    border-color 0.15s var(--ease-out-soft),
+    background-color 0.15s var(--ease-out-soft);
+}
+
+.bfh-onb__option:hover {
+  border-color: var(--b2);
+  background: var(--card);
+}
+
+/* A real border rather than an outline, so the card does not shift by half a
+   pixel when it becomes the selected one. */
+.bfh-onb__option[data-selected='true'] {
+  border: 1.5px solid var(--ink);
+  padding: 13px;
+  background: var(--card);
+}
+
+.bfh-onb__radio {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  border: 1.5px solid var(--b2);
+  border-radius: 50%;
+  background: transparent;
+  transition:
+    border-color 0.15s var(--ease-out-soft),
+    background-color 0.15s var(--ease-out-soft);
+}
+
+.bfh-onb__option[data-selected='true'] .bfh-onb__radio {
+  border-color: var(--ink);
+  background: var(--ink);
+}
+
+.bfh-onb__option[data-selected='true'] .bfh-onb__radio::after {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--bg);
+}
+
+.bfh-onb__optionicon {
+  flex: none;
+  margin-top: 3px;
+  color: var(--ink2);
+}
+
+.bfh-onb__optionbody {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.bfh-onb__optionname {
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+/* Stated outright rather than inherited: this text sat inside a button, and a
+   button's colour is not the colour a paragraph wants. */
+.bfh-onb__optiondesc {
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: var(--weight-regular);
+  line-height: 1.5;
+  color: var(--ink2);
+}
+
+.bfh-onb__badge {
+  align-self: flex-start;
+  margin-top: 6px;
+  padding: 2px 7px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 20px;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink3);
+}
+
+/* ---- Steps 2 and 3: fields ----------------------------------------------- */
+
+.bfh-onb__field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 6px;
+}
+
+.bfh-onb__label {
+  margin-bottom: 6px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink3);
+}
+
+.bfh-onb__input {
+  width: 100%;
+  padding: 12px 14px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 8px;
+  background: var(--card);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+  appearance: none;
+}
+
+.bfh-onb__input::placeholder {
+  color: var(--ink3);
+}
+
+.bfh-onb__input:focus {
+  border-color: var(--b2);
+}
+
+.bfh-onb__selectwrap,
+.bfh-onb__prefixwrap {
+  position: relative;
+  display: block;
+}
+
+.bfh-onb__selectwrap svg {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--ink3);
+}
+
+.bfh-onb__prefix {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  font-size: 13px;
+  color: var(--ink2);
+}
+
+.bfh-onb__input--prefixed {
+  padding-left: 30px;
+}
+
+.bfh-onb__hint {
+  margin-top: 6px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--ink3);
+}
+
+.bfh-onb__error {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.bfh-onb__skip {
+  margin: 2px 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: var(--weight-medium);
+  line-height: 1.5;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink3);
+  cursor: pointer;
+}
+
+.bfh-onb__skip:hover {
+  color: var(--ink);
+}
+
+/* ---- Step 4: the assistant ----------------------------------------------- */
+
+.bfh-onb__features {
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  border: var(--hairline) solid var(--b);
+  border-radius: 12px;
+  list-style: none;
+}
+
+.bfh-onb__feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 14px;
+  border-bottom: var(--hairline) solid var(--b);
+}
+
+.bfh-onb__feature:last-child {
+  border-bottom: 0;
+}
+
+.bfh-onb__featureicon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 7px;
+  background: var(--bg);
+  color: var(--ink2);
+}
+
+.bfh-onb__featurebody {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.bfh-onb__featurename {
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.bfh-onb__featuredesc {
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--ink2);
+}
+
+.bfh-onb__shortcut {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 12px 0 0;
+  padding: 9px 12px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 8px;
+  background: var(--bg);
+  font-size: 11px;
+  color: var(--ink2);
+}
+
+.bfh-onb__shortcut svg {
+  flex: none;
+  color: var(--ink3);
+}
+
+.bfh-onb__kbd {
+  padding: 1px 6px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+
+.bfh-onb__try {
+  align-self: flex-start;
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink2);
+  cursor: pointer;
+}
+
+.bfh-onb__try:hover {
+  color: var(--ink);
+}
+
+/* ---- Step 5: done -------------------------------------------------------- */
+
+.bfh-onb__panel--done {
+  align-items: center;
+  text-align: center;
+}
+
+.bfh-onb__tick {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 20px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.bfh-onb__donehead {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.bfh-onb__donesub {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink2);
+}
+
+/* What was entered, so the last screen confirms rather than only congratulates. */
+.bfh-onb__summary {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 20px 0 0;
+  border-top: var(--hairline) solid var(--b);
+  text-align: left;
+}
+
+.bfh-onb__summary > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: var(--hairline) solid var(--b);
+}
+
+.bfh-onb__summary dt {
+  margin: 0;
+}
+
+.bfh-onb__summary dd {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+/* ---- Zone 3: footer ------------------------------------------------------ */
+
+.bfh-onb__foot {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+  padding: 16px 0 36px;
+}
+
+.bfh-onb__panel--done .bfh-onb__foot {
+  width: 100%;
+  gap: 8px;
+}
+
+.bfh-onb__cta {
+  width: 100%;
+  padding: 14px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  color: var(--bg);
+  cursor: pointer;
+  transition: opacity 0.15s var(--ease-out-soft);
+}
+
+.bfh-onb__cta:hover {
+  opacity: 0.85;
+}
+
+.bfh-onb__cta:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bfh-onb__cta--ghost {
+  border: var(--hairline) solid var(--b);
+  background: transparent;
+  color: var(--ink);
+}
+
+.bfh-onb__back {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: var(--weight-medium);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink3);
+  cursor: pointer;
+}
+
+.bfh-onb__back:hover {
+  color: var(--ink);
+}
+
+/* The default ring is a dark edge in exactly the place the selected card grows
+   one, so a focused Business card read as a chosen Business card. Offset and
+   lighter, it cannot be mistaken for the choice. */
+.bfh-onb__option:focus-visible,
+.bfh-onb__cta:focus-visible,
+.bfh-onb__back:focus-visible,
+.bfh-onb__skip:focus-visible,
+.bfh-onb__try:focus-visible,
+.bfh-onb__input:focus-visible {
+  outline: 2px solid var(--ink3);
+  outline-offset: 2px;
+}
+
+.bfh-onb__option:focus:not(:focus-visible),
+.bfh-onb__cta:focus:not(:focus-visible) {
+  outline: none;
+}

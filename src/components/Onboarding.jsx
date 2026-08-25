@@ -1,6 +1,7 @@
 import {
   IconBuilding,
   IconCheck,
+  IconChevronDown,
   IconKeyboard,
   IconLayoutColumns,
   IconMessageCircle,
@@ -87,6 +88,27 @@ const shortcutLabel = () =>
     : 'Ctrl+K'
 
 /**
+ * How far along, as a row of marks rather than a numbered list.
+ *
+ * The current step is the only one that carries a shape: it stretches into a
+ * bar while the rest stay dots, so where you are reads at a glance without
+ * anyone having to count.
+ */
+function Dots({ count, step }) {
+  return (
+    <div className="bfh-onb__dots" aria-hidden="true">
+      {Array.from({ length: count }, (_, i) => (
+        <span
+          key={i}
+          className="bfh-onb__dot"
+          data-state={i === step ? 'current' : i < step ? 'done' : 'todo'}
+        />
+      ))}
+    </div>
+  )
+}
+
+/**
  * First run, before any data exists. A full page rather than a modal — there
  * is nothing behind it worth showing yet.
  *
@@ -105,6 +127,9 @@ export default function Onboarding({ onDone }) {
   const [personalBalance, setPersonalBalance] = useState('')
   const [error, setError] = useState(null)
   const [saving, setSaving] = useState(false)
+  // Which way the last move went, so the leaving and arriving panels slide the
+  // same way rather than both sliding left.
+  const [back, setBack] = useState(false)
 
   const trapRef = useFocusTrap()
   const isMobile = useIsMobile()
@@ -119,6 +144,11 @@ export default function Onboarding({ onDone }) {
   const readyStep = steps.length - 1
   const assistantStep = mode === 'both' ? 3 : -1
 
+  const goTo = (next, isBack = false) => {
+    setBack(isBack)
+    setStep(next)
+  }
+
   const saveMode = async (e) => {
     e.preventDefault()
     await putSetting('activeMode', mode)
@@ -127,7 +157,7 @@ export default function Onboarding({ onDone }) {
     } catch {
       // Remembered in the database either way; this copy is only a convenience.
     }
-    setStep(1)
+    goTo(1)
   }
 
   const saveSetup = async (e) => {
@@ -145,7 +175,7 @@ export default function Onboarding({ onDone }) {
       putSetting('symbol', chosen.symbol),
       putSetting('locale', chosen.locale),
     ])
-    setStep(2)
+    goTo(2)
     return undefined
   }
 
@@ -157,7 +187,7 @@ export default function Onboarding({ onDone }) {
     if (needsUser && personalBalance !== '') {
       await putSetting('personalOpeningBalance', Number(personalBalance) || 0)
     }
-    setStep(3)
+    goTo(3)
   }
 
   const finish = async (profile) => {
@@ -170,362 +200,368 @@ export default function Onboarding({ onDone }) {
 
   const startProfile = mode === 'personal' ? 'personal' : 'business'
 
+  const heading = {
+    0: 'What will you use Dual for?',
+    1: {
+      business: 'Set up your business.',
+      personal: 'Set up your personal finances.',
+      both: "Let's set up both.",
+    }[mode],
+    2: mode === 'personal' ? "What's your current savings?" : "What's your current cash balance?",
+    3: assistantStep === 3 ? 'Ask Dual anything.' : "You're all set.",
+    4: "You're all set.",
+  }[step]
+
+  const sub = {
+    0: 'You can always add the other later in Settings.',
+    1: {
+      business: "Two things and you're in.",
+      personal: 'Just your name and currency.',
+      both: "Three fields and you're in.",
+    }[mode],
+    2:
+      mode === 'personal'
+        ? 'Enter roughly how much you have saved right now.'
+        : 'Used as the starting point for cash flow. You can set it later instead.',
+    3:
+      assistantStep === 3
+        ? 'Ask anything, in English or Filipino.'
+        : 'Everything below can be changed in Settings.',
+    4: 'Start with business, personal, or try the assistant.',
+  }[step]
+
   const currencyField = (
-    <label className="bfh-formfield" htmlFor="onboard-currency">
-      <span className="bfh-micro">Currency</span>
-      <select
-        id="onboard-currency"
-        value={currency}
-        onChange={(e) => setCurrency(e.target.value)}
-      >
-        {CURRENCIES.map((c) => (
-          <option key={c.code} value={c.code}>
-            {c.code} · {c.symbol}
-          </option>
-        ))}
-      </select>
+    <label className="bfh-onb__field" htmlFor="onboard-currency">
+      <span className="bfh-onb__label">Currency</span>
+      <span className="bfh-onb__selectwrap">
+        <select
+          id="onboard-currency"
+          className="bfh-onb__input"
+          value={currency}
+          onChange={(e) => setCurrency(e.target.value)}
+        >
+          {CURRENCIES.map((c) => (
+            <option key={c.code} value={c.code}>
+              {c.code} · {c.symbol}
+            </option>
+          ))}
+        </select>
+        <IconChevronDown size={14} stroke={1.5} aria-hidden="true" />
+      </span>
     </label>
   )
 
+  /** The row under every step: one way on, one way back. */
+  const footer = (onBack, label = 'Continue →') => (
+    <div className="bfh-onb__foot">
+      <button type="submit" className="bfh-onb__cta">
+        {label}
+      </button>
+      {onBack && (
+        <button type="button" className="bfh-onb__back" onClick={onBack}>
+          ← Back
+        </button>
+      )}
+    </div>
+  )
+
   return (
-    <div className="bfh-onboard" role="dialog" aria-modal="true" aria-label="Set up Dual">
-      <div className="bfh-onboard__inner" ref={trapRef}>
-        <header className="bfh-onboard__head">
-          {/* The one place the mark animates — everywhere else keeps the
-              static file. */}
-          <AnimatedLogo size={72} />
-          <span className="bfh-logo__word">
-            <span className="bfh-logo__name">Dual</span>
-            <span className="bfh-logo__tag">Dual Finance</span>
+    <div className="bfh-onb" role="dialog" aria-modal="true" aria-label="Set up Dual">
+      <div className="bfh-onb__card" ref={trapRef}>
+        <header className="bfh-onb__head">
+          <div className="bfh-onb__brand">
+            {/* The mark is already a dark badge with light artwork, so it is the
+                badge — putting it inside a second ink square would sit one on
+                the other. It animates only here, on the first step. */}
+            {step === 0 ? (
+              <AnimatedLogo size={36} />
+            ) : (
+              <img src="/favicon.svg" alt="" width="36" height="36" />
+            )}
+            <span className="bfh-onb__brandtext">
+              <span className="bfh-onb__brandname">Dual</span>
+              <span className="bfh-onb__brandtag">Dual Finance</span>
+            </span>
+          </div>
+
+          <Dots count={steps.length} step={step} />
+
+          <span className="bfh-onb__step">
+            Step {step + 1} of {steps.length} — {steps[step]}
           </span>
+          <h1 className="bfh-onb__title">{heading}</h1>
+          <p className="bfh-onb__sub">{sub}</p>
         </header>
 
-        <ol className="bfh-onboard__steps">
-          {steps.map((label, index) => (
-            <li
-              key={label}
-              className="bfh-micro"
-              data-state={index === step ? 'current' : index < step ? 'done' : 'todo'}
-            >
-              {String(index + 1).padStart(2, '0')} — {label}
-            </li>
-          ))}
-        </ol>
+        <div className="bfh-onb__body" key={step} data-back={back ? 'true' : 'false'}>
+          {/* ---- 01 Mode ---- */}
+          {step === 0 && (
+            <form className="bfh-onb__panel" onSubmit={saveMode}>
+              <div className="bfh-onb__options" role="radiogroup" aria-label="What Dual is for">
+                {MODE_OPTIONS.map((option) => {
+                  const { Icon } = option
+                  const selected = mode === option.id
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      className="bfh-onb__option"
+                      data-selected={selected ? 'true' : 'false'}
+                      onClick={() => setMode(option.id)}
+                    >
+                      <span className="bfh-onb__radio" aria-hidden="true" />
+                      <Icon size={14} stroke={1.5} aria-hidden="true" className="bfh-onb__optionicon" />
+                      <span className="bfh-onb__optionbody">
+                        <span className="bfh-onb__optionname">{option.title}</span>
+                        <span className="bfh-onb__optiondesc">{option.body}</span>
+                        {option.recommended && (
+                          <span className="bfh-onb__badge">Recommended</span>
+                        )}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+              {footer(null)}
+            </form>
+          )}
 
-        {/* ---- 01 Mode ---- */}
-        {step === 0 && (
-          <form className="bfh-onboard__panel" onSubmit={saveMode}>
-            <h1 className="bfh-onboard__title">What will you use Dual for?</h1>
-            <p className="bfh-onboard__note">
-              You can always add the other later in Settings.
-            </p>
+          {/* ---- 02 Setup ---- */}
+          {step === 1 && (
+            <form className="bfh-onb__panel" onSubmit={saveSetup}>
+              {needsUser && (
+                <label className="bfh-onb__field" htmlFor="onboard-username">
+                  <span className="bfh-onb__label">Your name</span>
+                  <input
+                    id="onboard-username"
+                    className="bfh-onb__input"
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
+                    placeholder="Your first name"
+                    // eslint-disable-next-line jsx-a11y/no-autofocus
+                    autoFocus
+                  />
+                  <span className="bfh-onb__hint">This is how Dual will greet you.</span>
+                </label>
+              )}
 
-            <div className="bfh-modepick" role="radiogroup" aria-label="What Dual is for">
-              {MODE_OPTIONS.map((option) => {
-                const { Icon } = option
-                const selected = mode === option.id
-                return (
-                  <button
-                    key={option.id}
-                    type="button"
-                    role="radio"
-                    aria-checked={selected}
-                    className="bfh-modepick__card"
-                    data-selected={selected ? 'true' : 'false'}
-                    onClick={() => setMode(option.id)}
-                  >
-                    <span className="bfh-modepick__circle" aria-hidden="true">
-                      {selected && <IconCheck size={10} stroke={2.5} />}
+              {needsBusiness && (
+                <label className="bfh-onb__field" htmlFor="onboard-name">
+                  <span className="bfh-onb__label">Business name</span>
+                  <input
+                    id="onboard-name"
+                    className="bfh-onb__input"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your business or freelance name"
+                    // eslint-disable-next-line jsx-a11y/no-autofocus
+                    autoFocus={!needsUser}
+                  />
+                </label>
+              )}
+
+              {currencyField}
+              {error && <span className="bfh-onb__error">{error}</span>}
+              {footer(() => goTo(0, true))}
+            </form>
+          )}
+
+          {/* ---- 03 Cash ---- */}
+          {step === 2 && (
+            <form className="bfh-onb__panel" onSubmit={saveBalance}>
+              {needsBusiness && (
+                <label className="bfh-onb__field" htmlFor="onboard-balance">
+                  <span className="bfh-onb__label">
+                    {mode === 'both' ? 'Business cash' : 'Opening cash balance'}
+                  </span>
+                  <span className="bfh-onb__prefixwrap">
+                    <span className="bfh-onb__prefix" aria-hidden="true">
+                      {chosen.symbol}
                     </span>
-                    <Icon
-                      size={18}
-                      stroke={1.5}
-                      aria-hidden="true"
-                      className="bfh-modepick__icon"
+                    <input
+                      id="onboard-balance"
+                      className="bfh-onb__input bfh-onb__input--prefixed"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={balance}
+                      onChange={(e) => setBalance(e.target.value)}
+                      placeholder="0.00"
+                      // eslint-disable-next-line jsx-a11y/no-autofocus
+                      autoFocus
                     />
-                    <span className="bfh-modepick__body">
-                      <span className="bfh-modepick__title">{option.title}</span>
-                      <span className="bfh-modepick__desc">{option.body}</span>
-                      {option.recommended && (
-                        <span className="bfh-modepick__tag">Recommended</span>
-                      )}
+                  </span>
+                </label>
+              )}
+
+              {needsUser && (
+                <label className="bfh-onb__field" htmlFor="onboard-personal-balance">
+                  <span className="bfh-onb__label">
+                    {mode === 'both' ? 'Personal savings' : 'Current savings'}
+                  </span>
+                  <span className="bfh-onb__prefixwrap">
+                    <span className="bfh-onb__prefix" aria-hidden="true">
+                      {chosen.symbol}
                     </span>
-                  </button>
-                )
-              })}
-            </div>
+                    <input
+                      id="onboard-personal-balance"
+                      className="bfh-onb__input bfh-onb__input--prefixed"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={personalBalance}
+                      onChange={(e) => setPersonalBalance(e.target.value)}
+                      placeholder="0"
+                      // eslint-disable-next-line jsx-a11y/no-autofocus
+                      autoFocus={!needsBusiness}
+                    />
+                  </span>
+                </label>
+              )}
 
-            <div className="bfh-onboard__actions">
-              <button type="submit" className="bfh-btn-primary bfh-btn-primary--inline">
-                Continue →
+              {/* Skipping is a line of text rather than a third button: it is
+                  the quiet option, and giving it equal weight would suggest the
+                  number matters less than it does. */}
+              <button type="button" className="bfh-onb__skip" onClick={() => goTo(3)}>
+                Skip for now — you can set this in Settings later.
               </button>
-            </div>
-          </form>
-        )}
 
-        {/* ---- 02 Setup ---- */}
-        {step === 1 && (
-          <form className="bfh-onboard__panel" onSubmit={saveSetup}>
-            <h1 className="bfh-onboard__title">
-              {mode === 'business' && 'Set up your business.'}
-              {mode === 'personal' && 'Set up your personal finances.'}
-              {mode === 'both' && "Let's set up both."}
-            </h1>
-            <p className="bfh-onboard__note">
-              {mode === 'business' && "Two things and you're in."}
-              {mode === 'personal' && 'Just your name and currency.'}
-              {mode === 'both' && "Three fields and you're in."}
-            </p>
+              {footer(() => goTo(1, true))}
+            </form>
+          )}
 
-            {needsUser && (
-              <label className="bfh-formfield" htmlFor="onboard-username">
-                <span className="bfh-micro">Your name</span>
-                <input
-                  id="onboard-username"
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
-                  placeholder="Your first name"
-                  autoFocus
-                />
-                <span className="bfh-fieldhint">This is how Dual will greet you.</span>
-              </label>
-            )}
+          {/* ---- 04 Assistant, only when both sides were asked for ---- */}
+          {step === 3 && assistantStep === 3 && (
+            <form
+              className="bfh-onb__panel"
+              onSubmit={(e) => {
+                e.preventDefault()
+                goTo(4)
+              }}
+            >
+              <ul className="bfh-onb__features">
+                {ASSISTANT_FEATURES.map((feature) => {
+                  const Icon = feature.icon
+                  return (
+                    <li key={feature.label} className="bfh-onb__feature">
+                      <span className="bfh-onb__featureicon" aria-hidden="true">
+                        <Icon size={14} stroke={1.5} />
+                      </span>
+                      <span className="bfh-onb__featurebody">
+                        <span className="bfh-onb__featurename">{feature.label}</span>
+                        <span className="bfh-onb__featuredesc">{feature.sub}</span>
+                      </span>
+                    </li>
+                  )
+                })}
+              </ul>
 
-            {needsBusiness && (
-              <label className="bfh-formfield" htmlFor="onboard-name">
-                <span className="bfh-micro">Business name</span>
-                <input
-                  id="onboard-name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Your business or freelance name"
-                  autoFocus={!needsUser}
-                />
-              </label>
-            )}
+              {!isMobile && (
+                <p className="bfh-onb__shortcut">
+                  <IconKeyboard size={12} stroke={1.5} aria-hidden="true" />
+                  Open it anytime with <kbd className="bfh-onb__kbd">{shortcutLabel()}</kbd>
+                </p>
+              )}
 
-            {currencyField}
-            {error && <span className="bfh-formerror">{error}</span>}
-
-            <div className="bfh-onboard__actions">
-              <button type="button" className="bfh-btn-ghost" onClick={() => setStep(0)}>
-                Back
-              </button>
-              <button type="submit" className="bfh-btn-primary bfh-btn-primary--inline">
-                Continue →
-              </button>
-            </div>
-          </form>
-        )}
-
-        {/* ---- 03 Cash ---- */}
-        {step === 2 && (
-          <form className="bfh-onboard__panel" onSubmit={saveBalance}>
-            <h1 className="bfh-onboard__title">
-              {mode === 'personal' ? "What's your current savings?" : "What's your current cash balance?"}
-            </h1>
-            <p className="bfh-onboard__note">
-              {mode === 'personal'
-                ? 'Enter roughly how much you have saved right now.'
-                : 'Used as the starting point for cash flow. You can set it later instead.'}
-            </p>
-
-            {needsBusiness && (
-              <label className="bfh-formfield" htmlFor="onboard-balance">
-                <span className="bfh-micro">
-                  {mode === 'both' ? 'Business cash' : 'Opening cash balance'}
-                </span>
-                <input
-                  id="onboard-balance"
-                  type="number"
-                  step="0.01"
-                  value={balance}
-                  onChange={(e) => setBalance(e.target.value)}
-                  placeholder="0.00"
-                  autoFocus
-                />
-              </label>
-            )}
-
-            {needsUser && (
-              <label className="bfh-formfield" htmlFor="onboard-personal-balance">
-                <span className="bfh-micro">
-                  {mode === 'both' ? 'Personal savings' : 'Current savings'}
-                </span>
-                <input
-                  id="onboard-personal-balance"
-                  type="number"
-                  step="0.01"
-                  value={personalBalance}
-                  onChange={(e) => setPersonalBalance(e.target.value)}
-                  placeholder="0"
-                  autoFocus={!needsBusiness}
-                />
-              </label>
-            )}
-
-            <span className="bfh-fieldhint">
-              {mode === 'both'
-                ? 'Both can be updated anytime in Settings.'
-                : 'You can update this anytime in Settings.'}
-            </span>
-
-            <div className="bfh-onboard__actions">
-              <button type="button" className="bfh-btn-ghost" onClick={() => setStep(1)}>
-                Back
-              </button>
-              <button type="button" className="bfh-btn-ghost" onClick={() => setStep(3)}>
-                Skip
-              </button>
-              <button type="submit" className="bfh-btn-primary bfh-btn-primary--inline">
-                Continue →
-              </button>
-            </div>
-          </form>
-        )}
-
-        {/* ---- 04 Assistant, only when both sides were asked for ---- */}
-        {step === 3 && assistantStep === 3 && (
-          <div className="bfh-onboard__panel">
-            <span className="bfh-micro">AI assistant</span>
-            <h1 className="bfh-onboard__title bfh-onboard__title--tight">Ask Dual anything.</h1>
-            <p className="bfh-onboard__note bfh-onboard__note--wide">
-              Dual has a built-in AI that knows your finances. Ask it questions, get instant answers,
-              or just say &lsquo;add 500 for food&rsquo; and it opens the form for you.
-            </p>
-
-            <ul className="bfh-onboard__features">
-              {ASSISTANT_FEATURES.map((feature) => {
-                const Icon = feature.icon
-                return (
-                  <li key={feature.label} className="bfh-onboard__feature">
-                    <span className="bfh-howto__iconbox" aria-hidden="true">
-                      <Icon size={15} stroke={1.5} />
-                    </span>
-                    <span className="bfh-howto__rowbody">
-                      <span className="bfh-howto__rowname">{feature.label}</span>
-                      <span className="bfh-howto__rowdesc">{feature.sub}</span>
-                    </span>
-                  </li>
-                )
-              })}
-            </ul>
-
-            {!isMobile && (
-              <p className="bfh-onboard__shortcut">
-                <IconKeyboard size={13} stroke={1.5} aria-hidden="true" />
-                Open it anytime with {shortcutLabel()}.
-              </p>
-            )}
-
-            <div className="bfh-onboard__actions">
-              <button
-                type="button"
-                className="bfh-btn-ghost bfh-onboard__try"
-                onClick={openAssistant}
-              >
+              <button type="button" className="bfh-onb__try" onClick={openAssistant}>
                 Try it now
               </button>
-              <button
-                type="button"
-                className="bfh-btn-primary bfh-btn-primary--inline"
-                onClick={() => setStep(4)}
-              >
-                Continue →
-              </button>
-            </div>
-          </div>
-        )}
 
-        {/* ---- Ready ---- */}
-        {step === readyStep && step >= 3 && (
-          <div className="bfh-onboard__panel">
-            <h1 className="bfh-onboard__title">You&apos;re all set.</h1>
-            <p className="bfh-onboard__note">
-              {mode === 'business' &&
-                'Your business dashboard is ready. Add your first transaction to start tracking.'}
-              {mode === 'personal' &&
-                'Your personal finance dashboard is ready. Add a transaction or set your first goal.'}
-              {mode === 'both' &&
-                'Both modes are ready. Start with your business or jump straight into personal finance.'}
-            </p>
+              {footer(() => goTo(2, true))}
+            </form>
+          )}
 
-            <dl className="bfh-onboard__summary">
-              {needsUser && (
+          {/* ---- Ready ---- */}
+          {step === readyStep && step >= 3 && (
+            <div className="bfh-onb__panel bfh-onb__panel--done">
+              <span className="bfh-onb__tick" aria-hidden="true">
+                <IconCheck size={24} stroke={2} />
+              </span>
+
+              <p className="bfh-onb__donehead">All set.</p>
+              <p className="bfh-onb__donesub">
+                {mode === 'business' && 'Your business dashboard is ready.'}
+                {mode === 'personal' && 'Your personal finance dashboard is ready.'}
+                {mode === 'both' && 'Business and personal — both ready.'}
+              </p>
+
+              <dl className="bfh-onb__summary">
+                {needsUser && (
+                  <div>
+                    <dt className="bfh-onb__label">You</dt>
+                    <dd>{userName.trim() || '—'}</dd>
+                  </div>
+                )}
+                {needsBusiness && (
+                  <div>
+                    <dt className="bfh-onb__label">Business</dt>
+                    <dd>{name.trim() || '—'}</dd>
+                  </div>
+                )}
                 <div>
-                  <dt className="bfh-micro">You</dt>
-                  <dd>{userName.trim() || '—'}</dd>
+                  <dt className="bfh-onb__label">Currency</dt>
+                  <dd>
+                    {chosen.code} · {chosen.symbol}
+                  </dd>
                 </div>
-              )}
-              {needsBusiness && (
-                <div>
-                  <dt className="bfh-micro">Business</dt>
-                  <dd>{name.trim() || '—'}</dd>
-                </div>
-              )}
-              <div>
-                <dt className="bfh-micro">Currency</dt>
-                <dd>
-                  {chosen.code} · {chosen.symbol}
-                </dd>
+                {needsBusiness && (
+                  <div>
+                    <dt className="bfh-onb__label">Business cash</dt>
+                    <dd>
+                      {balance === ''
+                        ? 'Not set'
+                        : formatAmount(Number(balance) || 0, chosen.symbol)}
+                    </dd>
+                  </div>
+                )}
+                {needsUser && (
+                  <div>
+                    <dt className="bfh-onb__label">Savings</dt>
+                    <dd>
+                      {personalBalance === ''
+                        ? 'Not set'
+                        : formatAmount(Number(personalBalance) || 0, chosen.symbol)}
+                    </dd>
+                  </div>
+                )}
+              </dl>
+
+              <div className="bfh-onb__foot">
+                {mode === 'both' ? (
+                  <>
+                    <button
+                      type="button"
+                      className="bfh-onb__cta"
+                      onClick={() => finish('business')}
+                      disabled={saving}
+                    >
+                      Open Business →
+                    </button>
+                    <button
+                      type="button"
+                      className="bfh-onb__cta bfh-onb__cta--ghost"
+                      onClick={() => finish('personal')}
+                      disabled={saving}
+                    >
+                      Open Personal →
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    className="bfh-onb__cta"
+                    onClick={() => finish(startProfile)}
+                    disabled={saving}
+                  >
+                    {mode === 'personal' ? 'Open Personal →' : 'Open Business →'}
+                  </button>
+                )}
               </div>
-              {needsBusiness && (
-                <div>
-                  <dt className="bfh-micro">Business cash</dt>
-                  <dd>
-                    {balance === '' ? 'Not set' : formatAmount(Number(balance) || 0, chosen.symbol)}
-                  </dd>
-                </div>
-              )}
-              {needsUser && (
-                <div>
-                  <dt className="bfh-micro">Savings</dt>
-                  <dd>
-                    {personalBalance === ''
-                      ? 'Not set'
-                      : formatAmount(Number(personalBalance) || 0, chosen.symbol)}
-                  </dd>
-                </div>
-              )}
-            </dl>
-
-            <div
-              className={`bfh-onboard__actions${
-                mode === 'both' ? ' bfh-onboard__actions--pair' : ''
-              }`}
-            >
-              {mode === 'both' ? (
-                <>
-                  <button
-                    type="button"
-                    className="bfh-btn-primary bfh-btn-primary--inline"
-                    onClick={() => finish('business')}
-                    disabled={saving}
-                  >
-                    Business Dashboard →
-                  </button>
-                  <button
-                    type="button"
-                    className="bfh-btn-ghost bfh-btn-ghost--solid"
-                    onClick={() => finish('personal')}
-                    disabled={saving}
-                  >
-                    Personal Dashboard →
-                  </button>
-                </>
-              ) : (
-                <button
-                  type="button"
-                  className="bfh-btn-primary bfh-btn-primary--inline"
-                  onClick={() => finish(startProfile)}
-                  disabled={saving}
-                >
-                  {mode === 'personal' ? 'Go to Personal Dashboard →' : 'Go to Business Dashboard →'}
-                </button>
-              )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {assistantOpen && <AIAssistant onClose={closeAssistant} />}
