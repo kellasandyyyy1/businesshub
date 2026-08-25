@@ -221,8 +221,8 @@ export function monthlySeries(transactions = [], today, type, count = 6) {
  * calling something a need it is not would flatter the result.
  */
 export const BUDGET_BUCKETS = {
-  needs: ['Housing', 'Food', 'Transport', 'Healthcare'],
-  savings: ['Savings', 'Debt Payment'],
+  needs: ['Housing & Rent', 'Food & Groceries', 'Transportation', 'Healthcare', 'Utilities'],
+  savings: ['Savings Transfer', 'Debt Payment'],
 }
 
 export const BUCKET_TARGETS = { needs: 50, wants: 30, savings: 20 }

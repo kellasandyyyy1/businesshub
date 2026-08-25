@@ -710,3 +710,133 @@
   letter-spacing: var(--tracking-micro);
   color: var(--ink3);
 }
+
+/* ---- Categories: two profiles, two types -------------------------------- */
+
+.bfh-cathead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bfh-catprofiles {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.bfh-catprofile {
+  padding: 5px 12px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: 20px;
+  background: transparent;
+  font-size: 12px;
+  color: var(--ink2);
+  cursor: pointer;
+}
+
+/* The chosen profile is the one inverted thing on the panel. */
+.bfh-catprofile[aria-pressed='true'] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.bfh-catshowing {
+  margin: 4px 0 0;
+}
+
+.bfh-catlist {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bfh-catrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: var(--hairline) solid var(--b);
+}
+
+.bfh-catrow:last-child {
+  border-bottom: 0;
+}
+
+.bfh-catrow__icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink2);
+}
+
+.bfh-catrow__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bfh-catrow__badge {
+  flex: none;
+  padding: 2px 7px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: 20px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+}
+
+/* A second press confirms; the first only arms it. */
+.bfh-catrow .bfh-iconaction[data-confirming='true'] {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.bfh-iconpicker {
+  display: grid;
+  grid-template-columns: repeat(6, 32px);
+  gap: 6px;
+}
+
+.bfh-iconpicker__option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink2);
+  cursor: pointer;
+}
+
+.bfh-iconpicker__option[aria-pressed='true'] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.bfh-iconpicker__more {
+  align-self: flex-start;
+  margin-top: 8px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}

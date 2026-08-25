@@ -1,65 +1,106 @@
-import { IconPlus, IconTrash } from '@tabler/icons-react'
+import { IconPencil, IconPlus, IconTrash } from '@tabler/icons-react'
+import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
 
-import ICONS, { categoryIcon } from '../../config/categoryIcons'
+import CategoryModal from './CategoryModal'
+import { categoryIcon } from '../../config/categoryIcons'
+import { useProfile } from '../../context/ProfileContext'
 import { db } from '../../db/db'
-import { BUSINESS_PROFILE, addCategory } from '../../db/queries'
 
-const ICON_NAMES = Object.keys(ICONS)
+const PROFILES = [
+  { id: 'business', label: 'Business' },
+  { id: 'personal', label: 'Personal' },
+]
 
-export default function CategoriesSection({ categories, categoryUse }) {
-  const [tab, setTab] = useState('expense')
-  const [name, setName] = useState('')
-  const [icon, setIcon] = useState(ICON_NAMES[0])
+const TYPES = ['income', 'expense']
+
+/**
+ * The two charts of accounts, one profile at a time.
+ *
+ * The list is read here rather than taken from the page's settings data: that
+ * copy follows whichever profile the app is in, and this screen has to show
+ * either one regardless of which is open.
+ */
+export default function CategoriesSection({ categoryUse }) {
+  const { profile } = useProfile()
+  // Opens on the profile the user is actually in, which is the one they are
+  // most likely to have come here to change.
+  const [activeProfile, setActiveProfile] = useState(profile)
+  const [activeType, setActiveType] = useState('expense')
+  const [editing, setEditing] = useState(null) // null | {} | category
   const [error, setError] = useState(null)
+  const [confirming, setConfirming] = useState(null)
 
-  const rows = categories.filter((c) => c.type === tab)
-
-  const add = async (e) => {
-    e.preventDefault()
-    const trimmed = name.trim()
-    if (!trimmed) return setError('Name is required')
-    if (categories.some((c) => c.name.toLowerCase() === trimmed.toLowerCase())) {
-      return setError('That category already exists')
-    }
-
-    await addCategory(BUSINESS_PROFILE, {
-      name: trimmed,
-      type: tab,
-      icon,
-      custom: true,
-    })
-    setName('')
-    setError(null)
-    return undefined
-  }
+  const rows = useLiveQuery(
+    () =>
+      db.categories
+        .where('[profile+type]')
+        .equals([activeProfile, activeType])
+        .sortBy('name'),
+    [activeProfile, activeType],
+    [],
+  )
 
   const remove = async (category) => {
-    // Removing a category that transactions still point at would orphan them.
-    const used = categoryUse[category.name] ?? 0
+    // Removing a category that transactions still point at would strand them:
+    // the rows keep a name nothing in the list matches any more.
+    const used = categoryUse?.[category.name] ?? 0
     if (used > 0) {
+      setConfirming(null)
       setError(`${category.name} is used by ${used} transaction${used === 1 ? '' : 's'}`)
       return
     }
     await db.categories.delete(category.id)
+    setConfirming(null)
     setError(null)
   }
 
+  const profileLabel = activeProfile === 'personal' ? 'Personal' : 'Business'
+
   return (
     <div className="bfh-settings__body">
-      <h2 className="bfh-panel__title">Categories</h2>
+      <header className="bfh-cathead">
+        <h2 className="bfh-panel__title">Categories</h2>
+        <button
+          type="button"
+          className="bfh-btn-primary bfh-btn-primary--inline"
+          onClick={() => setEditing({})}
+        >
+          <IconPlus size={14} stroke={1.75} aria-hidden="true" />
+          Add category
+        </button>
+      </header>
+
+      <div className="bfh-catprofiles" role="group" aria-label="Profile">
+        {PROFILES.map((option) => (
+          <button
+            key={option.id}
+            type="button"
+            className="bfh-catprofile"
+            aria-pressed={activeProfile === option.id}
+            onClick={() => {
+              setActiveProfile(option.id)
+              setError(null)
+              setConfirming(null)
+            }}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
 
       <div className="bfh-tabs" role="tablist" aria-label="Category type">
-        {['income', 'expense'].map((id) => (
+        {TYPES.map((id) => (
           <button
             key={id}
             type="button"
             role="tab"
             className="bfh-tab"
-            aria-selected={tab === id}
+            aria-selected={activeType === id}
             onClick={() => {
-              setTab(id)
+              setActiveType(id)
               setError(null)
+              setConfirming(null)
             }}
           >
             {id}
@@ -67,70 +108,72 @@ export default function CategoriesSection({ categories, categoryUse }) {
         ))}
       </div>
 
-      <ul className="bfh-catlist">
-        {rows.map((category) => {
-          const Icon = categoryIcon(category.icon)
-          return (
-            <li key={category.id} className="bfh-catrow">
-              <Icon size={14} stroke={1.5} aria-hidden="true" />
-              <span className="bfh-catrow__name">{category.name}</span>
-              {!category.custom && <span className="bfh-chip">Default</span>}
-              {category.custom && (
-                <button
-                  type="button"
-                  className="bfh-iconaction bfh-catrow__delete"
-                  onClick={() => remove(category)}
-                  aria-label={`Delete ${category.name}`}
-                >
-                  <IconTrash size={14} stroke={1.5} aria-hidden="true" />
-                </button>
-              )}
-            </li>
-          )
-        })}
-        {rows.length === 0 && <p className="bfh-empty">No {tab} categories yet.</p>}
-      </ul>
+      <p className="bfh-micro bfh-catshowing">
+        Showing {profileLabel} {activeType} categories
+      </p>
 
-      <form className="bfh-addcat" onSubmit={add}>
-        <span className="bfh-micro">Add {tab} category</span>
+      {error && <p className="bfh-formerror">{error}</p>}
 
-        <div className="bfh-addcat__row">
-          <input
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value)
-              setError(null)
-            }}
-            placeholder="Category name"
-            aria-label="New category name"
-          />
-          <button type="submit" className="bfh-btn-primary bfh-btn-primary--inline">
-            <IconPlus size={14} stroke={1.75} aria-hidden="true" />
-            <span>Add category</span>
-          </button>
-        </div>
-
-        <div className="bfh-iconpicker" role="radiogroup" aria-label="Category icon">
-          {ICON_NAMES.map((key) => {
-            const Icon = ICONS[key]
+      {rows.length === 0 ? (
+        <p className="bfh-empty">Nothing here yet. Add the first one.</p>
+      ) : (
+        <ul className="bfh-catlist">
+          {rows.map((category) => {
+            const Icon = categoryIcon(category.icon)
+            // Anything the app did not ship is the user's to change.
+            const isDefault = category.isDefault === true
             return (
-              <button
-                key={key}
-                type="button"
-                role="radio"
-                aria-checked={icon === key}
-                aria-label={key}
-                className="bfh-iconpicker__option"
-                onClick={() => setIcon(key)}
-              >
-                <Icon size={16} stroke={1.5} aria-hidden="true" />
-              </button>
+              <li className="bfh-catrow" key={category.id}>
+                <span className="bfh-catrow__icon" aria-hidden="true">
+                  <Icon size={15} stroke={1.5} />
+                </span>
+                <span className="bfh-catrow__name">{category.name}</span>
+
+                {isDefault ? (
+                  <span className="bfh-catrow__badge">Default</span>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      className="bfh-iconaction"
+                      aria-label={`Edit ${category.name}`}
+                      onClick={() => setEditing(category)}
+                    >
+                      <IconPencil size={13} stroke={1.5} aria-hidden="true" />
+                    </button>
+                    <button
+                      type="button"
+                      className="bfh-iconaction"
+                      aria-label={
+                        confirming === category.id
+                          ? `Confirm delete ${category.name}`
+                          : `Delete ${category.name}`
+                      }
+                      data-confirming={confirming === category.id ? 'true' : undefined}
+                      onClick={() =>
+                        confirming === category.id ? remove(category) : setConfirming(category.id)
+                      }
+                    >
+                      <IconTrash size={13} stroke={1.5} aria-hidden="true" />
+                    </button>
+                  </>
+                )}
+              </li>
             )
           })}
-        </div>
+        </ul>
+      )}
 
-        {error && <span className="bfh-formerror">{error}</span>}
-      </form>
+      {editing && (
+        <CategoryModal
+          key={editing.id ?? 'new'}
+          category={editing.id ? editing : null}
+          profile={activeProfile}
+          defaultType={activeType}
+          existing={rows}
+          onClose={() => setEditing(null)}
+        />
+      )}
     </div>
   )
 }

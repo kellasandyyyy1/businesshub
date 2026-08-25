@@ -50,7 +50,7 @@ export default function Settings() {
         <BusinessSection key={JSON.stringify(data.settings.businessName)} settings={data.settings} />
       )}
       {section === 'categories' && (
-        <CategoriesSection categories={data.categories} categoryUse={data.categoryUse} />
+        <CategoriesSection categoryUse={data.categoryUse} />
       )}
       {section === 'methods' && (
         <PaymentMethodsSection paymentMethods={data.paymentMethods} methodUse={data.methodUse} />

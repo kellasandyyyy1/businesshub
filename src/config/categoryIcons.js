@@ -1,5 +1,9 @@
 import {
+  IconApps,
   IconArrowsExchange,
+  IconAward,
+  IconCertificate,
+  IconCoin,
   IconBolt,
   IconBriefcase,
   IconBuilding,
@@ -11,6 +15,8 @@ import {
   IconDeviceLaptop,
   IconDeviceTv,
   IconDots,
+  IconGift,
+  IconHanger,
   IconHeartRateMonitor,
   IconHome,
   IconPercentage,
@@ -19,6 +25,8 @@ import {
   IconReceiptTax,
   IconRepeat,
   IconScale,
+  IconSchool,
+  IconShoppingBag,
   IconSpeakerphone,
   IconToolsKitchen2,
   IconTransfer,
@@ -59,6 +67,16 @@ const ICONS = {
   'pig-money': IconPigMoney,
   'credit-card': IconCreditCard,
   dots: IconDots,
+
+  // Added when each profile got its own chart of accounts.
+  'shopping-bag': IconShoppingBag,
+  award: IconAward,
+  certificate: IconCertificate,
+  apps: IconApps,
+  hanger: IconHanger,
+  school: IconSchool,
+  gift: IconGift,
+  coin: IconCoin,
 }
 
 export function categoryIcon(iconName) {

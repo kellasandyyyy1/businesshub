@@ -19,63 +19,13 @@
 export const OWNER_DRAW_CATEGORY = 'Owner Draw / Salary'
 export const PERSONAL_DRAW_CATEGORY = 'Business Draw'
 
-/**
- * The starting chart of accounts for the business profile. Icon names are bare
- * Tabler names resolved by `config/categoryIcons.js` — no `ti-` prefix.
- */
-export const BUSINESS_CATEGORIES = [
-  // Income
-  { name: 'Client Payments', type: 'income', icon: 'cash' },
-  { name: 'Retainers', type: 'income', icon: 'repeat' },
-  { name: 'Consulting', type: 'income', icon: 'briefcase' },
-  { name: 'Interest Income', type: 'income', icon: 'percentage' },
-  // Expense
-  { name: 'Software & Subscriptions', type: 'expense', icon: 'device-laptop' },
-  { name: 'Office & Rent', type: 'expense', icon: 'building' },
-  { name: 'Utilities', type: 'expense', icon: 'bolt' },
-  { name: 'Internet & Comms', type: 'expense', icon: 'wifi' },
-  { name: 'Travel & Transport', type: 'expense', icon: 'car' },
-  { name: 'Meals & Entertainment', type: 'expense', icon: 'tools-kitchen-2' },
-  { name: 'Salaries & Contractors', type: 'expense', icon: 'users' },
-  // Money the owner takes out for themselves, as opposed to paying a
-  // contractor. It is the one expense that is also personal income.
-  { name: 'Owner Draw / Salary', type: 'expense', icon: 'arrows-exchange' },
-  { name: 'Marketing', type: 'expense', icon: 'speakerphone' },
-  { name: 'Taxes & Government', type: 'expense', icon: 'receipt-tax' },
-  { name: 'Equipment', type: 'expense', icon: 'device-desktop' },
-  { name: 'Bank Fees', type: 'expense', icon: 'building-bank' },
-  { name: 'Professional Services', type: 'expense', icon: 'scale' },
-]
+import { ALL_CATEGORIES } from './categoryData'
 
 /**
- * The same for the personal profile — a household's categories rather than a
- * company's. "Business Draw" is the one that spans both: money the owner moves
- * out of the business and into personal life.
+ * The category lists live in categoryData.js, shared with the migration that
+ * reshapes an existing database so the two can never disagree.
  */
-export const PERSONAL_CATEGORIES = [
-  // Income
-  { name: 'Salary', type: 'income', icon: 'building-bank' },
-  { name: 'Freelance', type: 'income', icon: 'briefcase' },
-  { name: 'Investments', type: 'income', icon: 'trending-up' },
-  { name: 'Business Draw', type: 'income', icon: 'arrows-exchange' },
-  { name: 'Other Income', type: 'income', icon: 'plus' },
-  // Expense
-  { name: 'Housing', type: 'expense', icon: 'home' },
-  { name: 'Food', type: 'expense', icon: 'tools-kitchen-2' },
-  { name: 'Transport', type: 'expense', icon: 'car' },
-  { name: 'Healthcare', type: 'expense', icon: 'heart-rate-monitor' },
-  { name: 'Entertainment', type: 'expense', icon: 'device-tv' },
-  { name: 'Subscriptions', type: 'expense', icon: 'repeat' },
-  { name: 'Savings', type: 'expense', icon: 'pig-money' },
-  { name: 'Debt Payment', type: 'expense', icon: 'credit-card' },
-  { name: 'Other', type: 'expense', icon: 'dots' },
-]
-
-/** Both lists, each row already carrying the profile it belongs to. */
-export const ALL_CATEGORIES = [
-  ...BUSINESS_CATEGORIES.map((c) => ({ ...c, profile: 'business' })),
-  ...PERSONAL_CATEGORIES.map((c) => ({ ...c, profile: 'personal' })),
-]
+export { ALL_CATEGORIES, BUSINESS_CATEGORIES, PERSONAL_CATEGORIES } from './categoryData'
 
 /**
  * Baseline settings. `businessName` is intentionally absent — its absence is

@@ -1,4 +1,5 @@
 import Dexie from 'dexie'
+import { ALL_CATEGORIES, RENAMED_CATEGORIES } from './categoryData'
 import { OWNER_DRAW_CATEGORY, PERSONAL_CATEGORIES, seedDefaults } from './defaults'
 
 /**
@@ -185,6 +186,92 @@ db.version(6)
       profile: 'business',
       createdAt: new Date().toISOString(),
     })
+  })
+
+/**
+ * v7 gives each profile its own chart of accounts.
+ *
+ * The lists were seeded when the app was business-only, so the personal side
+ * inherited names that suit a company and the business side was missing a few
+ * a company needs. This reshapes both.
+ *
+ * It does NOT clear the table. Two reasons: a category the user created
+ * themselves is their data, and a transaction stores its category as a name
+ * rather than a reference — so wiping the list would strand every row whose
+ * name went with it. Renames are applied to the category and to the rows that
+ * use it in the same pass, retired defaults are only removed when nothing
+ * refers to them, and anything custom is left alone.
+ */
+db.version(7)
+  .stores({
+    // The compound index is what lets a dropdown ask for one profile's
+    // categories of one type without walking the table.
+    categories: '++id, name, type, profile, [profile+type], isDefault, createdAt',
+  })
+  .upgrade(async (tx) => {
+    const categories = tx.table('categories')
+    const transactions = tx.table('transactions')
+    const budgets = tx.table('budgets')
+
+    // ---- Renames, applied to the rows that point at them ------------------
+    for (const { profile, type, from, to } of RENAMED_CATEGORIES) {
+      const existing = await categories
+        .filter((c) => c.profile === profile && c.type === type && c.name === from)
+        .toArray()
+
+      // A database that already has the new name keeps it; the old row is only
+      // dropped once its rows have been moved across.
+      const targetExists = await categories
+        .filter((c) => c.profile === profile && c.type === type && c.name === to)
+        .count()
+
+      for (const row of existing) {
+        if (targetExists > 0) await categories.delete(row.id)
+        else await categories.update(row.id, { name: to })
+      }
+
+      if (existing.length > 0 || targetExists > 0) {
+        await transactions
+          .filter((t) => (t.profile ?? 'business') === profile && t.category === from)
+          .modify({ category: to })
+        await budgets
+          .filter((b) => (b.profile ?? 'business') === profile && b.category === from)
+          .modify({ category: to })
+      }
+    }
+
+    // ---- Bring every default up to date, adding the ones that are missing --
+    const current = await categories.toArray()
+    const keyOf = (c) => `${c.profile}|${c.type}|${c.name}`
+    const byKey = new Map(current.map((c) => [keyOf(c), c]))
+    const createdAt = new Date().toISOString()
+
+    for (const wanted of ALL_CATEGORIES) {
+      const found = byKey.get(keyOf(wanted))
+      if (found) {
+        await categories.update(found.id, { icon: wanted.icon, isDefault: true })
+      } else {
+        await categories.add({ ...wanted, createdAt })
+      }
+    }
+
+    // ---- Retire defaults that are no longer offered ------------------------
+    const wantedKeys = new Set(ALL_CATEGORIES.map(keyOf))
+    for (const row of current) {
+      if (wantedKeys.has(keyOf(row))) continue
+      // Anything the user made is theirs to keep; it is simply not a default.
+      if (row.custom || row.isDefault === false) {
+        await categories.update(row.id, { isDefault: false })
+        continue
+      }
+      // A retired default that history still refers to stays, so the rows
+      // using it keep a name the app can still resolve to an icon.
+      const inUse = await transactions
+        .filter((t) => (t.profile ?? 'business') === row.profile && t.category === row.name)
+        .count()
+      if (inUse > 0) await categories.update(row.id, { isDefault: false })
+      else await categories.delete(row.id)
+    }
   })
 
 /** Enum-ish constants so pages and forms never hand-write these strings. */

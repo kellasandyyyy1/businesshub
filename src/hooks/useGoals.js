@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 
 import { db } from '../db/db'
+import { SAVINGS_CATEGORY } from '../db/categoryData'
 import { getGoals } from '../db/queries'
 
 /**
@@ -43,7 +44,7 @@ export async function contributeToGoal(goal, amount) {
       description: `Saved for ${row.name}`,
       amount: value,
       type: 'expense',
-      category: 'Savings',
+      category: SAVINGS_CATEGORY,
       status: 'cleared',
       paymentMethod: '',
       notes: '',
