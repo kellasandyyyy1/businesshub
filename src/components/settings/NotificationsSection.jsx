@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 
+import { useProfile } from '../../context/ProfileContext'
 import { putSetting } from '../../db/db'
 import {
   isPushConfigured,
@@ -39,6 +40,44 @@ const TOGGLES = [
     note: 'Show a recap of the week the first time the app opens on a Monday.',
     fallback: false,
   },
+]
+
+/* Only offered to someone who keeps personal books; there is nothing behind
+   these switches for a business-only setup to turn off. */
+const PERSONAL_TOGGLES = [
+  {
+    key: 'notifyGoalDeadline',
+    label: 'Goal deadlines',
+    note: 'Remind me when a savings goal is due within two weeks.',
+    fallback: true,
+  },
+  {
+    key: 'notifyGoalReached',
+    label: 'Goal reached',
+    note: 'Say something when I hit a savings goal.',
+    fallback: true,
+  },
+  {
+    key: 'notifySavingsRate',
+    label: 'Savings rate drop',
+    note: 'Tell me when I keep under 10% of what came in, after a much better month.',
+    fallback: true,
+  },
+  {
+    key: 'notifySpendingSpike',
+    label: 'Spending spikes',
+    note: 'Flag a category running at twice its usual weekly spend.',
+    fallback: true,
+  },
+  {
+    key: 'notifyNetWorth',
+    label: 'Net worth milestones',
+    note: 'Mark it when my net worth passes a round number.',
+    fallback: true,
+  },
+]
+
+const GENERAL_TOGGLES = [
   {
     key: 'voiceInput',
     label: 'Voice input',
@@ -59,7 +98,41 @@ const FAILURE_NOTE = {
   unconfigured: 'Push notifications are not set up for this build.',
 }
 
+function SwitchList({ toggles, settings }) {
+  return (
+    <ul className="bfh-catlist">
+      {toggles.map((toggle) => {
+        const value = settings[toggle.key] ?? toggle.fallback
+        return (
+          <li key={toggle.key} className="bfh-catrow bfh-catrow--stacked">
+            <span className="bfh-catrow__body">
+              <span className="bfh-catrow__name">{toggle.label}</span>
+              <span className="bfh-settings__note">{toggle.note}</span>
+            </span>
+
+            <button
+              type="button"
+              className="bfh-switch"
+              role="switch"
+              aria-checked={value}
+              aria-label={toggle.label}
+              onClick={() => putSetting(toggle.key, !value)}
+            >
+              <span className="bfh-switch__knob" />
+            </button>
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
 export default function NotificationsSection({ settings }) {
+  const { activeMode } = useProfile()
+  // Business-only setups keep the flat list they have always had; the headings
+  // only earn their space once there are two groups to tell apart.
+  const showPersonal = activeMode === 'personal' || activeMode === 'both'
+
   const [pushOn, setPushOn] = useState(false)
   const [busy, setBusy] = useState(false)
   const [failure, setFailure] = useState(null)
@@ -96,30 +169,18 @@ export default function NotificationsSection({ settings }) {
         delivery server — it stores nothing but that registration.
       </p>
 
-      <ul className="bfh-catlist">
-        {TOGGLES.map((toggle) => {
-          const value = settings[toggle.key] ?? toggle.fallback
-          return (
-            <li key={toggle.key} className="bfh-catrow bfh-catrow--stacked">
-              <span className="bfh-catrow__body">
-                <span className="bfh-catrow__name">{toggle.label}</span>
-                <span className="bfh-settings__note">{toggle.note}</span>
-              </span>
+      {showPersonal && <span className="bfh-micro bfh-settings__grouplabel">Business</span>}
+      <SwitchList toggles={TOGGLES} settings={settings} />
 
-              <button
-                type="button"
-                className="bfh-switch"
-                role="switch"
-                aria-checked={value}
-                aria-label={toggle.label}
-                onClick={() => putSetting(toggle.key, !value)}
-              >
-                <span className="bfh-switch__knob" />
-              </button>
-            </li>
-          )
-        })}
-      </ul>
+      {showPersonal && (
+        <>
+          <span className="bfh-micro bfh-settings__grouplabel">Personal</span>
+          <SwitchList toggles={PERSONAL_TOGGLES} settings={settings} />
+        </>
+      )}
+
+      <span className="bfh-micro bfh-settings__grouplabel">Assistant</span>
+      <SwitchList toggles={GENERAL_TOGGLES} settings={settings} />
 
       <section className="bfh-push">
         <div className="bfh-catrow bfh-catrow--stacked bfh-push__row">

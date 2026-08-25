@@ -924,3 +924,12 @@
 .bfh-modeconfirm__actions .bfh-btn-primary {
   width: auto;
 }
+
+/* Groups the notification switches once there is more than one kind of them. */
+.bfh-settings__grouplabel {
+  display: block;
+  margin: 18px 0 8px;
+}
+.bfh-settings__grouplabel:first-of-type {
+  margin-top: 4px;
+}
