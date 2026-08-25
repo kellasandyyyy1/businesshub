@@ -12,6 +12,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import AIAssistant from './ai/AIAssistant'
+import AnimatedLogo from './AnimatedLogo'
 import { useAssistantActions } from '../context/AssistantActionsContext'
 import { useProfile } from '../context/ProfileContext'
 import { putSetting } from '../db/db'
@@ -190,13 +191,9 @@ export default function Onboarding({ onDone }) {
     <div className="bfh-onboard" role="dialog" aria-modal="true" aria-label="Set up Dual">
       <div className="bfh-onboard__inner" ref={trapRef}>
         <header className="bfh-onboard__head">
-          <img
-            className="bfh-logo__mark"
-            src="/favicon.svg"
-            alt=""
-            width="140"
-            height="140"
-          />
+          {/* The one place the mark animates — everywhere else keeps the
+              static file. */}
+          <AnimatedLogo size={72} />
           <span className="bfh-logo__word">
             <span className="bfh-logo__name">Dual</span>
             <span className="bfh-logo__tag">Dual Finance</span>
