@@ -929,3 +929,210 @@
 .bfh-profile {
   cursor: pointer;
 }
+
+/* ---- Which mode, and how to change it ----------------------------------- */
+
+.bfh-viewing {
+  display: block;
+  margin: 6px 0 0;
+}
+
+.bfh-sidebar[data-collapsed='true'] .bfh-viewing {
+  display: none;
+}
+
+/* On a phone the greeting is the control. It stays a heading in appearance —
+   the chevrons and the badge below are what say it can be pressed. */
+.bfh-greetingtap {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.bfh-greeting__hint {
+  margin-left: 5px;
+  color: var(--ink3);
+  opacity: 0.5;
+  vertical-align: middle;
+}
+
+.bfh-modebadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: 20px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--ink3);
+}
+
+/* ---- Mode sheet ---------------------------------------------------------- */
+
+.bfh-modesheet {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: flex-end;
+}
+
+.bfh-modesheet__scrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgb(0 0 0 / 30%);
+  animation: bfh-fadein var(--duration-micro) var(--ease-out-soft);
+}
+
+.bfh-modesheet__panel {
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-height: 280px;
+  flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  border-top: var(--hairline) solid var(--b);
+  border-radius: 16px 16px 0 0;
+  background: var(--card);
+  animation: bfh-sheetup var(--duration-micro) var(--ease-out-soft);
+}
+
+@keyframes bfh-fadein {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes bfh-sheetup {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bfh-modesheet__panel,
+  .bfh-modesheet__scrim {
+    animation: none;
+  }
+}
+
+.bfh-modesheet__grip {
+  width: 32px;
+  height: 4px;
+  margin: 12px auto 0;
+  border-radius: 2px;
+  background: var(--b2);
+}
+
+.bfh-modesheet__label {
+  padding: 20px 20px 12px;
+  text-align: center;
+}
+
+.bfh-modesheet__options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 16px 24px;
+}
+
+.bfh-modeopt {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 12px;
+  background: var(--bg);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background var(--duration-micro) var(--ease-out-soft),
+    border-color var(--duration-micro) var(--ease-out-soft);
+}
+
+.bfh-modeopt:hover {
+  border-color: var(--b2);
+}
+
+/* The mode you are in is the inverted one — the same signal the sidebar
+   switcher and the assistant pill use. */
+.bfh-modeopt[data-active='true'] {
+  border-color: var(--ink);
+  background: var(--ink);
+}
+
+.bfh-modeopt__icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--ink2);
+}
+
+.bfh-modeopt[data-active='true'] .bfh-modeopt__icon {
+  border-color: transparent;
+  background: rgb(255 255 255 / 15%);
+  color: var(--bg);
+}
+
+.bfh-modeopt__body {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bfh-modeopt__name {
+  font-size: 14px;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.bfh-modeopt__desc {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--ink2);
+}
+
+.bfh-modeopt[data-active='true'] .bfh-modeopt__name {
+  color: var(--bg);
+}
+
+.bfh-modeopt[data-active='true'] .bfh-modeopt__desc {
+  color: var(--bg);
+  opacity: 0.65;
+}
+
+.bfh-modeopt__now {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--bg);
+  opacity: 0.6;
+}
+
+.bfh-modeopt__chevron {
+  flex: none;
+  color: var(--ink3);
+}

@@ -49,6 +49,8 @@ const shortcutLabel = () =>
 export default function Onboarding({ onDone }) {
   const [step, setStep] = useState(0)
   const [name, setName] = useState('')
+  // Optional: a blank one simply falls back to the business name later.
+  const [userName, setUserName] = useState('')
   const [currency, setCurrency] = useState('PHP')
   const [balance, setBalance] = useState('')
   const [error, setError] = useState(null)
@@ -68,6 +70,7 @@ export default function Onboarding({ onDone }) {
     setError(null)
     await Promise.all([
       putSetting('businessName', name.trim()),
+      putSetting('userName', userName.trim()),
       putSetting('currency', chosen.code),
       putSetting('symbol', chosen.symbol),
       putSetting('locale', chosen.locale),
@@ -131,6 +134,19 @@ export default function Onboarding({ onDone }) {
                 autoFocus
               />
               {error && <span className="bfh-formerror">{error}</span>}
+            </label>
+
+            {/* Optional. Leaving it blank is fine — the personal greeting falls
+                back to the business name rather than blocking setup. */}
+            <label className="bfh-formfield" htmlFor="onboard-username">
+              <span className="bfh-micro">Your name</span>
+              <input
+                id="onboard-username"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                placeholder="Your first name"
+              />
+              <span className="bfh-fieldhint">For your personal finance greetings.</span>
             </label>
 
             <label className="bfh-formfield" htmlFor="onboard-currency">

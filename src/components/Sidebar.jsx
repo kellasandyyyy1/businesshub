@@ -86,6 +86,12 @@ export default function Sidebar({ collapsed, open, onNavigate, onAddTransaction 
 
         <ProfileSwitcher onNavigate={onNavigate} />
 
+        {/* Names the choice just made above it, so the switcher reads as a
+            control and this as its current state. */}
+        <span className="bfh-micro bfh-viewing">
+          Viewing {profile === 'personal' ? 'Personal' : 'Business'}
+        </span>
+
         <button
           type="button"
           className="bfh-btn-primary mt-3"

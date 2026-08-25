@@ -39,6 +39,9 @@ export const DEFAULT_SETTINGS = [
   { key: 'taxRate', value: 0.12 },
   { key: 'fiscalYearStart', value: '01-01' },
   { key: 'theme', value: 'system' },
+  // Who the owner is, as distinct from what the business is called. Blank
+  // until asked for, and the greeting falls back rather than nagging.
+  { key: 'userName', value: '' },
 ]
 
 /** Writes the defaults. Runs once, on a database that has just been created. */

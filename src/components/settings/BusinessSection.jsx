@@ -61,6 +61,7 @@ export default function BusinessSection({ settings }) {
   const fileInput = useRef(null)
   const [form, setForm] = useState(() => ({
     businessName: settings.businessName ?? '',
+    userName: settings.userName ?? '',
     currency: settings.currency ?? 'PHP',
     openingBalance: settings.openingBalance ?? '',
     // Stored as MM-DD; only the month is editable here.
@@ -113,6 +114,7 @@ export default function BusinessSection({ settings }) {
 
     await Promise.all([
       putSetting('businessName', form.businessName.trim()),
+      putSetting('userName', form.userName.trim()),
       putSetting('currency', active.code),
       putSetting('symbol', active.symbol),
       putSetting('locale', active.locale),
@@ -169,11 +171,21 @@ export default function BusinessSection({ settings }) {
           />
         </div>
 
-        <label className="bfh-formfield bfh-identity__name">
-          <span className="bfh-micro">Business name</span>
-          <input value={form.businessName} onChange={set('businessName')} />
-          <span className="bfh-fieldhint">Shown in invoices, reports, and the dashboard.</span>
-        </label>
+        <div className="bfh-identity__name">
+          {/* Who you are, as distinct from what the business is called — the
+              personal side is greeted by this one. */}
+          <label className="bfh-formfield">
+            <span className="bfh-micro">Your name</span>
+            <input value={form.userName} onChange={set('userName')} placeholder="First name" />
+            <span className="bfh-fieldhint">Used in personal mode greetings.</span>
+          </label>
+
+          <label className="bfh-formfield">
+            <span className="bfh-micro">Business name</span>
+            <input value={form.businessName} onChange={set('businessName')} />
+            <span className="bfh-fieldhint">Shown in invoices, reports, and the dashboard.</span>
+          </label>
+        </div>
       </div>
 
       {/* ---- The rest ---- */}

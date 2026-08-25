@@ -4,6 +4,7 @@ import { db } from '../db/db'
 
 const FALLBACKS = {
   businessName: 'Dual Finance',
+  userName: '',
   currency: 'PHP',
   symbol: '₱',
   locale: 'en-PH',
