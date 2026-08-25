@@ -598,6 +598,13 @@
   color: var(--invert-fg);
 }
 
+/* Sits a touch back from the label: it marks the badge as openable without
+   competing with the word that answers the question. */
+.bfh-modebadge__caret {
+  margin-left: -1px;
+  opacity: 0.7;
+}
+
 /* ---- Icon buttons -------------------------------------------------------- */
 
 .bfh-icon-btn {
@@ -959,25 +966,24 @@
   cursor: pointer;
 }
 
-.bfh-greeting__hint {
-  margin-left: 5px;
-  color: var(--ink3);
-  opacity: 0.5;
-  vertical-align: middle;
-}
-
+/* Which set of books is on screen. This was a grey outline at 9px — the
+   faintest thing in the header, for the one piece of state a reader has to be
+   sure of before trusting any number below it. Filled, so it is answered at a
+   glance rather than read. */
 .bfh-modebadge {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 2px 8px;
-  border: var(--hairline) solid var(--b2);
+  padding: 3px 10px;
+  border: var(--hairline) solid var(--invert-bg);
   border-radius: 20px;
+  background: var(--invert-bg);
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 10px;
+  font-weight: var(--weight-semibold);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
-  color: var(--ink3);
+  color: var(--invert-fg);
 }
 
 /* ---- Mode sheet ---------------------------------------------------------- */

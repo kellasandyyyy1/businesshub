@@ -1,7 +1,7 @@
 import {
   IconBell,
   IconBuilding,
-  IconChevronsDown,
+  IconChevronDown,
   IconMenu2,
   IconMessageCircle,
   IconUser,
@@ -61,22 +61,23 @@ export default function Topbar({ onOpenMenu, onAsk }) {
             aria-haspopup="dialog"
             aria-label={`${greeting}. Currently in ${mode} mode. Change mode`}
           >
-            <span className="bfh-greeting">
-              {greeting}
-              <IconChevronsDown
-                size={11}
-                stroke={1.5}
-                aria-hidden="true"
-                className="bfh-greeting__hint"
-              />
-            </span>
+            <span className="bfh-greeting">{greeting}</span>
+            {/* The badge carries the chevron rather than the greeting: it is
+                the badge that opens the picker, and a lone glyph under the
+                name pointed at nothing. */}
             <span className="bfh-modebadge">
               {isPersonal ? (
-                <IconUser size={10} stroke={1.5} aria-hidden="true" />
+                <IconUser size={11} stroke={2} aria-hidden="true" />
               ) : (
-                <IconBuilding size={10} stroke={1.5} aria-hidden="true" />
+                <IconBuilding size={11} stroke={2} aria-hidden="true" />
               )}
               {mode}
+              <IconChevronDown
+                size={11}
+                stroke={2}
+                aria-hidden="true"
+                className="bfh-modebadge__caret"
+              />
             </span>
           </button>
         ) : (
