@@ -54,13 +54,16 @@
 
   /* ---- Typography ------------------------------------------------------ */
   --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
-  /* Proportional, not monospaced — the name is kept because every label,
-     tag, timestamp and axis in the app reaches for it by this token.
-     Geist sits behind it deliberately: Sora has no U+20B1, so the peso in
-     "₱284,500" is substituted, and Geist draws it in the app's own voice
-     rather than leaving it to whatever system-ui happens to be. */
-  --font-mono: 'Sora', 'Geist', system-ui, sans-serif;
-  --font-display: 'Geist Pixel', 'Sora', 'Geist', system-ui, sans-serif;
+  /* The label register: every micro-label, tag, timestamp, pill and chart axis
+     in the app reaches for it by this token. The name is historical — it has
+     not been a monospaced face since Geist Mono left.
+
+     Geist Pixel is not loaded yet: it is not on Google Fonts and the `geist`
+     npm package ships only Sans and Mono, so until a woff2 for it is added
+     these labels render as Geist. It leads the stack rather than trailing it
+     so that adding the file is the only step left. */
+  --font-mono: 'Geist Pixel', 'Geist', system-ui, sans-serif;
+  --font-display: 'Geist Pixel', 'Geist', system-ui, sans-serif;
   --font-serif: 'Source Serif 4', Georgia, serif;
 
   /* Compact scale — base UI text is 15px, not 16px */
@@ -71,8 +74,8 @@
   --text-longform: 1.0625rem; /* 17px serif */
   --text-body: 0.9375rem; /* 15px */
   --text-small: 0.8125rem; /* 13px */
-  --text-micro: 0.6875rem; /* 11px mono label */
-  --text-micro-sm: 0.5625rem; /* 9px mono label (tags, pills) */
+  --text-micro: 0.6875rem; /* 11px label */
+  --text-micro-sm: 0.5625rem; /* 9px label (tags, pills) */
 
   --leading-tight: 1;
   --leading-heading: 1.2;
