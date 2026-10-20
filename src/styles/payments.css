@@ -1,0 +1,283 @@
+/* ==========================================================================
+   Payment methods — Settings list and the mark used wherever a method shows
+   ========================================================================== */
+
+/* A neutral tile that holds either a brand's own logo or a plain icon, so a
+   row of mixed marks still lines up as one column. */
+.bfh-pmicon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  overflow: hidden;
+  border: var(--hairline) solid var(--b);
+  border-radius: 9px;
+  background: var(--bg);
+  color: var(--ink2);
+}
+.bfh-pmicon[data-logo] {
+  background: #fff;
+}
+.bfh-pmicon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  object-fit: contain;
+}
+
+.bfh-pmsection {
+  gap: 18px;
+}
+.bfh-pmsection__head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.bfh-pmsection__head .bfh-settings__note {
+  margin: 0;
+  max-width: 52ch;
+}
+
+/* ---- The list ------------------------------------------------------------ */
+
+.bfh-pmlist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+
+.bfh-pmrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 60px;
+  padding: 10px 14px;
+}
+.bfh-pmrow + .bfh-pmrow {
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-pmrow__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.bfh-pmrow__name {
+  overflow: hidden;
+  font-size: var(--fs-body);
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.bfh-pmrow__meta {
+  font-size: var(--fs-small);
+  line-height: 1.35;
+  color: var(--ink3);
+}
+
+/* Switched off: the row steps back, the switch stays fully readable. */
+.bfh-pmrow[data-inactive] :is(.bfh-pmicon, .bfh-pmrow__name) {
+  opacity: 0.5;
+}
+
+/* Always there for an unused method — hover-only would hide it on a phone. */
+.bfh-pmrow__delete {
+  flex: none;
+  color: var(--ink3);
+}
+.bfh-pmrow__delete:hover {
+  color: var(--ink);
+}
+
+/* ---- Adding one ---------------------------------------------------------- */
+
+.bfh-pmadd {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bfh-pmadd__row {
+  display: flex;
+  gap: 8px;
+}
+
+.bfh-pmadd__field {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 0 4px 0 6px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  transition: border-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-pmadd__field:focus-within {
+  border-color: var(--ink);
+}
+.bfh-pmadd__field[data-error] {
+  border-color: var(--neg);
+}
+.bfh-pmadd__field input {
+  flex: 1;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  color: var(--ink);
+  outline: none;
+}
+.bfh-pmadd__field input::placeholder {
+  color: var(--ink3);
+}
+.bfh-pmadd__row .bfh-btn-primary {
+  min-height: 42px;
+}
+
+.bfh-pmadd__suggest {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+}
+.bfh-pmchip {
+  gap: 6px;
+  padding-left: 6px;
+}
+.bfh-pmchip .bfh-pmicon {
+  border-radius: 6px;
+}
+
+@media (max-width: 767px) {
+  .bfh-pmrow {
+    min-height: 64px;
+    padding: 10px 12px;
+  }
+  .bfh-pmadd__field input,
+  .bfh-pmadd__row .bfh-btn-primary {
+    min-height: 44px;
+  }
+}
+
+/* Transaction detail: the method's mark beside its name. */
+.bfh-detail__method {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.bfh-detail__method .bfh-pmicon {
+  border-radius: 6px;
+}
+
+
+/* ---- Transaction form: the payment method picker ------------------------- */
+
+/* Quick-add sits where the select was, the same height, so nothing jumps. */
+.bfh-pmpicker__add {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bfh-pmpicker__add input {
+  flex: 1;
+  min-width: 0;
+}
+.bfh-pmpicker__add .bfh-btn-primary {
+  flex: none;
+  min-height: 42px;
+}
+.bfh-pmpicker__add .bfh-btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.bfh-pmpicker__cancel {
+  flex: none;
+  width: 42px;
+  height: 42px;
+}
+
+/* No methods yet: a field-shaped button that opens the quick-add row. */
+.bfh-pmpicker__empty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  color: var(--ink3);
+  text-align: left;
+  cursor: pointer;
+}
+.bfh-pmpicker__empty:focus-visible {
+  outline: none;
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgb(var(--ink-c) / 0.08);
+}
+.bfh-pmpicker__emptyadd {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+
+@media (max-width: 767px) {
+  .bfh-pmpicker__add .bfh-btn-primary,
+  .bfh-pmpicker__cancel,
+  .bfh-pmpicker__empty {
+    min-height: 44px;
+  }
+  .bfh-pmpicker__cancel {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* Lists: the method under a row, as a quiet caption. */
+.bfh-txmethod {
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--ink3);
+}
+
+/* Settings: renaming in place. */
+.bfh-pmrename {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.bfh-pmrename input {
+  flex: 1;
+  min-width: 0;
+  min-height: 36px;
+  padding: 6px 10px;
+  border: var(--hairline) solid var(--ink);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  color: var(--ink);
+  outline: none;
+}
+.bfh-row__method {
+  display: block;
+  margin-top: 2px;
+}

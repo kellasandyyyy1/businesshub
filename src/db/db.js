@@ -1,6 +1,7 @@
 import Dexie from 'dexie'
 import { ALL_CATEGORIES, RENAMED_CATEGORIES } from './categoryData'
 import { OWNER_DRAW_CATEGORY, PERSONAL_CATEGORIES, seedDefaults } from './defaults'
+import { methodKey, methodsFromSetting, withIds } from '../lib/paymentMethods'
 
 /**
  * Dual Finance — local-only database.
@@ -274,6 +275,78 @@ db.version(7)
     }
   })
 
+/**
+ * v8 — a holding table for the few seconds a delete can still be undone.
+ *
+ * A removed row moves here whole, in the same transaction that takes it out of
+ * its own table, and moves back with the same id if the user taps Undo. While
+ * it is here it is simply not in its table, so every total, report, budget and
+ * notice leaves it out without any of them having to know. Whatever is still
+ * here when the app opens again is purged: the tab closed before Undo.
+ *
+ *   { id, table, row, deletedAt }
+ */
+db.version(8).stores({
+  trash: '++id, table, deletedAt',
+})
+
+/**
+ * v9 — GoTyme joins the payment methods. A list the user has never edited
+ * comes from the defaults and picks it up there; one they have edited is
+ * stored, so it gets GoTyme appended here, once. Removing it afterwards sticks.
+ */
+db.version(9).stores({}).upgrade(async (tx) => {
+  const settings = tx.table('settings')
+  const row = await settings.where('key').equals('paymentMethods').first()
+  if (!row || !Array.isArray(row.value)) return
+  if (row.value.some((m) => /go\s?tyme/i.test(m?.name ?? ''))) return
+  await settings.update(row.id, { value: [...row.value, { name: 'GoTyme', active: true }] })
+})
+
+/**
+ * v10 — transactions point at a saved payment method by id.
+ *
+ * The method list gains ids and is written down for good (a never-edited list
+ * was only ever the defaults in code). Names the ledger already used that the
+ * list lacked are kept as methods: Settings has always listed them, so they
+ * are methods as far as the user can tell, and dropping them would make
+ * their history look orphaned. Every transaction whose free text matches a
+ * method by name — ignoring case and stray spaces — then gets that method's
+ * id; its text stays as the snapshot.
+ */
+db.version(10)
+  .stores({
+    transactions: '++id, date, type, category, clientId, status, paymentMethod, paymentMethodId, profile, createdAt',
+  })
+  .upgrade(async (tx) => {
+    const settings = tx.table('settings')
+    const transactions = tx.table('transactions')
+
+    const row = await settings.where('key').equals('paymentMethods').first()
+    const list = methodsFromSetting(row?.value)
+    const known = new Set(list.map((m) => methodKey(m.name)))
+
+    const extra = []
+    await transactions.each((t) => {
+      const name = String(t.paymentMethod ?? '').trim()
+      if (name && !known.has(methodKey(name))) {
+        known.add(methodKey(name))
+        extra.push({ name, active: true })
+      }
+    })
+
+    const methods = withIds([...list, ...extra])
+    if (row) await settings.update(row.id, { value: methods })
+    else await settings.add({ key: 'paymentMethods', value: methods })
+
+    const byName = new Map(methods.map((m) => [methodKey(m.name), m]))
+    await transactions.toCollection().modify((t) => {
+      if (t.paymentMethodId) return
+      const match = byName.get(methodKey(t.paymentMethod))
+      if (match) t.paymentMethodId = match.id
+    })
+  })
+
 /** Enum-ish constants so pages and forms never hand-write these strings. */
 export const TRANSACTION_TYPES = ['income', 'expense', 'transfer']
 export const TRANSACTION_STATUSES = ['cleared', 'pending']
@@ -380,6 +453,13 @@ export async function initDb() {
   const legacy = await readLegacyDatabase()
 
   await db.open()
+
+  // An undo window that never closed — the tab went first — commits now.
+  try {
+    await db.trash.clear()
+  } catch (err) {
+    console.warn('Dual: could not clear pending deletes —', err?.message)
+  }
 
   if (legacy) {
     try {

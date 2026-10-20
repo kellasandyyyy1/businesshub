@@ -18,7 +18,7 @@ const asArray = (value) => (Array.isArray(value) ? value : [])
 export function parseAIResponse(raw) {
   const source = String(raw ?? '').trim()
   const end = source.lastIndexOf('}')
-  if (end === -1) return { text: source, stats: [], followUps: [], action: null }
+  if (end === -1) return { text: source, stats: [], followUps: [], action: null, actions: [] }
 
   let depth = 0
   for (let i = end; i >= 0; i -= 1) {
@@ -35,6 +35,9 @@ export function parseAIResponse(raw) {
           stats: asArray(parsed.stats),
           followUps: asArray(parsed.followUps),
           action: parsed.action ?? null,
+          // Several transactions in one message arrive as a list; a single one
+          // arrives as `action`. Callers always get both keys.
+          actions: asArray(parsed.actions),
         }
       } catch {
         const block = source.slice(i, end + 1)
@@ -42,18 +45,19 @@ export function parseAIResponse(raw) {
         // be the meta block, drop it rather than showing the reader a broken
         // object — that is the exact thing this screen must never do. Anything
         // else is prose that happens to contain braces, so it stays.
-        const isMetaBlock = /"(stats|followUps|action)"\s*:/.test(block)
+        const isMetaBlock = /"(stats|followUps|actions?)"\s*:/.test(block)
         return {
           text: isMetaBlock ? stripTrailingFence(source.slice(0, i)) : source,
           stats: [],
           followUps: [],
           action: null,
+          actions: [],
         }
       }
     }
   }
 
-  return { text: source, stats: [], followUps: [], action: null }
+  return { text: source, stats: [], followUps: [], action: null, actions: [] }
 }
 
 export default parseAIResponse

@@ -1,0 +1,233 @@
+/* ==========================================================================
+   Signal — the one place colour is allowed, and only to mean something
+
+   Red is a problem, not an outflow. Green is good news, not income. Amber is
+   a warning. Each lives on a small element only and always beside an arrow,
+   an icon or a word, so nothing depends on seeing the colour.
+   ========================================================================== */
+
+.sig-pos {
+  color: var(--pos);
+}
+.sig-neg {
+  color: var(--neg);
+}
+.sig-warn {
+  color: var(--warn);
+}
+
+/* ---- Badges -------------------------------------------------------------- */
+
+.badge-sig {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 7px;
+  border: var(--hairline) solid;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  white-space: nowrap;
+}
+.badge-sig svg {
+  flex: none;
+}
+
+.badge-pos {
+  border-color: var(--pos-b);
+  background: var(--pos-bg);
+  color: var(--pos);
+}
+.badge-neg {
+  border-color: var(--neg-b);
+  background: var(--neg-bg);
+  color: var(--neg);
+}
+.badge-warn {
+  border-color: var(--warn-b);
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+.badge-neutral {
+  border-color: var(--b2);
+  background: transparent;
+  color: var(--ink3);
+}
+
+/* ---- Dots ---------------------------------------------------------------- */
+
+.dot {
+  display: inline-block;
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.dot-pos {
+  background: var(--pos);
+}
+.dot-neg {
+  background: var(--neg);
+}
+.dot-warn {
+  background: var(--warn);
+}
+
+/* ---- Delta: the comparison line under a figure --------------------------- */
+
+/* The arrow always gives the direction; the colour of the figure says
+   whether that direction is welcome. The label never takes colour. */
+.bfh-sigdelta {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px 4px;
+  min-width: 0;
+  font-size: var(--fs-small);
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink3);
+}
+.bfh-sigdelta__mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: var(--weight-medium);
+  white-space: nowrap;
+}
+.bfh-sigdelta__mark[data-tone='neutral'] {
+  color: var(--ink2);
+}
+.bfh-sigdelta__label {
+  color: var(--ink3);
+}
+
+/* Screen readers hear "up, good" rather than a coloured arrow. */
+.bfh-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---- Where the signals land ---------------------------------------------- */
+
+/* Metric tiles: the delta takes the row the badge and context used to share. */
+.bfh-metric__row .bfh-sigdelta {
+  flex: 1;
+}
+
+/* Invoice due-date text: problem red, due-soon amber, everything else ink. */
+.bfh-due[data-tone='neg'] {
+  color: var(--neg);
+}
+.bfh-due[data-tone='warn'] {
+  color: var(--warn);
+}
+
+/* Invoice summary: the late count is the one figure here that goes red. */
+.bfh-invhero__alert .dot-neg {
+  margin-right: -2px;
+}
+.bfh-invhero__alert strong.sig-neg {
+  color: var(--neg);
+}
+
+/* Budget bars: ink while there is room, amber near the cap, red past it. */
+.bfh-budget__fill[data-tone='warn'] {
+  background: var(--warn);
+}
+.bfh-budget__fill[data-tone='neg'] {
+  background: var(--neg);
+}
+.bfh-budget__caption {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-caption);
+  color: var(--ink3);
+}
+.bfh-budget__caption[data-tone='neg'] {
+  color: var(--neg);
+}
+
+/* Goal bars: ink while saving, green once reached. */
+.bfh-goalcard[data-status='completed'] .bfh-goalcard__fill,
+.bfh-goal__fill[data-complete] {
+  background: var(--pos);
+}
+
+/* Client rows: a single dot before the name, nothing else. */
+.bfh-clientrow__name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.bfh-clientrow__nametext {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Notifications: a tone dot at the start of each row; the words stay ink. */
+.bfh-notifmenu__item > .dot {
+  margin-top: 7px;
+}
+
+/* A neutral note that something is off, without raising the alarm. */
+.bfh-signote {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.bfh-signote > .dot {
+  position: relative;
+  top: -1px;
+}
+
+/* Budget card: used on the left, what is left (or over) on the right. */
+.bfh-budget__split {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+/* Cash flow hero: the runway badge rides beside the label, never on the figure. */
+.bfh-cashhero__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.bfh-cashhero__line .bfh-sigdelta {
+  font-size: var(--fs-body-sm);
+}
+.bfh-cashhero__runway {
+  margin: 2px 0 0;
+  font-size: var(--fs-small);
+  color: var(--ink2);
+}
+
+.bfh-goal__name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Charts stay monochrome. The one exception: a threshold line — the low-cash
+   floor — may be drawn in dashed amber, with its "Low cash" label beside it. */
+.bfh-plot__threshold {
+  stroke: var(--warn);
+}

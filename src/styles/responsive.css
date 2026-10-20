@@ -46,7 +46,7 @@
     border-radius: var(--radius-sm);
     padding: 5px 10px;
     font-family: var(--font-sans);
-    font-size: 12px;
+    font-size: var(--fs-small);
     color: var(--ink);
     white-space: nowrap;
     z-index: 100;
@@ -60,7 +60,7 @@
 
 @media (max-width: 767px) {
   .bfh-greeting {
-    font-size: 14px;
+    font-size: var(--fs-body);
   }
   /* The date line and the period switcher move into the page itself. */
   .bfh-greeting__sub,
@@ -130,7 +130,7 @@
 
 .bfh-bottomnav__label {
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   line-height: 1;
@@ -166,15 +166,12 @@
   background: var(--card);
   border-top-left-radius: var(--radius-lg);
   border-top-right-radius: var(--radius-lg);
-  animation: bfh-sheet-up 280ms var(--ease-out-soft);
+  animation: bfh-sheet-up var(--duration-sheet-mobile) var(--ease-sheet) both;
 }
 
 @keyframes bfh-sheet-up {
   from {
     transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
   }
 }
 
@@ -200,7 +197,7 @@
   min-height: 48px;
   padding: 0 12px;
   border-radius: var(--radius-sm);
-  font-size: 14px;
+  font-size: var(--fs-body);
   color: var(--ink2);
   text-decoration: none;
 }
@@ -274,7 +271,7 @@
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     overflow-y: auto;
     padding-bottom: env(safe-area-inset-bottom);
-    animation: bfh-sheet-up 280ms var(--ease-out-soft);
+    animation: bfh-sheet-up var(--duration-sheet-mobile) var(--ease-sheet) both;
   }
   /* The grab handle that says "this drags up from the bottom". */
   .bfh-modal__panel::before {
@@ -305,7 +302,7 @@
   border: 0;
   background: transparent;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: var(--fs-label-lg);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   color: var(--ink2);
@@ -347,7 +344,7 @@
     gap: 8px;
   }
   .bfh-metric__value {
-    font-size: 17px;
+    font-size: 20px;
   }
 }
 
@@ -463,7 +460,7 @@
 }
 
 .bfh-txcard__name {
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   font-weight: var(--weight-medium);
   line-height: 1.35;
   color: var(--ink);
@@ -472,7 +469,7 @@
 .bfh-txcard__amount {
   flex: none;
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   font-weight: var(--weight-medium);
   color: var(--ink);
   font-variant-numeric: tabular-nums;
@@ -517,7 +514,7 @@
   border: 0;
   background: transparent;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: var(--fs-label-lg);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   color: var(--ink2);
@@ -591,68 +588,21 @@ body {
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   Text floor: 11px on phones
+   Text floor
    --------------------------------------------------------------------------
-   The design system's 9px mono micro-label is deliberate and stays that way on
-   desktop. On a phone held at arm's length it stops being readable, so every
-   label a user has to read to work the interface is lifted to 11px here. Chart
-   axis ticks are the one exception noted below.
+   The type ladder in tokens.css steps up a size below 1024px, which lifts every
+   micro label to 11px and body copy to 14–15px without a per-selector list.
+
+   Form controls go further on phones: iOS zooms the page into any field set
+   under 16px, which throws the layout sideways mid-entry.
    -------------------------------------------------------------------------- */
 
-@media (max-width: 1023px) {
-  .bfh-micro,
-  .bfh-micro.bfh-link,
-  .bfh-howto__tag,
-  .bfh-howto__tipnum,
-  .bfh-breakdown__share,
-  .bfh-recurring__freq,
-  .bfh-recurring__annual,
-  .bfh-clientrow__body .bfh-micro,
-  .bfh-greeting__sub,
-  .bfh-avatar,
-  .bfh-cell-amount,
-  .bfh-chip,
-  .bfh-chip--button,
-  .bfh-status-pill,
-  .bfh-cell-status,
-  .bfh-status,
-  .bfh-delta,
-  .bfh-pill-invert,
-  .bfh-badge,
-  .bfh-aipill,
-  .bfh-bottomnav__label,
-  .bfh-period,
-  .bfh-tab,
-  .bfh-ghostaction,
-  .bfh-alert__sub,
-  .bfh-alert__title,
-  .bfh-budget__warn,
-  .bfh-inline-prompt,
-  .bfh-report__label,
-  .bfh-ai-note__link,
-  .bfh-link,
-  .bfh-panel__back,
-  .bfh-backlink,
-  .bfh-formerror,
-  .bfh-kbd,
-  .bfh-toggle__option,
-  .bfh-btn-danger,
-  .bfh-filter select,
-  .bfh-export__previewmeta,
-  .bfh-suggest__pill,
-  .bfh-suggest__confirm,
-  .bfh-suggest__dismiss,
-  .bfh-ask__followups,
-  .bfh-table th,
-  .bfh-report__table th,
-  .bfh-doc__items th,
-  .bfh-export__table th,
-  .bfh-report__table tr[data-kind='section'] td,
-  .bfh-chart__axis,
-  .bfh-cashchart text {
-    font-size: 11px;
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    font-size: 16px !important;
   }
-
 }
 
 /* --------------------------------------------------------------------------
@@ -735,7 +685,7 @@ body {
     border-left: 0;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     padding-bottom: env(safe-area-inset-bottom);
-    animation: bfh-sheet-up 280ms var(--ease-out-soft);
+    animation: bfh-sheet-up var(--duration-sheet-mobile) var(--ease-sheet) both;
   }
   .bfh-ask__panel::before {
     content: '';
@@ -791,7 +741,7 @@ body {
   }
   .bfh-items__row input {
     min-height: 40px;
-    font-size: 13px;
+    font-size: var(--fs-body-sm);
   }
 }
 
@@ -842,12 +792,74 @@ body {
    "vs last period" was being ellipsised down to "vs last peri…". Letting the
    caption drop beneath the badge keeps the whole phrase readable. */
 @media (max-width: 767px) {
+  /* Two-up cards are too narrow for the badge and its caption to share a
+     line reliably; some fit and some wrap, and the grid looks ragged. Every
+     card stacks them instead, so the four line up. */
   .bfh-metric__row {
-    flex-wrap: wrap;
-    row-gap: 3px;
+    flex-direction: column;
+    align-items: flex-start;
+    row-gap: 4px;
   }
   .bfh-metric__context {
     white-space: normal;
     overflow: visible;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Phone polish — finance lists read as lists, not as rows of badges
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  /* The filters hold 16px so iOS does not zoom into them; at that size the
+     uppercase label register shouts, so they read as plain sentence-case
+     controls instead. */
+  .bfh-filter select {
+    padding-right: 28px;
+    font-family: var(--font-sans);
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--ink);
+  }
+
+  /* A transaction card's category, date and status are one line of context
+     under the name, separated by middots. As bordered uppercase pills they
+     wrapped onto a second row and outweighed the amount they describe. */
+  .bfh-txcard {
+    padding: 14px 16px;
+  }
+  .bfh-txcard__top {
+    align-items: baseline;
+  }
+  .bfh-txcard__meta {
+    gap: 0;
+    margin-top: 3px;
+  }
+  .bfh-txcard__meta .bfh-chip {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    font-weight: var(--weight-regular);
+    /* Statuses are stored lower-case ("cleared"); category names and dates
+       are already capitalised, so this only lifts the status. */
+    text-transform: capitalize;
+    letter-spacing: 0;
+    color: var(--ink2);
+  }
+  .bfh-txcard__meta .bfh-chip + .bfh-chip::before {
+    content: '·';
+    margin: 0 6px;
+    color: var(--ink3);
+  }
+
+  /* The client's name keeps the line; export and edit drop beneath it. */
+  .bfh-clienthead {
+    flex-wrap: wrap;
+    row-gap: 12px;
+  }
+  .bfh-clienthead__body {
+    flex: 1 1 calc(100% - 62px);
   }
 }

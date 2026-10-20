@@ -1,0 +1,291 @@
+/* ==========================================================================
+   Toasts — confirmations, undo, and errors from what the user just did
+
+   A frosted banner in the manner of iOS: translucent material over a blur,
+   soft layered depth, a round glyph, and a spring that settles rather than
+   stops. On a phone it drops in from the top like a system notification; on
+   larger screens it rises bottom-right, above the assistant bubble.
+   ========================================================================== */
+
+.bfh-toasts {
+  /* Material and depth, redefined for dark below. */
+  --toast-bg: rgb(255 255 255 / 0.78);
+  --toast-edge: rgb(0 0 0 / 0.06);
+  --toast-ink: rgb(var(--ink-c));
+  --toast-ink2: rgb(var(--ink-c) / 0.6);
+  --toast-fill: rgb(var(--ink-c) / 0.07);
+  --toast-shadow:
+    0 0.5px 0 rgb(255 255 255 / 0.6) inset,
+    0 1px 2px rgb(0 0 0 / 0.06),
+    0 8px 24px -6px rgb(0 0 0 / 0.16),
+    0 24px 48px -16px rgb(0 0 0 / 0.14);
+  --toast-spring: cubic-bezier(0.2, 1.25, 0.32, 1);
+  --toast-out: cubic-bezier(0.4, 0, 0.8, 0.4);
+
+  position: fixed;
+  right: 24px;
+  /* Clear of the assistant bubble in the bottom-right corner. */
+  bottom: 88px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 360px;
+  max-width: calc(100vw - 48px);
+  pointer-events: none;
+}
+
+.bfh-toast {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 52px;
+  padding: 10px 10px 10px 11px;
+  overflow: hidden;
+  border: 0.5px solid var(--toast-edge);
+  border-radius: 18px;
+  background: var(--toast-bg);
+  -webkit-backdrop-filter: saturate(180%) blur(22px);
+  backdrop-filter: saturate(180%) blur(22px);
+  color: var(--toast-ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: var(--weight-medium);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  box-shadow: var(--toast-shadow);
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transform-origin: 50% 100%;
+  animation: bfh-toast-rise 560ms var(--toast-spring) both;
+  will-change: transform, opacity;
+}
+.bfh-toast[data-leaving] {
+  animation: bfh-toast-sink 300ms var(--toast-out) both;
+}
+.bfh-toast[data-swiped] {
+  animation: none;
+}
+
+/* Without a blur to sit on, the material goes nearly opaque so text stays
+   readable over whatever is behind it. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .bfh-toasts {
+    --toast-bg: rgb(255 255 255 / 0.97);
+  }
+}
+
+/* ---- Glyph ---------------------------------------------------------------- */
+
+.bfh-toast__badge {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--toast-fill);
+  color: var(--toast-ink);
+}
+/* Only the outcome takes a tint — done is good news, failed is a problem. */
+.bfh-toast[data-type='success'] .bfh-toast__badge {
+  background: var(--pos-bg);
+  color: var(--pos);
+}
+.bfh-toast[data-type='error'] .bfh-toast__badge {
+  background: var(--neg-bg);
+  color: var(--neg);
+}
+.bfh-toast[data-type='success'] .bfh-toast__badge svg {
+  animation: bfh-toast-tick 420ms 120ms var(--toast-spring) both;
+}
+
+.bfh-toast__message {
+  display: -webkit-box;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.bfh-toast:is([data-type='success'], [data-type='info']) .bfh-toast__message {
+  cursor: pointer;
+}
+
+/* ---- Buttons -------------------------------------------------------------- */
+
+.bfh-toast__action {
+  flex: none;
+  min-height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--toast-fill);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
+  color: var(--toast-ink);
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    transform 160ms var(--toast-spring);
+}
+.bfh-toast__action:hover {
+  background: rgb(var(--ink-c) / 0.12);
+}
+.bfh-toast__action:active {
+  transform: scale(0.94);
+}
+
+.bfh-toast__close {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--toast-ink2);
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+.bfh-toast__close:hover {
+  background: var(--toast-fill);
+  color: var(--toast-ink);
+}
+
+.bfh-toast :is(.bfh-toast__action, .bfh-toast__close):focus-visible {
+  outline: 2px solid var(--toast-ink);
+  outline-offset: 1px;
+}
+
+/* The undo window, running out as a hairline along the bottom edge. */
+.bfh-toast__countdown {
+  position: absolute;
+  right: 18px;
+  bottom: 0;
+  left: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--toast-ink);
+  opacity: 0.18;
+  transform-origin: left center;
+  animation-name: bfh-toast-countdown;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+}
+
+/* ---- Motion --------------------------------------------------------------- */
+
+@keyframes bfh-toast-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.94);
+  }
+  40% {
+    opacity: 1;
+  }
+}
+@keyframes bfh-toast-sink {
+  to {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+}
+@keyframes bfh-toast-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-120%) scale(0.96);
+  }
+  35% {
+    opacity: 1;
+  }
+}
+@keyframes bfh-toast-lift {
+  to {
+    opacity: 0;
+    transform: translateY(-120%) scale(0.97);
+  }
+}
+@keyframes bfh-toast-tick {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+}
+@keyframes bfh-toast-countdown {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* ---- Dark: an elevated charcoal material instead of frosted white -------- */
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) .bfh-toasts {
+    --toast-bg: rgb(44 44 48 / 0.78);
+    --toast-edge: rgb(255 255 255 / 0.08);
+    --toast-shadow:
+      0 0.5px 0 rgb(255 255 255 / 0.08) inset,
+      0 8px 24px -6px rgb(0 0 0 / 0.5),
+      0 24px 48px -16px rgb(0 0 0 / 0.5);
+  }
+}
+:root.dark .bfh-toasts {
+  --toast-bg: rgb(44 44 48 / 0.78);
+  --toast-edge: rgb(255 255 255 / 0.08);
+  --toast-shadow:
+    0 0.5px 0 rgb(255 255 255 / 0.08) inset,
+    0 8px 24px -6px rgb(0 0 0 / 0.5),
+    0 24px 48px -16px rgb(0 0 0 / 0.5);
+}
+
+/* ---- Phone: a banner from the top edge, over everything ------------------- */
+
+@media (max-width: 767px) {
+  .bfh-toasts {
+    top: calc(env(safe-area-inset-top) + 10px);
+    right: 12px;
+    bottom: auto;
+    left: 12px;
+    width: auto;
+    max-width: 440px;
+    margin: 0 auto;
+    /* Newest nearest the edge it came from. */
+    flex-direction: column-reverse;
+  }
+  .bfh-toast {
+    transform-origin: 50% 0;
+    animation-name: bfh-toast-drop;
+  }
+  .bfh-toast[data-leaving] {
+    animation-name: bfh-toast-lift;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bfh-toast,
+  .bfh-toast[data-leaving],
+  .bfh-toast__badge svg {
+    animation-name: bfh-toast-fade;
+    animation-duration: 160ms;
+  }
+  .bfh-toast[data-leaving] {
+    animation-direction: reverse;
+  }
+  @keyframes bfh-toast-fade {
+    from {
+      opacity: 0;
+    }
+  }
+}

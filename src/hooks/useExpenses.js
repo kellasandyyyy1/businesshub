@@ -34,7 +34,6 @@ export function useExpensesData(profile = BUSINESS_PROFILE) {
       clients,
       clientsById: Object.fromEntries(clients.map((c) => [c.id, c])),
       categoryIcons: Object.fromEntries(categories.map((c) => [c.name, c.icon])),
-      paymentMethods: [...new Set(expenses.map((t) => t.paymentMethod).filter(Boolean))].sort(),
     }
   }, [profile])
 }

@@ -1,75 +1,82 @@
+import { IconFileInvoice, IconHourglass, IconRepeat } from '@tabler/icons-react'
+
 import { formatCurrency, formatDate } from '../../lib/format'
 
 const TABS = [
-  { id: 'income', label: 'Expected income' },
-  { id: 'expenses', label: 'Expected expenses' },
+  { id: 'income', label: 'Coming in' },
+  { id: 'expenses', label: 'Going out' },
 ]
 
+/** Where each expected amount comes from, in words and with a picture. */
+const SOURCES = {
+  invoice: { label: 'Unpaid invoice', Icon: IconFileInvoice },
+  pending: { label: 'Pending entry', Icon: IconHourglass },
+  recurring: { label: 'Repeats monthly', Icon: IconRepeat },
+}
+
+/**
+ * The money behind the line on the chart: what is expected to arrive and
+ * what is expected to leave, each with when, why, and how much. One list
+ * that reads the same on a phone as on a desktop, rather than a table that
+ * has to be squeezed.
+ */
 export default function UpcomingTable({ income, expenses, tab, onTab, symbol }) {
   const rows = tab === 'income' ? income : expenses
-  const total = rows.reduce((sum, r) => sum + r.amount, 0)
+  const sum = (list) => list.reduce((total, r) => total + r.amount, 0)
+  const totals = { income: sum(income), expenses: sum(expenses) }
 
   return (
-    <section className="bfh-card bfh-table-card">
-      <div className="bfh-tabs bfh-tabs--flush" role="tablist" aria-label="Upcoming money">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            role="tab"
-            className="bfh-tab"
-            aria-selected={tab === t.id}
-            onClick={() => onTab(t.id)}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      <table className="bfh-table">
-        <thead>
-          <tr>
-            <th scope="col">Date</th>
-            <th scope="col">Description</th>
-            <th scope="col" className="bfh-cell-amount">
-              Amount
-            </th>
-            <th scope="col">Source</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, index) => (
-            // Projected rows have no database identity of their own.
-            // eslint-disable-next-line react/no-array-index-key
-            <tr key={`${row.date}-${row.description}-${index}`}>
-              <td className="bfh-cell-date">{formatDate(row.date)}</td>
-              <td className="bfh-cell-desc">
-                <span className="bfh-row__name">{row.description}</span>
-              </td>
-              <td className="bfh-cell-amount">
-                {tab === 'income' ? '' : '−'}
-                {formatCurrency(row.amount, symbol)}
-              </td>
-              <td className="bfh-cell-pill">
-                <span className="bfh-chip">{row.source}</span>
-              </td>
-            </tr>
+    <section className="bfh-card bfh-upcoming">
+      <header className="bfh-upcoming__head">
+        <h2 className="bfh-panel__title">What is behind the line</h2>
+        <div className="bfh-segment" role="radiogroup" aria-label="Upcoming money">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              role="radio"
+              className="bfh-segment__option"
+              aria-checked={tab === t.id}
+              onClick={() => onTab(t.id)}
+            >
+              {t.label} · {formatCurrency(totals[t.id], symbol)}
+            </button>
           ))}
-        </tbody>
-      </table>
+        </div>
+      </header>
 
       {rows.length === 0 ? (
         <p className="bfh-empty">
-          Nothing {tab === 'income' ? 'expected to arrive' : 'scheduled to leave'} in this window.
+          {tab === 'income'
+            ? 'Nothing is expected to come in during this window. Unpaid invoices you have sent show up here.'
+            : 'Nothing is scheduled to go out. Bills that repeat every month show up here once Dual has seen them three times.'}
         </p>
       ) : (
-        <footer className="bfh-runningtotal">
-          <span className="bfh-micro">
-            {rows.length} expected {tab === 'income' ? 'receipt' : 'payment'}
-            {rows.length === 1 ? '' : 's'}
-          </span>
-          <span className="bfh-runningtotal__value">{formatCurrency(total, symbol)}</span>
-        </footer>
+        <ul className="bfh-upcoming__list">
+          {rows.map((row, index) => {
+            const source = SOURCES[row.source] ?? SOURCES.pending
+            const { Icon } = source
+            return (
+              // Projected rows have no database identity of their own.
+              // eslint-disable-next-line react/no-array-index-key
+              <li key={`${row.date}-${row.description}-${index}`} className="bfh-upcoming__row">
+                <span className="bfh-upcoming__icon" aria-hidden="true">
+                  <Icon size={16} stroke={1.5} />
+                </span>
+                <span className="bfh-upcoming__body">
+                  <span className="bfh-upcoming__name">{row.description}</span>
+                  <span className="bfh-upcoming__meta">
+                    {formatDate(row.date)} · {source.label}
+                  </span>
+                </span>
+                <span className="bfh-upcoming__amount" data-type={tab}>
+                  {tab === 'income' ? '+' : '−'}
+                  {formatCurrency(row.amount, symbol)}
+                </span>
+              </li>
+            )
+          })}
+        </ul>
       )}
     </section>
   )

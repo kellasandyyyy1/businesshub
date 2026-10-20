@@ -6,11 +6,13 @@ import { createContext, useContext, useMemo, useState } from 'react'
  * drilling — switching a tab re-renders all of them at once.
  */
 
+/* `label` is the compact pill text; `name` is the same window said in words,
+   for headings and sentences — "Last 30 days", not "Last 30d". */
 export const PERIODS = [
-  { id: '7d', label: '7d', days: 7 },
-  { id: '30d', label: '30d', days: 30 },
-  { id: '90d', label: '90d', days: 90 },
-  { id: '12m', label: '12m', days: 365 },
+  { id: '7d', label: '7d', name: '7 days', days: 7 },
+  { id: '30d', label: '30d', name: '30 days', days: 30 },
+  { id: '90d', label: '90d', name: '90 days', days: 90 },
+  { id: '12m', label: '12m', name: '12 months', days: 365 },
 ]
 
 const PeriodContext = createContext(null)

@@ -65,7 +65,7 @@
 }
 
 .bfh-onb__brandname {
-  font-size: 14px;
+  font-size: var(--fs-body);
   font-weight: var(--weight-medium);
   line-height: 1;
   letter-spacing: -0.01em;
@@ -74,7 +74,7 @@
 
 .bfh-onb__brandtag {
   font-family: var(--font-mono);
-  font-size: 8px;
+  font-size: var(--fs-label);
   font-weight: var(--weight-medium);
   line-height: 1;
   text-transform: uppercase;
@@ -126,7 +126,7 @@
   display: block;
   margin-bottom: 8px;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -144,7 +144,7 @@
 
 .bfh-onb__sub {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   line-height: 1.6;
   color: var(--ink2);
 }
@@ -277,7 +277,7 @@
 }
 
 .bfh-onb__optionname {
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   font-weight: var(--weight-medium);
   line-height: 1.3;
   color: var(--ink);
@@ -287,7 +287,7 @@
    button's colour is not the colour a paragraph wants. */
 .bfh-onb__optiondesc {
   margin-top: 2px;
-  font-size: 11px;
+  font-size: var(--fs-caption);
   font-weight: var(--weight-regular);
   line-height: 1.5;
   color: var(--ink2);
@@ -301,7 +301,7 @@
   border-radius: 20px;
   background: transparent;
   font-family: var(--font-mono);
-  font-size: 8px;
+  font-size: var(--fs-label);
   font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -319,7 +319,7 @@
 .bfh-onb__label {
   margin-bottom: 6px;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -333,7 +333,7 @@
   border-radius: 8px;
   background: var(--card);
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   color: var(--ink);
   outline: none;
   appearance: none;
@@ -367,7 +367,7 @@
   top: 50%;
   left: 14px;
   transform: translateY(-50%);
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   color: var(--ink2);
 }
 
@@ -377,13 +377,13 @@
 
 .bfh-onb__hint {
   margin-top: 6px;
-  font-size: 11px;
+  font-size: var(--fs-caption);
   line-height: 1.4;
   color: var(--ink3);
 }
 
 .bfh-onb__error {
-  font-size: 11px;
+  font-size: var(--fs-caption);
   line-height: 1.4;
   color: var(--ink);
 }
@@ -394,7 +394,7 @@
   border: 0;
   background: transparent;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: var(--fs-label-lg);
   font-weight: var(--weight-medium);
   line-height: 1.5;
   text-align: center;
@@ -451,7 +451,7 @@
 }
 
 .bfh-onb__featurename {
-  font-size: 12px;
+  font-size: var(--fs-small);
   font-weight: var(--weight-medium);
   line-height: 1.3;
   color: var(--ink);
@@ -459,7 +459,7 @@
 
 .bfh-onb__featuredesc {
   margin-top: 2px;
-  font-size: 11px;
+  font-size: var(--fs-caption);
   line-height: 1.4;
   color: var(--ink2);
 }
@@ -473,7 +473,7 @@
   border: var(--hairline) solid var(--b);
   border-radius: 8px;
   background: var(--bg);
-  font-size: 11px;
+  font-size: var(--fs-caption);
   color: var(--ink2);
 }
 
@@ -487,7 +487,7 @@
   border: var(--hairline) solid var(--b2);
   border-radius: 4px;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   font-weight: var(--weight-medium);
   color: var(--ink);
 }
@@ -499,7 +499,7 @@
   border: 0;
   background: transparent;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: var(--fs-label-lg);
   font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -539,7 +539,7 @@
 
 .bfh-onb__donesub {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   line-height: 1.5;
   color: var(--ink2);
 }
@@ -569,7 +569,7 @@
 
 .bfh-onb__summary dd {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   color: var(--ink);
 }
 
@@ -595,7 +595,7 @@
   border-radius: 9px;
   background: var(--ink);
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   font-weight: var(--weight-medium);
   line-height: 1;
   color: var(--bg);
@@ -623,7 +623,7 @@
   border: 0;
   background: transparent;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--fs-caption);
   font-weight: var(--weight-medium);
   text-align: center;
   text-transform: uppercase;

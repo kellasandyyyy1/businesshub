@@ -122,3 +122,13 @@ export function groupTotals(rows, keyOf, labelOf) {
     .sort((a, b) => b.value - a.value)
 }
 
+
+/**
+ * How the monthly figure was arrived at. On a window shorter than a month it
+ * is a pace, not a month actually earned, and the caption has to say so.
+ */
+export function monthlyCaption(period) {
+  if (period.days < 30) return `a month at this ${period.name} pace`
+  if (period.days > 31) return `average month over ${period.name}`
+  return `the last ${period.name}`
+}

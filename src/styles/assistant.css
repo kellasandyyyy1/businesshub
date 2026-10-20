@@ -95,7 +95,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   font-weight: var(--weight-medium);
   color: var(--ink);
 }
@@ -107,18 +107,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.bfh-assist__esc {
-  padding: 2px 6px;
-  border: var(--hairline) solid var(--b2);
-  border-radius: var(--radius-xs);
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: var(--weight-medium);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-micro);
-  color: var(--ink3);
 }
 
 /* ---- Suggestions --------------------------------------------------------- */
@@ -133,7 +121,7 @@
 .bfh-assist__eyebrow {
   margin-bottom: 4px;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
@@ -150,7 +138,7 @@
   border-radius: var(--radius-sm);
   background: var(--bg);
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: var(--fs-small);
   text-align: left;
   color: var(--ink2);
   cursor: pointer;
@@ -197,7 +185,7 @@
   border-radius: 12px 12px 2px 12px;
   background: var(--invert-bg);
   color: var(--invert-fg);
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   line-height: 1.5;
 }
 
@@ -215,7 +203,7 @@
   align-items: center;
   gap: 6px;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
@@ -225,7 +213,7 @@
 /* ---- Rendered answer ------------------------------------------------------ */
 
 .ai-text {
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   line-height: 1.65;
   color: var(--ink);
 }
@@ -270,7 +258,7 @@
 
 .bfh-assist__statvalue {
   font-family: var(--font-mono);
-  font-size: 15px;
+  font-size: var(--fs-lead);
   font-weight: var(--weight-medium);
   letter-spacing: -0.02em;
   color: var(--ink);
@@ -280,7 +268,7 @@
 .bfh-assist__statlabel {
   margin-top: 2px;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
@@ -302,7 +290,7 @@
   border-radius: var(--radius-pill);
   background: transparent;
   font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: var(--fs-caption);
   color: var(--ink2);
   cursor: pointer;
   transition:
@@ -359,7 +347,7 @@
 
 .bfh-assist__error {
   margin: 0;
-  font-size: 12px;
+  font-size: var(--fs-small);
   line-height: 1.5;
   color: var(--ink2);
 }
@@ -370,7 +358,7 @@
   border-radius: var(--radius-xs);
   background: transparent;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--fs-caption);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   color: var(--ink2);
@@ -398,7 +386,7 @@
   border: 0;
   background: transparent;
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   color: var(--ink);
   outline: none;
 }
@@ -454,58 +442,69 @@
   border-color: var(--ink3);
 }
 
-.bfh-assist__mic[data-listening='true'] {
+/* Filled while the mic is open, because then the microphone is what the
+   panel is doing. The ring pulses slowly while it waits for a voice and
+   quickly once it hears one, so the person can tell the two apart. */
+.bfh-assist__mic[data-status='listening'],
+.bfh-assist__mic[data-status='recording'],
+.bfh-assist__mic[data-status='processing'] {
   border-color: var(--invert-bg);
   background: var(--invert-bg);
   color: var(--invert-fg);
 }
+.bfh-assist__mic[data-status='silent'],
+.bfh-assist__mic[data-status='blocked'],
+.bfh-assist__mic[data-status='offline'],
+.bfh-assist__mic[data-status='nomic'],
+.bfh-assist__mic[data-status='error'] {
+  border-style: dashed;
+  color: var(--ink3);
+}
 
-.bfh-assist__micring {
-  position: absolute;
-  inset: -4px;
-  border: 1.5px solid var(--ink);
-  border-radius: var(--radius-pill);
-  opacity: 0.3;
+@keyframes bfh-micring {
+  0% {
+    box-shadow: 0 0 0 0 rgb(var(--ink-c) / 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 8px rgb(var(--ink-c) / 0);
+  }
+}
+@keyframes bfh-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  @keyframes bfh-micpulse {
-    0%,
-    100% {
-      transform: scale(1);
-      opacity: 0.3;
-    }
-    50% {
-      transform: scale(1.3);
-      opacity: 0;
-    }
+  .bfh-assist__mic[data-status='listening'] {
+    animation: bfh-micring 1.5s ease infinite;
   }
-  .bfh-assist__micring {
-    animation: bfh-micpulse 1.2s var(--ease-out-soft) infinite;
+  .bfh-assist__mic[data-status='recording'] {
+    animation: bfh-micring 0.6s ease infinite;
+  }
+  .bfh-assist__spin {
+    animation: bfh-spin 0.9s linear infinite;
   }
 }
 
-/* Dimmed while the recogniser is still revising the tail of the sentence, so
-   text that may yet change is not read as text that has settled. */
-.bfh-assist__input[data-interim='true'] {
-  color: var(--ink2);
-}
-
-.bfh-assist__voiceerror {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+/* What the microphone is doing, in words, under the input. */
+.bfh-assist__voicestatus {
   flex: none;
   margin: 0;
-  padding: 6px 16px;
-  border-top: var(--hairline) solid var(--b);
-  font-size: 11px;
-  line-height: 1.4;
-  color: var(--ink2);
+  padding: 0 16px 10px;
+  /* Several of these are full sentences, so they read in sentence case. */
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--weight-medium);
+  color: var(--ink3);
+  animation: bfh-confirm-in 200ms var(--ease-sheet) both;
 }
-
-.bfh-assist__voiceerror svg {
-  flex: none;
+/* A stop that needs the person to do something reads in ink, not grey. */
+.bfh-assist__voicestatus[data-status='blocked'],
+.bfh-assist__voicestatus[data-status='offline'],
+.bfh-assist__voicestatus[data-status='nomic'],
+.bfh-assist__voicestatus[data-status='error'] {
+  color: var(--ink);
 }
 
 /* ---- Bottom sheet on a phone ------------------------------------------------ */
@@ -523,7 +522,7 @@
     border-left: 0;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     padding-bottom: env(safe-area-inset-bottom);
-    animation: bfh-sheet-up 280ms var(--ease-out-soft);
+    animation: bfh-sheet-up var(--duration-sheet-mobile) var(--ease-sheet) both;
   }
   .bfh-assist__grip {
     display: block;
@@ -534,52 +533,6 @@
     border-radius: var(--radius-pill);
     background: var(--b2);
   }
-  /* There is no Esc key on a phone keyboard. */
-  .bfh-assist__esc {
-    display: none;
-  }
-}
-
-/* ---- Which books are loaded --------------------------------------------- */
-
-.bfh-assist__mode {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 2px 8px;
-  border: var(--hairline) solid var(--b2);
-  border-radius: 20px;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: var(--weight-medium);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-micro);
-  color: var(--ink3);
-  white-space: nowrap;
-}
-
-.bfh-assist__switch {
-  border: 0;
-  background: transparent;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: var(--weight-medium);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-micro);
-  color: var(--ink3);
-  cursor: pointer;
-}
-
-.bfh-assist__switch:hover {
-  color: var(--ink);
-}
-
-/* The pill is the part that must survive a narrow panel; the switch link has
-   the sidebar switcher behind it and can go. */
-@media (max-width: 520px) {
-  .bfh-assist__switch {
-    display: none;
-  }
 }
 
 /* A system line belongs to neither side of the conversation, so it is not a
@@ -587,9 +540,583 @@
 .bfh-assist__system {
   margin: 8px auto;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: var(--fs-label-lg);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   color: var(--ink3);
   text-align: center;
+}
+
+/* ==========================================================================
+   Confirmation card — a transaction the assistant understood, waiting for
+   the person to save it. Nothing is written until they tap Save.
+   ========================================================================== */
+
+.bfh-confirmlist {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  margin-top: 8px;
+}
+
+.bfh-confirm__saveall {
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 9px 14px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--invert-bg);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--weight-medium);
+  color: var(--invert-fg);
+  cursor: pointer;
+  transition: transform 120ms var(--ease-out-soft), opacity var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-confirm__saveall:active {
+  transform: scale(0.98);
+}
+
+/* Collapsing to nothing without measuring: a one-row grid animates its row
+   from 1fr to 0fr, and the inner wrapper clips what is left. */
+.bfh-confirm {
+  display: grid;
+  grid-template-rows: 1fr;
+  opacity: 1;
+  animation: bfh-confirm-in 320ms var(--ease-sheet) both;
+  transition:
+    grid-template-rows 300ms var(--ease-sheet),
+    opacity 300ms var(--ease-sheet),
+    margin 300ms var(--ease-sheet);
+}
+.bfh-confirm + .bfh-confirm {
+  margin-top: 8px;
+}
+.bfh-confirm[data-state='collapsed'] {
+  grid-template-rows: 0fr;
+  opacity: 0;
+  margin-top: 0;
+  pointer-events: none;
+}
+
+@keyframes bfh-confirm-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.bfh-confirm__inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.bfh-confirm__card {
+  padding: 14px 16px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-md);
+  background: var(--card);
+}
+
+.bfh-confirm__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: -6px -8px 0 0;
+}
+
+.bfh-confirm__eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink3);
+}
+
+.bfh-confirm__close {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink3);
+  cursor: pointer;
+  transition: background-color var(--duration-micro) var(--ease-out-soft), color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-confirm__close:hover {
+  background: var(--surface-fill);
+  color: var(--ink);
+}
+.bfh-confirm__close:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.bfh-confirm__details {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.bfh-confirm__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--ink2);
+}
+
+.bfh-confirm__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.bfh-confirm__name {
+  overflow: hidden;
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-medium);
+  line-height: 1.3;
+  color: var(--ink);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bfh-confirm__meta {
+  margin-top: 2px;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: var(--tracking-micro);
+  text-transform: uppercase;
+  color: var(--ink3);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bfh-confirm__amount {
+  flex: none;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: var(--weight-medium);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.bfh-confirm__note {
+  margin: 10px 0 0;
+  font-size: var(--fs-small);
+  color: var(--ink2);
+}
+
+.bfh-confirm__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-confirm__edit,
+.bfh-confirm__save {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 9px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 120ms var(--ease-out-soft),
+    border-color var(--duration-micro) var(--ease-out-soft),
+    opacity var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-confirm__edit:active,
+.bfh-confirm__save:active {
+  transform: scale(0.98);
+}
+.bfh-confirm__edit:focus-visible,
+.bfh-confirm__save:focus-visible,
+.bfh-confirm__saveall:focus-visible,
+.bfh-confirm__close:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.bfh-confirm__edit {
+  flex: 1;
+  border: var(--hairline) solid var(--b2);
+  background: transparent;
+  color: var(--ink2);
+}
+.bfh-confirm__edit:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.bfh-confirm__save {
+  flex: 2;
+  border: 0;
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+.bfh-confirm__save:hover {
+  opacity: 0.88;
+}
+
+.bfh-confirm__saving {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--tracking-micro);
+  text-transform: uppercase;
+  color: var(--ink3);
+}
+
+.bfh-confirm__saved {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  animation: bfh-confirm-in 260ms var(--ease-sheet) both;
+}
+
+@media (max-width: 767px) {
+  .bfh-confirm__edit,
+  .bfh-confirm__save,
+  .bfh-confirm__saveall {
+    min-height: 44px;
+  }
+}
+
+/* A small status tag beside the eyebrow — an invoice says it is a draft. */
+.bfh-confirm__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.bfh-confirm__badge {
+  padding: 0 6px;
+  border: var(--hairline) dashed var(--b2);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-label);
+  line-height: 1.6;
+  color: var(--ink3);
+}
+
+/* Why a card cannot be saved as it stands. Ink, not grey: it has to be read
+   before the button beneath it makes sense. */
+.bfh-confirm__note--warn {
+  color: var(--ink);
+}
+.bfh-confirm__note--warn::before {
+  content: '! ';
+  font-weight: var(--weight-semibold);
+}
+
+/* ==========================================================================
+   Conversation polish
+   ========================================================================== */
+
+/* ---- Empty state: what this is for, then what to try ---------------------- */
+
+.bfh-assist__hello {
+  margin-bottom: 6px;
+}
+.bfh-assist__hellotitle {
+  margin: 0;
+  font-size: 17px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+.bfh-assist__hellobody {
+  margin: 4px 0 0;
+  max-width: 46ch;
+  font-size: var(--fs-body-sm);
+  line-height: 1.55;
+  color: var(--ink2);
+}
+
+/* The eyebrows separate the two groups; the second needs air above it. */
+.bfh-assist__suggest .bfh-assist__eyebrow + .bfh-assist__suggestion {
+  margin-top: 0;
+}
+.bfh-assist__examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.bfh-assist__suggestion + .bfh-assist__eyebrow {
+  margin-top: 10px;
+}
+
+/* ---- Answers -------------------------------------------------------------- */
+
+/* Lists get the dash the prompt asks the model to write, rather than nothing
+   at all — the browser bullet was being reset away. */
+.ai-text ul {
+  list-style: none;
+  padding-left: 0;
+}
+.ai-text ul li {
+  position: relative;
+  padding-left: 14px;
+  color: var(--ink);
+}
+.ai-text ul li::before {
+  content: '–';
+  position: absolute;
+  left: 0;
+  color: var(--ink3);
+}
+
+/* Stat tiles share the row evenly instead of wrapping one onto a line of
+   its own. */
+.bfh-assist__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  align-self: stretch;
+}
+.bfh-assist__stat {
+  min-width: 0;
+}
+.bfh-assist__statvalue {
+  overflow: hidden;
+  font-family: var(--font-sans);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bfh-assist__thinking {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-small);
+  color: var(--ink3);
+}
+
+/* A fresh answer settles in rather than appearing all at once. */
+.bfh-assist__reply,
+.bfh-assist__ask {
+  animation: bfh-confirm-in 280ms var(--ease-sheet) both;
+}
+
+/* ---- Composer -------------------------------------------------------------- */
+
+.bfh-assist__inputrow {
+  align-items: flex-end;
+}
+.bfh-assist__input {
+  display: block;
+  max-height: 120px;
+  padding: 5px 0;
+  resize: none;
+  overflow-y: auto;
+  line-height: 1.45;
+}
+.bfh-assist__send,
+.bfh-assist__mic {
+  margin-bottom: 1px;
+}
+/* Mic and send are one pair: the same circle, side by side, on one baseline. */
+.bfh-assist__send,
+.bfh-assist__mic {
+  width: 36px;
+  height: 36px;
+}
+.bfh-assist__send {
+  transition:
+    opacity 0.15s var(--ease-out-soft),
+    transform 120ms var(--ease-out-soft);
+}
+.bfh-assist__send:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+@media (max-width: 767px) {
+  .bfh-assist__send,
+  .bfh-assist__mic {
+    width: 40px;
+    height: 40px;
+  }
+  .bfh-assist__new,
+  .bfh-assist__headright .bfh-iconaction {
+    min-width: 40px;
+    min-height: 40px;
+  }
+}
+
+/* ==========================================================================
+   Header — who is answering, from which books, and the two ways out
+   ========================================================================== */
+
+.bfh-assist__head {
+  height: auto;
+  min-height: 60px;
+  padding: 10px 10px 10px 16px;
+  gap: 10px;
+}
+
+.bfh-assist__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* The logomark is its own dark badge with a hairline edge, so it needs no
+   frame or fill here and reads on both themes as it does in the sidebar. */
+.bfh-assist__mark {
+  display: block;
+  flex: none;
+  width: 32px;
+  height: 32px;
+}
+
+.bfh-assist__titles {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.bfh-assist__title {
+  font-size: var(--fs-body);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.bfh-assist__subtitle {
+  overflow: hidden;
+  font-size: var(--fs-small);
+  line-height: 1.3;
+  color: var(--ink3);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bfh-assist__headright {
+  flex: none;
+  gap: 4px;
+}
+
+/* Business | Personal — the same segmented look as the rest of the app. */
+.bfh-assist__sides {
+  display: inline-flex;
+  gap: 2px;
+  margin-right: 4px;
+  padding: 3px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-pill);
+  background: var(--surface-fill);
+}
+
+.bfh-assist__side {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--weight-medium);
+  color: var(--ink3);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--duration-micro) var(--ease-out-soft),
+    color var(--duration-micro) var(--ease-out-soft),
+    box-shadow var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-assist__side:hover {
+  color: var(--ink);
+}
+.bfh-assist__side[aria-checked='true'] {
+  background: var(--bg);
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.1), 0 0 0 1px var(--b);
+  cursor: default;
+}
+
+.bfh-assist__headbtn {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink2);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--duration-micro) var(--ease-out-soft),
+    color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-assist__headbtn:hover {
+  background: var(--surface-fill);
+  color: var(--ink);
+}
+.bfh-assist__headbtn:active,
+.bfh-assist__side:active {
+  transform: scale(0.95);
+}
+.bfh-assist__headbtn:focus-visible,
+.bfh-assist__side:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* On a phone the switch keeps its icons and drops the words, so the title
+   and the two buttons never have to wrap. */
+@media (max-width: 480px) {
+  .bfh-assist__sidelabel {
+    display: none;
+  }
+  .bfh-assist__side {
+    width: 34px;
+    height: 30px;
+    padding: 0;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 767px) {
+  .bfh-assist__head {
+    padding-top: 6px;
+  }
+  .bfh-assist__headbtn {
+    width: 40px;
+    height: 40px;
+  }
 }

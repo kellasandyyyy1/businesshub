@@ -7,16 +7,22 @@ import ClientTransactions from './ClientTransactions'
 import ExportButton from '../export/ExportButton'
 import InvoiceTable from '../invoices/InvoiceTable'
 import { initialsOf } from '../../hooks/useClients'
-import { downloadCSV, exportFilename, resolvePeriod } from '../../lib/export'
+import { downloadCSV, exportFilename, exportWithToast, resolvePeriod } from '../../lib/export'
+import { useToast } from '../../context/ToastContext'
 import { buildExport } from '../../lib/exportTypes'
 import { formatCurrency, formatFullDate } from '../../lib/format'
 import useExportData from '../../hooks/useExportData'
 
-const TABS = ['overview', 'invoices', 'transactions']
+const TABS = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'invoices', label: 'Invoices' },
+  { id: 'transactions', label: 'Payments' },
+]
 
 export default function ClientDetail({ client, categoryIcons, symbol, onEdit }) {
   const navigate = useNavigate()
   const exportData = useExportData()
+  const toast = useToast()
 
   /* One client's history is a filter the Export Center cannot express, so
      this exports directly rather than redirecting there. */
@@ -31,25 +37,34 @@ export default function ClientDetail({ client, categoryIcons, symbol, onEdit }) 
       clientId: client.id,
     })
     if (rows.length === 0) return
-    downloadCSV(
-      rows,
-      columns,
-      exportFilename('client-revenue', client.company.toLowerCase().replace(/[^a-z0-9]+/g, '-'), 'csv', exportData.today),
+    exportWithToast(toast, () =>
+      downloadCSV(
+        rows,
+        columns,
+        exportFilename('client-revenue', client.company.toLowerCase().replace(/[^a-z0-9]+/g, '-'), 'csv', exportData.today),
+      ),
     )
   }
   // Local, so selecting another client (which remounts on key) always lands
   // back on the overview rather than a tab left over from the last one.
   const [tab, setTab] = useState('overview')
 
+  const overdue = client.invoices.filter((i) => i.effectiveStatus === 'overdue')
   const stats = [
-    { label: 'Revenue generated', value: formatCurrency(client.revenue, symbol) },
-    { label: 'Outstanding', value: formatCurrency(client.outstanding, symbol) },
+    { label: 'Paid you so far', value: formatCurrency(client.revenue, symbol) },
+    {
+      label: 'Still owes you',
+      value: formatCurrency(client.outstanding, symbol),
+      note: overdue.length ? `${overdue.length} overdue` : client.outstanding > 0 ? 'Nothing late' : null,
+    },
     { label: 'Invoices', value: String(client.invoiceCount) },
     {
-      label: 'Last payment',
-      value: client.lastPayment ? formatFullDate(client.lastPayment) : '—',
+      label: 'Last paid',
+      value: client.lastPayment ? formatFullDate(client.lastPayment) : 'Not yet',
     },
   ]
+  const counts = { overview: null, invoices: client.invoices.length, transactions: client.transactions.length }
+  const newInvoice = () => navigate(`/invoices?new=1&clientId=${client.id}`)
 
   return (
     <div className="bfh-clientdetail">
@@ -59,61 +74,68 @@ export default function ClientDetail({ client, categoryIcons, symbol, onEdit }) 
         </span>
         <div className="bfh-clienthead__body">
           <h2 className="bfh-clienthead__name">{client.name}</h2>
-          <div className="bfh-micro">{client.company}</div>
+          <div className="bfh-clienthead__sub">
+            {client.company && client.company !== client.name ? client.company : 'Individual client'}
+          </div>
         </div>
-        <ExportButton
-          typeId="client-revenue"
-          label="Export history"
-          period="this-year"
-          clientId={client.id}
-          onDirect={exportHistory}
-        />
-
-        <button
-          type="button"
-          className="bfh-iconaction"
-          onClick={() => onEdit(client)}
-          aria-label={`Edit ${client.name}`}
-        >
-          <IconPencil size={14} stroke={1.5} aria-hidden="true" />
-        </button>
+        {/* The thing people come to a client to do is bill them, so that leads. */}
+        <div className="bfh-clienthead__actions">
+          <button type="button" className="bfh-btn-primary bfh-btn-primary--inline" onClick={newInvoice}>
+            <IconPlus size={14} stroke={1.75} aria-hidden="true" />
+            <span>New invoice</span>
+          </button>
+          <button type="button" className="bfh-btn-outline" onClick={() => onEdit(client)}>
+            <IconPencil size={14} stroke={1.5} aria-hidden="true" />
+            Edit
+          </button>
+          <ExportButton
+            typeId="client-revenue"
+            label="Export"
+            period="this-year"
+            clientId={client.id}
+            onDirect={exportHistory}
+          />
+        </div>
       </header>
 
       <div className="bfh-summary">
         {stats.map((stat) => (
           <div className="bfh-summary__cell" key={stat.label}>
-            <span className="bfh-micro">{stat.label}</span>
+            <span className="bfh-clientstat__label">{stat.label}</span>
             <span className="bfh-summary__value">{stat.value}</span>
+            {stat.note && <span className="bfh-clientstat__note">{stat.note}</span>}
           </div>
         ))}
       </div>
 
-      <div className="bfh-tabs" role="tablist" aria-label="Client detail">
-        {TABS.map((id) => (
+      <div className="bfh-segment bfh-clientdetail__tabs" role="tablist" aria-label="Client detail">
+        {TABS.map((t) => (
           <button
-            key={id}
+            key={t.id}
             type="button"
             role="tab"
-            className="bfh-tab"
-            aria-selected={tab === id}
-            onClick={() => setTab(id)}
+            className="bfh-segment__option"
+            aria-checked={tab === t.id}
+            aria-selected={tab === t.id}
+            onClick={() => setTab(t.id)}
           >
-            {id}
+            {t.label}
+            {counts[t.id] != null && <span className="bfh-choicechip__count">{counts[t.id]}</span>}
           </button>
         ))}
       </div>
 
-      {tab === 'overview' && <ClientOverview client={client} symbol={symbol} />}
+      {tab === 'overview' && <ClientOverview client={client} symbol={symbol} onEdit={() => onEdit(client)} />}
 
       {tab === 'invoices' && (
         <div className="bfh-tabbody">
           <button
             type="button"
             className="bfh-btn-primary bfh-btn-primary--inline"
-            onClick={() => navigate(`/invoices?new=1&clientId=${client.id}`)}
+            onClick={newInvoice}
           >
             <IconPlus size={14} stroke={1.75} aria-hidden="true" />
-            <span>Create invoice for {client.name}</span>
+            <span>New invoice for {client.name}</span>
           </button>
 
           <InvoiceTable

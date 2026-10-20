@@ -25,11 +25,13 @@ export function useGoals() {
  * the month is concerned — the money has left the pot the household spends
  * from — which is why it lands as an expense under Savings.
  *
+ * `date` defaults to today; the assistant passes the day the person named.
+ *
  * The amount is stored unsigned. Every expense in this database is, and the
  * minus is added when one is displayed; a negative here would subtract from
  * the spending totals instead of adding to them.
  */
-export async function contributeToGoal(goal, amount) {
+export async function contributeToGoal(goal, amount, date) {
   const value = Number(amount)
   if (!Number.isFinite(value) || value <= 0) return
 
@@ -40,7 +42,7 @@ export async function contributeToGoal(goal, amount) {
     await db.goals.update(goal.id, { current: (Number(row.current) || 0) + value })
 
     await db.transactions.add({
-      date: new Date().toISOString().slice(0, 10),
+      date: date || new Date().toISOString().slice(0, 10),
       description: `Saved for ${row.name}`,
       amount: value,
       type: 'expense',

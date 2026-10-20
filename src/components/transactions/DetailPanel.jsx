@@ -1,77 +1,115 @@
-import { IconArrowLeft, IconX } from '@tabler/icons-react'
-import { useEffect, useState } from 'react'
+import { IconArrowLeft, IconPencil, IconTrash, IconX } from '@tabler/icons-react'
+import { useEffect } from 'react'
 
-import { formatCurrency, formatFullDate } from '../../lib/format'
+import PaymentMethodIcon from '../PaymentMethodIcon'
+import { useMethodList } from '../../hooks/usePaymentMethods'
+import { methodLabel } from '../../lib/paymentMethods'
+import { PendingBadge } from '../common/TxList'
+import { categoryIcon } from '../../config/categoryIcons'
+import { formatFullDate } from '../../lib/format'
+import { amountLabel } from '../../lib/txDisplay'
+import useDismiss from '../../hooks/useDismiss'
 import useFocusTrap from '../../hooks/useFocusTrap'
 
-function Field({ label, children }) {
+const TYPE_WORDS = { income: 'Money in', expense: 'Money out', transfer: 'Transfer' }
+
+function Row({ label, children }) {
+  if (!children) return null
   return (
-    <div className="bfh-field">
-      <span className="bfh-micro">{label}</span>
-      <span className="bfh-field__value">{children || '—'}</span>
+    <div className="bfh-detail__row">
+      <dt>{label}</dt>
+      <dd>{children}</dd>
     </div>
   )
 }
 
-export default function DetailPanel({ tx, client, symbol, onClose, onEdit, onDelete }) {
-  const [confirming, setConfirming] = useState(false)
+/**
+ * One transaction, read at a glance: the amount and what it was for lead, the
+ * rest is a short list of facts that only shows what was filled in. Deleting
+ * is immediate; the toast that follows carries Undo.
+ */
+export default function DetailPanel({ tx, client, symbol, categoryIcons = {}, onClose, onEdit, onDelete }) {
+  const [closing, dismiss] = useDismiss(onClose, 240)
+  const method = methodLabel(tx, useMethodList() ?? [])
   const trapRef = useFocusTrap()
-
-  // A different row means a fresh decision about deleting.
-  useEffect(() => setConfirming(false), [tx.id])
+  const Icon = categoryIcon(categoryIcons[tx.category])
 
   useEffect(() => {
     const onKeyDown = (e) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') dismiss()
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [onClose])
-
-  const signed = tx.type === 'income' ? tx.amount : -tx.amount
+  }, [dismiss])
 
   return (
-    <aside className="bfh-panel" ref={trapRef} tabIndex={-1} aria-label="Transaction detail">
+    <aside
+      className="bfh-panel bfh-detail"
+      data-state={closing ? 'closing' : 'open'}
+      ref={trapRef}
+      tabIndex={-1}
+      aria-label="Transaction detail"
+    >
       <header className="bfh-panel__head">
         {/* Full screen on a phone, so "back" is the truthful affordance. */}
-        <button type="button" className="bfh-panel__back" onClick={onClose}>
+        <button type="button" className="bfh-panel__back" onClick={dismiss}>
           <IconArrowLeft size={16} stroke={1.5} aria-hidden="true" />
-          Transactions
+          Back
         </button>
-        <span className="bfh-micro bfh-panel__title-text">Transaction</span>
-        <button
-          type="button"
-          className="bfh-iconaction bfh-panel__close"
-          onClick={onClose}
-          aria-label="Close panel"
-        >
-          <IconX size={14} stroke={1.5} aria-hidden="true" />
+        <span className="bfh-micro bfh-panel__title-text">{TYPE_WORDS[tx.type] ?? 'Transaction'}</span>
+        <button type="button" className="bfh-sheet__close bfh-panel__close" onClick={dismiss} aria-label="Close">
+          <IconX size={16} stroke={1.75} aria-hidden="true" />
         </button>
       </header>
 
       <div className="bfh-panel__body">
-        <Field label="Description">{tx.description}</Field>
-        <Field label="Amount">{formatCurrency(signed, symbol)}</Field>
-        <Field label="Date">{formatFullDate(tx.date)}</Field>
-        <Field label="Type">{tx.type}</Field>
-        <Field label="Category">{tx.category}</Field>
-        <Field label="Client">{client ? `${client.company} · ${client.name}` : null}</Field>
-        <Field label="Payment method">{tx.paymentMethod}</Field>
-        <Field label="Status">{tx.status}</Field>
-        <Field label="Notes">{tx.notes}</Field>
+        <div className="bfh-detail__hero">
+          <span className="bfh-detail__icon" aria-hidden="true">
+            <Icon size={20} stroke={1.5} />
+          </span>
+          <span className="bfh-detail__amount" data-type={tx.type}>
+            {amountLabel(tx, symbol)}
+          </span>
+          <h2 className="bfh-detail__name">{tx.description}</h2>
+          <span className="bfh-detail__date">{formatFullDate(tx.date)}</span>
+          {tx.status === 'pending' && <PendingBadge tx={tx} />}
+        </div>
+
+        <dl className="bfh-detail__list">
+          <Row label="Category">{tx.category}</Row>
+          <Row label="Type">{TYPE_WORDS[tx.type]}</Row>
+          <Row label="Status">{tx.status === 'pending' ? 'Pending' : 'Cleared'}</Row>
+          <Row label="Client">{client ? `${client.company} · ${client.name}` : null}</Row>
+          <Row label="Paid with">
+            {method ? (
+              <span className="bfh-detail__method">
+                <PaymentMethodIcon name={method.replace(/ · removed$/, '')} size={22} />
+                {method}
+              </span>
+            ) : null}
+          </Row>
+          <Row label="Notes">{tx.notes}</Row>
+        </dl>
       </div>
 
       <footer className="bfh-panel__foot">
-        <button type="button" className="bfh-btn-primary" onClick={() => onEdit(tx)}>
-          Edit
-        </button>
-        <button
-          type="button"
-          className="bfh-btn-ghost"
-          onClick={() => (confirming ? onDelete(tx) : setConfirming(true))}
-        >
-          {confirming ? 'Confirm delete' : 'Delete'}
-        </button>
+        {/* No "are you sure?" step: the delete happens and the toast that
+            follows offers Undo, which is quicker and forgives a slip. */}
+        <>
+            <button type="button" className="bfh-btn-primary" onClick={() => onEdit(tx)}>
+              <IconPencil size={15} stroke={1.75} aria-hidden="true" />
+              Edit
+            </button>
+            <button
+              type="button"
+              className="bfh-btn-outline"
+              onClick={() => onDelete(tx)}
+              aria-label="Delete transaction"
+            >
+              <IconTrash size={15} stroke={1.75} aria-hidden="true" />
+              Delete
+            </button>
+        </>
       </footer>
     </aside>
   )

@@ -3,12 +3,13 @@ import { shiftDays } from './format'
 
 export const LOW_CASH_THRESHOLD = 100_000
 
+/* `label` for chips, `name` for sentences: "In 90 days you will have…" */
 export const HORIZONS = [
-  { id: '30d', label: '30d', days: 30 },
-  { id: '60d', label: '60d', days: 60 },
-  { id: '90d', label: '90d', days: 90 },
-  { id: '6mo', label: '6mo', days: 182 },
-  { id: '12mo', label: '12mo', days: 365 },
+  { id: '30d', label: '30 days', name: '30 days', days: 30 },
+  { id: '60d', label: '60 days', name: '60 days', days: 60 },
+  { id: '90d', label: '90 days', name: '90 days', days: 90 },
+  { id: '6mo', label: '6 months', name: '6 months', days: 182 },
+  { id: '12mo', label: '1 year', name: 'a year', days: 365 },
 ]
 
 const median = (numbers) => {

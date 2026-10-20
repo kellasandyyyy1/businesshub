@@ -18,8 +18,11 @@
   --gray-100: 245 245 245; /* #f5f5f5  subtle fill */
   --gray-200: 233 233 233; /* #e9e9e9  hairlines, borders */
   --gray-300: 212 212 212; /* #d4d4d4  strong borders, scrollbar */
-  --gray-400: 163 163 163; /* #a3a3a3  faint text, labels */
-  --gray-500: 115 115 115; /* #737373  muted text */
+  /* 400 and 500 carry text, so they are set by contrast, not by the ramp:
+     #787878 clears 4.4:1 on white for the micro labels, #5c5c5c clears 6.5:1
+     for secondary copy. */
+  --gray-400: 120 120 120; /* #787878  faint text, labels */
+  --gray-500: 92 92 92; /* #5c5c5c  muted text */
   --gray-600: 82 82 82; /* #525252 */
   --gray-700: 64 64 64; /* #404040 */
   --gray-800: 38 38 38; /* #262626 */
@@ -52,7 +55,26 @@
   --ink2: rgb(var(--gray-500)); /* secondary text */
   --ink3: rgb(var(--gray-400)); /* tertiary text, micro-labels */
 
+  /* ---- Signal: meaning only ------------------------------------------
+     Colour says good / warning / problem and nothing else — never an
+     outflow, never decoration, never brand. Only small things carry it
+     (a delta, a dot, a badge, an icon), always beside an arrow, icon or
+     word, so it reads the same in greyscale. Text values clear 4.5:1 on
+     --bg, --card and their own badge fill in both themes. */
+  --pos: #2f7a4b;
+  --pos-bg: #eaf3ec;
+  --pos-b: #cfe3d5;
+  --neg: #b8382f;
+  --neg-bg: #fbecea;
+  --neg-b: #f2cfcb;
+  --warn: #9a6212;
+  --warn-bg: #fbf1e2;
+  --warn-b: #f0ddbd;
+
   /* ---- Typography ------------------------------------------------------ */
+  /* Body: Geist Regular — everything that is read rather than glanced
+     at: paragraphs, fields, buttons, list rows. Display (headings and the big
+     money figures) use Geist too, at heavier weights. */
   --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
   /* The label register: every micro-label, tag, timestamp, pill and chart axis
      in the app reaches for it by this token. The name is historical — it has
@@ -63,7 +85,7 @@
      these labels render as Geist. It leads the stack rather than trailing it
      so that adding the file is the only step left. */
   --font-mono: 'Geist Pixel', 'Geist', system-ui, sans-serif;
-  --font-display: 'Geist Pixel', 'Geist', system-ui, sans-serif;
+  --font-display: 'Geist', system-ui, -apple-system, sans-serif;
   --font-serif: 'Source Serif 4', Georgia, serif;
 
   /* Compact scale — base UI text is 15px, not 16px */
@@ -76,6 +98,18 @@
   --text-small: 0.8125rem; /* 13px */
   --text-micro: 0.6875rem; /* 11px label */
   --text-micro-sm: 0.5625rem; /* 9px label (tags, pills) */
+
+  /* The working UI ladder. Every component reaches for one of these rather
+     than a pixel value, so the whole app can step up a size on touch screens
+     from one place (see the media query below). The label rungs are the
+     uppercase micro register; nothing in the app goes under 10px. */
+  --fs-label: 10px;
+  --fs-label-lg: 11px;
+  --fs-caption: 11px;
+  --fs-small: 12px;
+  --fs-body-sm: 13px;
+  --fs-body: 14px;
+  --fs-lead: 15px;
 
   --leading-tight: 1;
   --leading-heading: 1.2;
@@ -126,6 +160,14 @@
   --stagger-step: 70ms;
   --entrance-offset: 12px;
   --pulse-duration: 1.8s;
+  /* Sheets and dialogs: a fast start that settles slowly, the curve iOS uses
+     for its own sheets. Exits are quicker than entrances — leaving should
+     never make anyone wait. */
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --duration-sheet: 320ms;
+  --duration-sheet-mobile: 460ms;
+  --duration-exit: 200ms;
 
   /* ---- Halftone texture ------------------------------------------------ */
   --halftone-cell: 9px;
@@ -146,6 +188,20 @@
   --bp-md: 768px;
   --bp-lg: 1024px;
   --bp-xl: 1280px;
+}
+
+/* Phones and tablets are read at arm's length, often outdoors: every rung of
+   the ladder steps up one size, and the micro labels land on an 11px floor. */
+@media (max-width: 1023px) {
+  :root {
+    --fs-label: 11px;
+    --fs-label-lg: 11.5px;
+    --fs-caption: 12px;
+    --fs-small: 13px;
+    --fs-body-sm: 14px;
+    --fs-body: 15px;
+    --fs-lead: 16px;
+  }
 }
 
 /* Safe areas for notched devices. viewport-fit=cover makes these meaningful. */
@@ -173,8 +229,8 @@
     --gray-100: 30 30 34; /* #1e1e22 */
     --gray-200: 42 42 48; /* #2a2a30 */
     --gray-300: 58 58 66; /* #3a3a42 */
-    --gray-400: 138 138 146; /* #8a8a92 */
-    --gray-500: 160 160 168; /* #a0a0a8 */
+    --gray-400: 148 148 156; /* #94949c */
+    --gray-500: 172 172 180;
     --gray-600: 180 180 188; /* #b4b4bc */
     --gray-700: 200 200 206; /* #c8c8ce */
     --gray-800: 220 220 224; /* #dcdce0 */
@@ -187,6 +243,16 @@
     --shadow-modal: 0 40px 90px -20px rgb(0 0 0 / 0.7);
 
     --halftone-dot: rgb(var(--ink-c) / 0.42);
+
+    --pos: #6fc28e;
+    --pos-bg: rgb(111 194 142 / 0.12);
+    --pos-b: rgb(111 194 142 / 0.28);
+    --neg: #eb7d73;
+    --neg-bg: rgb(235 125 115 / 0.12);
+    --neg-b: rgb(235 125 115 / 0.28);
+    --warn: #e0a84e;
+    --warn-bg: rgb(224 168 78 / 0.12);
+    --warn-b: rgb(224 168 78 / 0.28);
   }
 }
 
@@ -200,8 +266,8 @@
   --gray-100: 30 30 34;
   --gray-200: 42 42 48;
   --gray-300: 58 58 66;
-  --gray-400: 138 138 146;
-  --gray-500: 160 160 168;
+  --gray-400: 148 148 156;
+  --gray-500: 172 172 180;
   --gray-600: 180 180 188;
   --gray-700: 200 200 206;
   --gray-800: 220 220 224;
@@ -213,6 +279,16 @@
   --shadow-modal: 0 40px 90px -20px rgb(0 0 0 / 0.7);
 
   --halftone-dot: rgb(var(--ink-c) / 0.42);
+
+  --pos: #6fc28e;
+  --pos-bg: rgb(111 194 142 / 0.12);
+  --pos-b: rgb(111 194 142 / 0.28);
+  --neg: #eb7d73;
+  --neg-bg: rgb(235 125 115 / 0.12);
+  --neg-b: rgb(235 125 115 / 0.28);
+  --warn: #e0a84e;
+  --warn-bg: rgb(224 168 78 / 0.12);
+  --warn-b: rgb(224 168 78 / 0.28);
 }
 
 /* ==========================================================================
@@ -234,6 +310,7 @@ body {
   background-color: rgb(var(--background));
   color: var(--text-primary);
   font-family: var(--font-sans);
+  font-weight: 400;
   font-size: var(--text-body);
   line-height: var(--leading-body);
   -webkit-font-smoothing: antialiased;

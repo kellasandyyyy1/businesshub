@@ -14,9 +14,18 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+/* Four counts are glanceable two by two; one per row pushed the invoice
+   list a full screen down on a phone. */
 @media (max-width: 560px) {
   .bfh-inv-cards {
-    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+  .bfh-inv-cards .bfh-inv-card {
+    padding: 14px;
+  }
+  .bfh-inv-card__head {
+    flex-wrap: wrap;
+    row-gap: 4px;
   }
 }
 
@@ -57,7 +66,7 @@
 }
 
 .bfh-inv-card__value {
-  font-size: 11px;
+  font-size: var(--fs-caption);
   line-height: 1.3;
   color: var(--ink2);
 }
@@ -103,7 +112,7 @@
   border-bottom: 1.5px solid transparent;
   background: transparent;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: var(--fs-label-lg);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   line-height: 1.4;
@@ -125,12 +134,12 @@
   width: 1%;
   white-space: nowrap;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--fs-caption);
   color: var(--ink);
 }
 
 .bfh-cell-client {
-  font-size: 12px;
+  font-size: var(--fs-small);
   font-weight: var(--weight-medium);
   color: var(--ink);
 }
@@ -150,7 +159,7 @@
   border: var(--hairline) solid var(--b2);
   border-radius: var(--radius-pill);
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   font-weight: var(--weight-medium);
   line-height: 1.7;
   text-transform: uppercase;
@@ -187,7 +196,7 @@
 
 .bfh-panel__heading {
   margin: 0;
-  font-size: 15px;
+  font-size: var(--fs-lead);
   font-weight: var(--weight-medium);
   line-height: 1.3;
   color: var(--ink);
@@ -232,7 +241,7 @@
   border-radius: var(--radius-xs);
   background: var(--bg);
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--fs-small);
   color: var(--ink);
   outline: none;
   transition: border-color var(--duration-micro) var(--ease-out-soft);
@@ -244,7 +253,7 @@
 .bfh-items__total {
   text-align: right;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--fs-small);
   color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
@@ -255,7 +264,7 @@
   border: 0;
   background: transparent;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--fs-caption);
   color: var(--ink3);
   cursor: pointer;
   transition: color var(--duration-micro) var(--ease-out-soft);
@@ -298,7 +307,7 @@
   border-radius: var(--radius-xs);
   background: var(--bg);
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--fs-small);
   color: var(--ink);
   outline: none;
 }
@@ -308,14 +317,14 @@
 
 .bfh-totals__value {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--fs-small);
   color: var(--ink2);
   font-variant-numeric: tabular-nums;
 }
 
 .bfh-totals__grand {
   font-family: var(--font-mono);
-  font-size: 15px;
+  font-size: var(--fs-lead);
   font-weight: var(--weight-medium);
   color: var(--ink);
   font-variant-numeric: tabular-nums;
@@ -341,7 +350,7 @@
 }
 
 .bfh-doc__business {
-  font-size: 15px;
+  font-size: var(--fs-lead);
   font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-heading);
   color: var(--ink);
@@ -353,7 +362,7 @@
 
 .bfh-doc__number {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--fs-small);
   color: var(--ink);
 }
 
@@ -364,13 +373,13 @@
 }
 
 .bfh-doc__client {
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   font-weight: var(--weight-medium);
   color: var(--ink);
 }
 
 .bfh-doc__client-meta {
-  font-size: 11px;
+  font-size: var(--fs-caption);
   color: var(--ink2);
 }
 
@@ -382,7 +391,7 @@
   padding: 0 0 6px;
   border-bottom: var(--hairline) solid var(--b);
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   font-weight: var(--weight-regular);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
@@ -399,7 +408,7 @@
 .bfh-doc__items td {
   padding: 8px 0;
   border-bottom: var(--hairline) solid var(--b);
-  font-size: 12px;
+  font-size: var(--fs-small);
   color: var(--ink);
 }
 .bfh-doc__items td:not(:first-child) {
@@ -421,20 +430,20 @@
   justify-content: space-between;
   gap: 16px;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--fs-small);
   color: var(--ink2);
   font-variant-numeric: tabular-nums;
 }
 .bfh-doc__grand {
   padding-top: 6px;
   border-top: var(--hairline) solid var(--b);
-  font-size: 14px !important;
+  font-size: var(--fs-body) !important;
   color: var(--ink) !important;
 }
 
 .bfh-doc__notes p {
   margin: 4px 0 0;
-  font-size: 12px;
+  font-size: var(--fs-small);
   line-height: 1.5;
   color: var(--ink2);
 }
@@ -457,13 +466,13 @@
 
 .bfh-payments__method {
   flex: 1;
-  font-size: 12px;
+  font-size: var(--fs-small);
   color: var(--ink2);
 }
 
 .bfh-payments__amount {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--fs-small);
   font-weight: var(--weight-medium);
   color: var(--ink);
 }

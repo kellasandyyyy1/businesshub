@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 
+import SignalBadge from '../SignalBadge'
 import { formatCurrency } from '../../lib/format'
 import { goalDeadlineLabel, goalProgress } from '../../lib/personal'
 
@@ -35,7 +36,10 @@ export default function GoalsStrip({ goals, symbol, today }) {
 
           return (
             <li key={goal.id} className="bfh-goal">
-              <span className="bfh-goal__name">{goal.name}</span>
+              <span className="bfh-goal__name">
+                {goal.name}
+                {progress >= 1 && <SignalBadge tone="pos">Reached</SignalBadge>}
+              </span>
 
               <span
                 className="bfh-goal__track"
@@ -45,7 +49,11 @@ export default function GoalsStrip({ goals, symbol, today }) {
                 aria-valuemax={100}
                 aria-label={`${goal.name} progress`}
               >
-                <span className="bfh-goal__fill" style={{ width: `${progress * 100}%` }} />
+                <span
+                  className="bfh-goal__fill"
+                  data-complete={progress >= 1 || undefined}
+                  style={{ width: `${progress * 100}%` }}
+                />
               </span>
 
               <span className="bfh-goal__row">

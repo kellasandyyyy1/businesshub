@@ -4,6 +4,7 @@ import { useState } from 'react'
 import BudgetCard from '../components/budgets/BudgetCard'
 import EmptyState from '../components/EmptyState'
 import BudgetModal from '../components/budgets/BudgetModal'
+import useAssistantPrefill from '../hooks/useAssistantPrefill'
 import useBudgetsData from '../hooks/useBudgets'
 import useSettings from '../hooks/useSettings'
 import { formatCurrency } from '../lib/format'
@@ -12,6 +13,7 @@ export default function Budgets() {
   const data = useBudgetsData()
   const { symbol } = useSettings()
   const [editing, setEditing] = useState(null) // null | {} | budget
+  useAssistantPrefill('SET_BUDGET', (record) => setEditing(record?.id ? record : { prefill: record }))
 
   if (!data) return <div className="bfh-page" />
 
@@ -77,7 +79,7 @@ export default function Budgets() {
       {editing && (
         <BudgetModal
           key={editing.id ?? 'new'}
-          budget={editing.id ? editing : null}
+          budget={editing.id ? editing : (editing.prefill ?? null)}
           categories={data.categories}
           onClose={() => setEditing(null)}
         />

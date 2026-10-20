@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from 'react'
 import ICONS, { categoryIcon } from '../../config/categoryIcons'
 import { db } from '../../db/db'
 import { addCategory } from '../../db/queries'
+import { useToast } from '../../context/ToastContext'
+import { short } from '../../lib/toastCopy'
 import useFocusTrap from '../../hooks/useFocusTrap'
 
 /** The icons worth offering first, by what the category is for. */
@@ -34,6 +36,7 @@ export default function CategoryModal({ category, profile, defaultType, existing
   const [error, setError] = useState(null)
   const firstField = useRef(null)
   const trapRef = useFocusTrap()
+  const toast = useToast()
   const isEdit = Boolean(category?.id)
 
   useEffect(() => {
@@ -60,9 +63,15 @@ export default function CategoryModal({ category, profile, defaultType, existing
     )
     if (clash) return setError('That category already exists')
 
-    if (isEdit) await db.categories.update(category.id, { name: trimmed, type, icon })
-    else await addCategory(profile, { name: trimmed, type, icon, isDefault: false })
+    try {
+      if (isEdit) await db.categories.update(category.id, { name: trimmed, type, icon })
+      else await addCategory(profile, { name: trimmed, type, icon, isDefault: false })
+    } catch {
+      toast.error("Couldn't save. Try again.")
+      return undefined
+    }
 
+    toast.success(`${short(trimmed)} category ${isEdit ? 'updated' : 'added'}`)
     onClose()
     return undefined
   }

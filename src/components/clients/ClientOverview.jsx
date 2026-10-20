@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import RevenueChart from './RevenueChart'
 import { db } from '../../db/db'
 
-function ContactRow({ icon: Icon, label, value, href }) {
+function ContactRow({ icon: Icon, label, value, href, onAdd }) {
   return (
     <div className="bfh-contact">
       <span className="bfh-iconbox">
@@ -21,14 +21,17 @@ function ContactRow({ icon: Icon, label, value, href }) {
             <span className="bfh-contact__value">{value}</span>
           )
         ) : (
-          <span className="bfh-contact__value bfh-contact__value--empty">—</span>
+          // A gap is something to fill, not a dash to read past.
+          <button type="button" className="bfh-contact__add" onClick={onAdd}>
+            Add {label.toLowerCase()}
+          </button>
         )}
       </span>
     </div>
   )
 }
 
-export default function ClientOverview({ client, symbol }) {
+export default function ClientOverview({ client, symbol, onEdit }) {
   const [notes, setNotes] = useState(client.notes ?? '')
   const [saved, setSaved] = useState(false)
 
@@ -54,27 +57,33 @@ export default function ClientOverview({ client, symbol }) {
             label="Email"
             value={client.email}
             href={client.email ? `mailto:${client.email}` : null}
+            onAdd={onEdit}
           />
           <ContactRow
             icon={IconPhone}
             label="Phone"
             value={client.phone}
             href={client.phone ? `tel:${client.phone.replace(/\s/g, '')}` : null}
+            onAdd={onEdit}
           />
-          <ContactRow icon={IconMapPin} label="Address" value={client.address} />
+          <ContactRow icon={IconMapPin} label="Address" value={client.address} onAdd={onEdit} />
         </div>
       </section>
 
       <section className="bfh-card">
-        <h3 className="bfh-panel__title">Revenue history</h3>
-        <div className="bfh-micro">Last 12 months</div>
-        <RevenueChart series={client.series} symbol={symbol} />
+        <h3 className="bfh-panel__title">What they have paid</h3>
+        <p className="bfh-clientcard__sub">Month by month, the last 12 months.</p>
+        {client.series.some((m) => m.revenue > 0) ? (
+          <RevenueChart series={client.series} symbol={symbol} />
+        ) : (
+          <p className="bfh-empty">No payments from {client.name} in the last 12 months yet.</p>
+        )}
       </section>
 
       <section className="bfh-card">
         <header className="bfh-notes__head">
           <h3 className="bfh-panel__title">Notes</h3>
-          <span className="bfh-micro">{saved ? 'Saved' : 'Saves on blur'}</span>
+          <span className="bfh-notes__status">{saved ? 'Saved' : 'Saved automatically'}</span>
         </header>
         <textarea
           className="bfh-notes"
@@ -86,6 +95,7 @@ export default function ClientOverview({ client, symbol }) {
           }}
           onBlur={commit}
           aria-label={`Notes about ${client.name}`}
+          placeholder="Payment terms, who to contact, anything worth remembering"
         />
       </section>
     </div>

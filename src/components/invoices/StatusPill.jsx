@@ -1,12 +1,12 @@
+import SignalBadge from '../SignalBadge'
+import { invoiceSignal } from '../../lib/signal'
+
 /**
- * Status as border treatment, not colour: dashed for a draft, solid for one in
- * flight, inverted once paid, and a pulsing dot when it is late.
+ * Where an invoice stands, as a badge: paid is good news, overdue is a
+ * problem, due within three days is a warning. Sent and draft are ordinary,
+ * so they stay grey — colour is kept for the ones that need a look.
  */
-export default function StatusPill({ status }) {
-  return (
-    <span className="bfh-status-pill" data-status={status}>
-      {status === 'overdue' && <span className="bfh-status-pill__dot" aria-hidden="true" />}
-      {status}
-    </span>
-  )
+export default function StatusPill({ invoice, today }) {
+  const { tone, label } = invoiceSignal(invoice, today)
+  return <SignalBadge tone={tone}>{label}</SignalBadge>
 }

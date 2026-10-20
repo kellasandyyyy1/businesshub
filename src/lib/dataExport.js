@@ -111,9 +111,9 @@ export async function exportCounts(db) {
 /* ---- Reading a file back ---------------------------------------------------- */
 
 export function validateExport(parsed) {
-  if (!parsed || typeof parsed !== 'object') return 'This file is not a valid Dual backup.'
+  if (!parsed || typeof parsed !== 'object') return "That file isn't a Dual backup."
   if (!parsed.exportedAt || !parsed.version || !parsed.mode) {
-    return 'This file is not a valid Dual backup.'
+    return "That file isn't a Dual backup."
   }
   if (!parsed.business && !parsed.personal) return 'This backup has no data in it.'
   return null

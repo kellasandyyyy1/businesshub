@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 
+import { useToast } from '../../context/ToastContext'
 import { putSetting } from '../../db/db'
 
 const CURRENCIES = [
@@ -71,6 +72,7 @@ export default function BusinessSection({ settings }) {
     avatar: settings.businessAvatar ?? settings.logo ?? null,
   }))
   const [status, setStatus] = useState(null)
+  const toast = useToast()
 
   const set = (key) => (e) => {
     setForm((f) => ({ ...f, [key]: e.target.value }))
@@ -112,7 +114,8 @@ export default function BusinessSection({ settings }) {
       return
     }
 
-    await Promise.all([
+    try {
+      await Promise.all([
       putSetting('businessName', form.businessName.trim()),
       putSetting('userName', form.userName.trim()),
       putSetting('currency', active.code),
@@ -125,8 +128,14 @@ export default function BusinessSection({ settings }) {
       ...(form.openingBalance === ''
         ? []
         : [putSetting('openingBalance', Number(form.openingBalance) || 0)]),
-    ])
-    setStatus({ text: 'Saved' })
+      ])
+    } catch {
+      toast.error("Couldn't save. Try again.")
+      return
+    }
+    // Problems with the form stay beside it; a save that worked is a toast.
+    setStatus(null)
+    toast.success('Business details saved')
   }
 
   return (

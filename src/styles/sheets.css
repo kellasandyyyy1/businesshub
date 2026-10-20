@@ -1,0 +1,1695 @@
+/* ==========================================================================
+   Sheets — the add/edit transaction dialog, the detail panel, and the buttons
+   they share. Loaded after responsive.css so the phone rules here win.
+   ========================================================================== */
+
+/* ---- Exits ---------------------------------------------------------------- */
+
+/* Every overlay that knows it is closing (see useDismiss) plays its entrance
+   backwards, faster, and with the backdrop fading alongside it. */
+.bfh-modal[data-state='closing'] .bfh-modal__backdrop {
+  animation: bfh-fade-out var(--duration-exit) var(--ease-exit) both;
+}
+.bfh-modal[data-state='closing'] .bfh-modal__panel {
+  animation: bfh-modal-out var(--duration-exit) var(--ease-exit) both;
+}
+.bfh-panel[data-state='closing'] {
+  animation: bfh-panel-out var(--duration-exit) var(--ease-exit) both;
+}
+
+@keyframes bfh-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes bfh-modal-out {
+  to {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+}
+@keyframes bfh-panel-out {
+  to {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+@keyframes bfh-sheet-down {
+  to {
+    transform: translateY(100%);
+  }
+}
+@keyframes bfh-screen-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+@keyframes bfh-screen-out {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@media (max-width: 767px) {
+  .bfh-modal[data-state='closing'] .bfh-modal__panel {
+    animation: bfh-sheet-down 260ms var(--ease-exit) both;
+  }
+  /* Full screen on a phone: it arrives from the side like a pushed screen and
+     leaves the same way. */
+  .bfh-panel {
+    animation: bfh-screen-in var(--duration-sheet-mobile) var(--ease-sheet) both;
+    box-shadow: none;
+  }
+  .bfh-panel[data-state='closing'] {
+    animation: bfh-screen-out 260ms var(--ease-exit) both;
+  }
+}
+
+/* ---- Buttons --------------------------------------------------------------- */
+
+.bfh-btn-primary,
+.bfh-btn-outline,
+.bfh-btn-text,
+.bfh-btn-ghost,
+.bfh-btn-danger-solid {
+  -webkit-tap-highlight-color: transparent;
+}
+.bfh-btn-primary:active:not(:disabled),
+.bfh-btn-outline:active,
+.bfh-btn-text:active,
+.bfh-btn-ghost:active,
+.bfh-btn-danger-solid:active {
+  transform: scale(0.98);
+}
+.bfh-btn-primary:focus-visible,
+.bfh-btn-outline:focus-visible,
+.bfh-btn-text:focus-visible,
+.bfh-btn-ghost:focus-visible,
+.bfh-btn-danger-solid:focus-visible,
+.bfh-segment__option:focus-visible,
+.bfh-sheet__close:focus-visible,
+.bfh-sheet__more:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.bfh-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.bfh-btn-primary {
+  transition:
+    opacity var(--duration-micro) var(--ease-out-soft),
+    transform 120ms var(--ease-out-soft),
+    background-color var(--duration-theme) var(--ease-out-soft);
+}
+
+/* A neutral secondary action: solid hairline, ink text. */
+.bfh-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 14px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-micro) var(--ease-out-soft),
+    transform 120ms var(--ease-out-soft);
+}
+.bfh-btn-outline:hover {
+  border-color: var(--ink);
+}
+
+/* The quietest action in a footer: Cancel, Keep it. */
+.bfh-btn-text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-medium);
+  color: var(--ink2);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-micro) var(--ease-out-soft),
+    color var(--duration-micro) var(--ease-out-soft),
+    transform 120ms var(--ease-out-soft);
+}
+.bfh-btn-text:hover {
+  background: var(--surface-fill);
+  color: var(--ink);
+}
+
+/* A confirmed delete is the one moment that earns the inverted fill. */
+.bfh-btn-danger-solid {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--invert-bg);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--invert-fg);
+  cursor: pointer;
+  transition: transform 120ms var(--ease-out-soft);
+}
+
+/* ---- Form fields (every form in the app) ------------------------------------ */
+
+.bfh-fieldlabel {
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-medium);
+  color: var(--ink2);
+}
+
+.bfh-fieldhint {
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--ink3);
+}
+
+.bfh-formfield {
+  gap: 6px;
+}
+
+.bfh-formfield input,
+.bfh-formfield select,
+.bfh-formfield textarea {
+  min-height: 42px;
+  padding: 9px 12px;
+  border-color: var(--b2);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  transition:
+    border-color var(--duration-micro) var(--ease-out-soft),
+    box-shadow var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-formfield input::placeholder,
+.bfh-formfield textarea::placeholder {
+  color: var(--ink3);
+}
+.bfh-formfield input:focus,
+.bfh-formfield select:focus,
+.bfh-formfield textarea:focus,
+.bfh-amountfield__box:focus-within {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgb(var(--ink-c) / 0.08);
+}
+.bfh-formfield select {
+  background-position: right 15px center, right 12px center;
+  padding-right: 30px;
+}
+
+/* An error names the field in words and gives its box a heavier edge. */
+.bfh-formerror {
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--weight-medium);
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink);
+}
+.bfh-formerror::before {
+  content: '! ';
+}
+[data-invalid='true'] input,
+[data-invalid='true'] select,
+[data-invalid='true'] .bfh-amountfield__box {
+  border-color: var(--ink);
+  border-width: 1.5px;
+}
+
+/* ---- The add / edit sheet --------------------------------------------------- */
+
+.bfh-sheet .bfh-modal__panel {
+  width: 460px;
+  max-height: min(760px, 100%);
+  overflow: hidden;
+}
+
+.bfh-sheet__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 16px 4px 20px;
+}
+
+.bfh-sheet__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+
+.bfh-sheet__close {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink2);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-micro) var(--ease-out-soft),
+    color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-sheet__close:hover {
+  background: var(--surface-fill);
+  color: var(--ink);
+}
+
+.bfh-sheet__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 12px 20px 20px;
+}
+/* A scrolling column would otherwise squeeze its children to fit rather than
+   scroll — the type switch was the first to be crushed. */
+.bfh-sheet__body > * {
+  flex-shrink: 0;
+}
+
+.bfh-segment--fill {
+  display: flex;
+  align-self: stretch;
+}
+.bfh-segment--fill .bfh-segment__option {
+  flex: 1 1 0;
+  min-height: 38px;
+}
+
+/* The amount is the field that matters most, so it is the biggest thing on
+   the sheet: a large figure with its sign and currency in front of it. */
+.bfh-amountfield {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bfh-amountfield__box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  transition:
+    border-color var(--duration-micro) var(--ease-out-soft),
+    box-shadow var(--duration-micro) var(--ease-out-soft);
+}
+
+.bfh-amountfield__symbol {
+  flex: none;
+  font-size: 22px;
+  font-weight: var(--weight-medium);
+  color: var(--ink2);
+  font-variant-numeric: tabular-nums;
+}
+
+.bfh-sheet .bfh-amountfield__box input[inputmode='decimal'] {
+  flex: 1;
+  min-width: 0;
+  height: 52px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 28px !important;
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  outline: none;
+  -moz-appearance: textfield;
+}
+.bfh-amountfield__box input::-webkit-outer-spin-button,
+.bfh-amountfield__box input::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+.bfh-amountfield__box input::placeholder {
+  color: var(--ink3);
+  opacity: 0.6;
+}
+
+.bfh-sheet__pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
+.bfh-sheet__more {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 2px 2px;
+  border: 0;
+  border-top: var(--hairline) solid var(--b);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+.bfh-sheet__morehint {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-weight: var(--weight-regular);
+  color: var(--ink3);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.bfh-sheet__more svg {
+  flex: none;
+  color: var(--ink2);
+  transition: transform 260ms var(--ease-sheet);
+}
+.bfh-sheet__more[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+
+.bfh-sheet__extra {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: bfh-reveal 280ms var(--ease-sheet) both;
+}
+
+@keyframes bfh-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.bfh-sheet__foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 16px 16px 20px;
+  border-top: var(--hairline) solid var(--b);
+  background: var(--card);
+}
+
+.bfh-sheet__submit {
+  width: auto;
+  min-height: 42px;
+  padding: 0 20px;
+  border-radius: 10px;
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-semibold);
+}
+
+@media (max-width: 767px) {
+  .bfh-sheet .bfh-modal__panel {
+    width: 100%;
+    max-height: 92vh;
+    max-height: 92dvh;
+  }
+  .bfh-sheet__head {
+    padding-top: 8px;
+  }
+  .bfh-sheet__foot {
+    padding-bottom: calc(14px + env(safe-area-inset-bottom));
+  }
+  /* The main action takes the width a thumb expects; Cancel stays small. */
+  .bfh-sheet__submit {
+    flex: 1;
+    min-height: 50px;
+    font-size: var(--fs-body);
+  }
+  /* The base sheet already pads for the home indicator; the footer does it
+     here instead, so the panel itself does not. */
+  .bfh-sheet .bfh-modal__panel {
+    padding-bottom: 0;
+  }
+}
+
+/* ---- Detail panel ------------------------------------------------------------ */
+
+.bfh-detail {
+  width: 360px;
+}
+
+.bfh-detail__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding-bottom: 18px;
+  border-bottom: var(--hairline) solid var(--b);
+}
+
+.bfh-detail__icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 10px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--ink2);
+}
+
+.bfh-detail__amount {
+  font-size: 30px;
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--ink);
+}
+.bfh-detail__amount[data-type='transfer'] {
+  color: var(--ink2);
+}
+
+.bfh-detail__name {
+  margin: 4px 0 0;
+  font-size: var(--fs-lead);
+  font-weight: var(--weight-medium);
+  line-height: 1.35;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.bfh-detail__date {
+  font-size: var(--fs-small);
+  color: var(--ink2);
+}
+
+.bfh-detail__list {
+  margin: 0;
+}
+
+.bfh-detail__row {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: var(--hairline) solid var(--b);
+}
+.bfh-detail__row:last-child {
+  border-bottom: 0;
+}
+.bfh-detail__row dt {
+  font-size: var(--fs-small);
+  color: var(--ink2);
+}
+.bfh-detail__row dd {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: 1.45;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.bfh-detail .bfh-panel__foot {
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+}
+.bfh-detail .bfh-panel__foot .bfh-btn-primary {
+  min-height: 42px;
+}
+.bfh-detail .bfh-panel__foot .bfh-btn-outline {
+  flex: none;
+  min-height: 42px;
+}
+
+.bfh-detail__confirm {
+  width: 100%;
+  animation: bfh-reveal 240ms var(--ease-sheet) both;
+}
+.bfh-detail__confirm p {
+  margin: 0 0 10px;
+  font-size: var(--fs-body-sm);
+  color: var(--ink);
+}
+.bfh-detail__confirmactions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@media (max-width: 767px) {
+  .bfh-detail {
+    width: 100%;
+  }
+  .bfh-detail .bfh-panel__foot .bfh-btn-primary,
+  .bfh-detail .bfh-panel__foot .bfh-btn-outline {
+    min-height: 48px;
+  }
+}
+
+/* ---- Floating add button ------------------------------------------------------ */
+
+.bfh-fab {
+  width: 56px;
+  height: 56px;
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.2),
+    0 10px 24px -8px rgb(0 0 0 / 0.45);
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 160ms var(--ease-out-soft),
+    box-shadow 160ms var(--ease-out-soft);
+  animation: bfh-fab-in 420ms var(--ease-sheet) both;
+}
+.bfh-fab:active {
+  transform: scale(0.94);
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.2),
+    0 4px 12px -6px rgb(0 0 0 / 0.4);
+}
+.bfh-fab:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+@keyframes bfh-fab-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+/* The field styling above is for text boxes. Checkboxes and radios inside a
+   form field keep their own size — without this they grew into a 42px grey
+   square with their label squeezed beside it. */
+.bfh-formfield input[type='checkbox'],
+.bfh-formfield input[type='radio'] {
+  width: auto;
+  min-height: 0;
+  padding: 0;
+  box-shadow: none;
+}
+
+.bfh-fieldlabel__optional {
+  margin-left: 4px;
+  font-weight: var(--weight-regular);
+  color: var(--ink3);
+}
+
+/* A chip that has been picked reads as chosen. */
+.bfh-assist__chip[aria-pressed='true'] {
+  border-color: var(--invert-bg);
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+/* ---- Goal form ---------------------------------------------------------------- */
+
+.bfh-goalform__ideas,
+.bfh-goalform__quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.bfh-goalform__ideas {
+  margin-top: -6px;
+}
+
+.bfh-goalform__when {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+  animation: bfh-reveal 240ms var(--ease-sheet) both;
+}
+
+/* The plan the form has worked out so far, in the same quiet panel the goal
+   card uses for it — so it reads as the same promise on both. */
+.bfh-goalform__plan {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-fill);
+  font-size: var(--fs-body-sm);
+  line-height: 1.45;
+  color: var(--ink);
+  animation: bfh-reveal 240ms var(--ease-sheet) both;
+}
+
+.bfh-goalform__delete {
+  margin-right: auto;
+  padding-left: 0;
+}
+
+@media (max-width: 380px) {
+  .bfh-goalform__amounts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ==========================================================================
+   Invoice editor — four numbered steps, read top to bottom
+   ========================================================================== */
+
+.bfh-invform__titles {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.bfh-invform__number {
+  font-size: var(--fs-small);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink3);
+}
+
+/* The body scrolls as one column. Each step keeps its height — the old form
+   grid could shrink inside it and grew a scroll box of its own, which hid
+   the dates behind a second scrollbar. */
+.bfh-invform__body {
+  gap: 0;
+  padding: 0;
+}
+.bfh-invform__body > * {
+  flex-shrink: 0;
+}
+
+.bfh-invform__step {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 16px 20px;
+}
+.bfh-invform__step + .bfh-invform__step {
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-invform__steptitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.bfh-invform__stepnum {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-pill);
+  background: var(--invert-bg);
+  font-size: var(--fs-caption);
+  font-weight: var(--weight-semibold);
+  color: var(--invert-fg);
+}
+
+.bfh-invform__hint {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: 1.5;
+  color: var(--ink2);
+}
+.bfh-invform__link {
+  color: var(--ink);
+  font-weight: var(--weight-medium);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---- Items: one small card each, every field labelled ------------------- */
+
+.bfh-invform__items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bfh-invitem {
+  display: grid;
+  /* Quantity is a short number, price the figure that matters: the narrow
+     column goes to the quantity. */
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 10px 12px;
+  padding: 14px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+.bfh-invitem__desc {
+  grid-column: 1 / -1;
+}
+
+/* The arithmetic in words, so the line total is never a mystery. */
+.bfh-invitem__foot {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 32px;
+  margin-top: -2px;
+}
+.bfh-invitem__sum {
+  font-size: var(--fs-small);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink2);
+}
+.bfh-invitem__sum strong {
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--ink);
+}
+.bfh-invitem__remove {
+  gap: 4px;
+  min-height: 32px;
+  padding: 0 8px;
+  font-size: var(--fs-small);
+}
+
+.bfh-invform__additem {
+  align-self: flex-start;
+  min-height: 40px;
+}
+
+@media (max-width: 480px) {
+  .bfh-invitem {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+}
+@media (max-width: 767px) {
+  .bfh-invform__additem {
+    align-self: stretch;
+  }
+}
+
+/* ---- Totals: money in the order it is worked out ---------------------- */
+
+.bfh-invtotals {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 16px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+
+.bfh-invtotals__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  font-size: var(--fs-body-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.bfh-invtotals__row + .bfh-invtotals__row {
+  border-top: var(--hairline) solid var(--b);
+}
+.bfh-invtotals__row > span:last-child {
+  font-weight: var(--weight-medium);
+}
+
+.bfh-invtotals__rate {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bfh-invtotals__pct {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ink2);
+}
+.bfh-invtotals__pct input {
+  width: 64px;
+  min-height: 34px;
+  padding: 0 8px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-sm);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--ink);
+  outline: none;
+}
+.bfh-invtotals__pct input:focus {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgb(var(--ink-c) / 0.08);
+}
+
+.bfh-invtotals__row--grand {
+  min-height: 60px;
+  font-size: var(--fs-body);
+  font-weight: var(--weight-semibold);
+}
+.bfh-invtotals__row--grand > span:last-child {
+  font-size: 22px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.02em;
+}
+
+/* ---- Footer ------------------------------------------------------------- */
+
+.bfh-invform__foot {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+.bfh-invform__foothint {
+  margin: 0;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--ink2);
+}
+.bfh-invform__actions {
+  display: flex;
+  gap: 8px;
+}
+.bfh-invform__actions > * {
+  flex: 1;
+  min-height: 46px;
+}
+.bfh-invform .bfh-invform__actions .bfh-btn-primary {
+  gap: 6px;
+  width: auto;
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-semibold);
+}
+
+/* ---- Client form --------------------------------------------------------------- */
+
+/* The client as the list will show them, filled in as the form is. */
+.bfh-clientpreview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: var(--hairline) dashed var(--b2);
+  border-radius: var(--radius-md);
+}
+.bfh-clientpreview__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.bfh-clientpreview__name {
+  overflow: hidden;
+  font-size: var(--fs-body);
+  font-weight: var(--weight-semibold);
+  color: var(--ink);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.bfh-clientpreview__meta {
+  overflow: hidden;
+  font-size: var(--fs-small);
+  color: var(--ink3);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 480px) {
+  .bfh-clientform__contact {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ==========================================================================
+   Invoices list and detail
+   ========================================================================== */
+
+/* Status pills read as words, not codes — "Overdue", not "OVERDUE". */
+.bfh-status-pill {
+  padding: 2px 10px;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.5;
+}
+
+.bfh-invpage__actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---- Summary: what is owed, and whether any of it is late ------------- */
+
+.bfh-invhero {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px;
+}
+.bfh-invhero__line {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin: 2px 0 0;
+}
+.bfh-invhero__figure {
+  font-size: 32px;
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  color: var(--ink);
+}
+.bfh-invhero__of {
+  font-size: var(--fs-body);
+  color: var(--ink2);
+}
+.bfh-invhero__note {
+  margin: 8px 0 0;
+  font-size: var(--fs-body-sm);
+  color: var(--ink2);
+}
+
+.bfh-invhero__alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px dashed var(--ink);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-sm);
+  line-height: 1.4;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-invhero__alert:hover,
+.bfh-invhero__alert:active {
+  background: var(--surface-fill);
+}
+.bfh-invhero__alert svg {
+  flex: none;
+}
+.bfh-invhero__alert strong {
+  font-weight: var(--weight-semibold);
+}
+.bfh-invhero__alertgo {
+  flex: none;
+  margin-left: auto;
+  font-weight: var(--weight-medium);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* A filter chip carries its count, so the totals and the way to see each
+   group are the same control. */
+.bfh-choicechip__count {
+  margin-left: 6px;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.6;
+}
+
+/* ---- Phone cards ----------------------------------------------------------- */
+
+.bfh-invcard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  padding: 14px 16px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-invcard:active {
+  background: var(--surface-fill);
+}
+.bfh-invcard__top,
+.bfh-invcard__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+.bfh-invcard__client {
+  overflow: hidden;
+  font-size: var(--fs-body);
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.bfh-invcard__amount {
+  flex: none;
+  font-size: var(--fs-body);
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.bfh-invcard__when {
+  overflow: hidden;
+  font-size: var(--fs-small);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink2);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+/* Late is the one fact on the card that asks for something. */
+.bfh-invcard[data-status='overdue'] {
+  border-color: var(--ink);
+}
+.bfh-invcard[data-status='overdue'] .bfh-invcard__when,
+.bfh-cell-when[data-status='overdue'] {
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+
+.bfh-cell-when {
+  font-size: var(--fs-small);
+  color: var(--ink2);
+  white-space: nowrap;
+}
+
+/* ---- Detail ------------------------------------------------------------------ */
+
+.bfh-invdetail__standing {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--surface-fill);
+}
+.bfh-invdetail__standing[data-status='overdue'] {
+  border: 1px dashed var(--ink);
+  background: transparent;
+}
+.bfh-invdetail__standingtitle {
+  font-size: var(--fs-body);
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.bfh-invdetail__standingbody {
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--ink2);
+}
+
+.bfh-invdetail__foot {
+  gap: 8px;
+}
+.bfh-invdetail__foot .bfh-btn-outline {
+  flex: none;
+  min-height: 44px;
+}
+.bfh-invdetail .bfh-invdetail__foot .bfh-btn-primary {
+  flex: 1;
+  gap: 6px;
+  width: auto;
+  min-height: 44px;
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-semibold);
+}
+
+@media (max-width: 767px) {
+  .bfh-invpage__actions .bfh-btn-primary--inline {
+    min-height: 44px;
+  }
+}
+
+/* On a phone the two buttons sit under the title on a row of their own,
+   instead of squeezing the subtitle into three lines beside them. */
+@media (max-width: 767px) {
+  .bfh-invpage .bfh-pagehead {
+    flex-wrap: wrap;
+    row-gap: 12px;
+  }
+  .bfh-invpage .bfh-invpage__actions {
+    width: 100%;
+  }
+  .bfh-invpage .bfh-invpage__actions > * {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+/* ==========================================================================
+   Cash flow
+   ========================================================================== */
+
+.bfh-cashhero {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px;
+}
+.bfh-cashhero__line {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin: 2px 0 0;
+}
+.bfh-cashhero__figure {
+  font-size: 32px;
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  color: var(--ink);
+}
+.bfh-cashhero__of {
+  font-size: var(--fs-body);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink2);
+}
+
+/* Today, plus what comes in, minus what goes out: the sum the figure is. */
+.bfh-cashhero__steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--hairline);
+  margin: 14px 0 0;
+  overflow: hidden;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-sm);
+  background: var(--b);
+}
+.bfh-cashhero__steps > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  background: var(--card);
+}
+.bfh-cashhero__steps dt {
+  font-size: var(--fs-small);
+  color: var(--ink2);
+}
+.bfh-cashhero__steps dd {
+  margin: 0;
+  overflow: hidden;
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bfh-cashhero__warn,
+.bfh-cashhero__note {
+  margin: 12px 0 0;
+  font-size: var(--fs-body-sm);
+  line-height: 1.45;
+}
+.bfh-cashhero__warn {
+  padding: 10px 12px;
+  border: 1px dashed var(--ink);
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+}
+.bfh-cashhero__note {
+  color: var(--ink2);
+}
+
+.bfh-cashhero__opening {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: var(--hairline) solid var(--b);
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--ink2);
+}
+.bfh-cashpage .bfh-inline-prompt {
+  min-height: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-medium);
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.bfh-cashchart__sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-small);
+  color: var(--ink2);
+}
+
+/* ---- What is behind the line -------------------------------------------- */
+
+.bfh-upcoming__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.bfh-upcoming__head .bfh-segment__option {
+  font-variant-numeric: tabular-nums;
+}
+
+.bfh-upcoming__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.bfh-upcoming__row {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 60px;
+  padding: 10px 0;
+}
+.bfh-upcoming__row + .bfh-upcoming__row {
+  border-top: var(--hairline) solid var(--b);
+}
+.bfh-upcoming__icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--ink2);
+}
+.bfh-upcoming__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.bfh-upcoming__name {
+  overflow: hidden;
+  font-size: var(--fs-body);
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.bfh-upcoming__meta {
+  font-size: var(--fs-small);
+  color: var(--ink2);
+}
+.bfh-upcoming__amount {
+  font-size: var(--fs-body);
+  font-weight: var(--weight-medium);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  .bfh-upcoming__head .bfh-segment {
+    display: flex;
+    width: 100%;
+  }
+  .bfh-upcoming__head .bfh-segment__option {
+    flex: 1;
+  }
+}
+
+/* ==========================================================================
+   Insights
+   ========================================================================== */
+
+.bfh-insightspage__refresh {
+  flex: none;
+}
+
+/* Three facts as sentences: a label, the figure, then what it means. */
+.bfh-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--hairline);
+  overflow: hidden;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-md);
+  background: var(--b);
+}
+.bfh-fact {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 14px 16px;
+  background: var(--card);
+}
+.bfh-fact__value {
+  font-size: var(--fs-lead);
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.bfh-fact__text {
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--ink2);
+}
+
+.bfh-insights__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-bottom: 4px;
+}
+.bfh-insights__source {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--fs-small);
+  color: var(--ink3);
+}
+
+.bfh-insightspage .bfh-insights__list {
+  margin: 0;
+  padding: 0;
+}
+.bfh-insightspage .bfh-insight {
+  padding: 16px 10px;
+}
+.bfh-insightspage .bfh-insight__num {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--weight-semibold);
+  color: var(--ink2);
+}
+.bfh-insightspage .bfh-insight[data-priority] .bfh-insight__num {
+  border-color: var(--invert-bg);
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+.bfh-insight__labels {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bfh-insight__tag {
+  font-size: var(--fs-small);
+  color: var(--ink3);
+}
+.bfh-insightspage .bfh-insight__title {
+  font-size: var(--fs-body);
+  font-weight: var(--weight-semibold);
+}
+.bfh-insightspage .bfh-insight__text {
+  font-size: var(--fs-body-sm);
+  line-height: 1.55;
+}
+.bfh-insight__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+  margin-top: 2px;
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--ink-c) / 0.3);
+  text-underline-offset: 3px;
+}
+.bfh-insight__action:hover {
+  text-decoration-color: var(--ink);
+}
+
+@media (max-width: 767px) {
+  .bfh-insightspage .bfh-pagehead {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+}
+
+/* ---- AI forecast ------------------------------------------------------------ */
+
+.bfh-forecast__sub {
+  max-width: 52ch;
+  margin: 2px 0 0;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--ink2);
+}
+.bfh-forecast__go {
+  flex: none;
+  gap: 6px;
+}
+@media (max-width: 767px) {
+  .bfh-forecast__head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .bfh-forecast__go {
+    min-height: 44px;
+  }
+  .bfh-forecast__tabs {
+    display: flex;
+    width: 100%;
+  }
+  .bfh-forecast__tabs .bfh-segment__option {
+    flex: 1;
+  }
+}
+
+/* ==========================================================================
+   Clients
+   ========================================================================== */
+
+.bfh-clients__add {
+  flex: none;
+}
+
+.bfh-clientlist__sorts {
+  margin-top: 10px;
+}
+.bfh-clientlist__sorts .bfh-choicechip {
+  min-height: 32px;
+  padding: 0 12px;
+  font-size: var(--fs-small);
+}
+
+.bfh-clientrow {
+  gap: 12px;
+  min-height: 64px;
+  padding: 12px 14px 12px 12px;
+}
+.bfh-clientrow__name {
+  font-size: var(--fs-body);
+}
+/* A company or an email: written as it is, not shouted in capitals. */
+.bfh-clientrow__sub {
+  overflow: hidden;
+  font-size: var(--fs-small);
+  color: var(--ink2);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.bfh-clientrow__money {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+}
+.bfh-clientrow__revenue {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-semibold);
+}
+.bfh-clientrow__owed {
+  font-size: var(--fs-small);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink3);
+}
+.bfh-clientrow__owed[data-owing] {
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+
+/* ---- One client ------------------------------------------------------------ */
+
+.bfh-clienthead {
+  flex-wrap: wrap;
+  row-gap: 14px;
+}
+.bfh-clienthead__body {
+  flex: 1 1 200px;
+}
+.bfh-clienthead__name {
+  font-size: 20px;
+  font-weight: var(--weight-semibold);
+}
+.bfh-clienthead__actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+.bfh-clienthead__actions > * {
+  min-height: 40px;
+}
+
+.bfh-clientstat__label {
+  font-size: var(--fs-small);
+  color: var(--ink2);
+}
+.bfh-clientstat__note {
+  font-size: var(--fs-small);
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+
+.bfh-clientdetail__tabs {
+  display: flex;
+  align-self: flex-start;
+}
+
+.bfh-contact__add {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-medium);
+  color: var(--ink2);
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.bfh-contact__add:hover {
+  color: var(--ink);
+}
+
+.bfh-clientcard__sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-small);
+  color: var(--ink2);
+}
+.bfh-notes__status {
+  font-size: var(--fs-small);
+  color: var(--ink3);
+}
+
+@media (max-width: 767px) {
+  .bfh-clients .bfh-pagehead {
+    flex-wrap: wrap;
+    row-gap: 12px;
+  }
+  .bfh-clients__add {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+  .bfh-clienthead__actions {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    width: 100%;
+  }
+  .bfh-clienthead__actions > * {
+    min-height: 44px;
+  }
+  .bfh-clientdetail__tabs {
+    align-self: stretch;
+  }
+  .bfh-clientdetail__tabs .bfh-segment__option {
+    flex: 1;
+  }
+}
+.bfh-clienthead__sub {
+  font-size: var(--fs-body-sm);
+  color: var(--ink2);
+}
+
+/* ==========================================================================
+   Display type — Geist for headings and the figures a page leads with.
+   Body copy is Geist Regular (--font-sans); these are the exceptions
+   that should read as titles and numbers rather than prose.
+   ========================================================================== */
+
+h1,
+h2,
+h3,
+.bfh-pagehead__title,
+.bfh-personalhead__title,
+.bfh-sheet__title,
+.bfh-greeting,
+.bfh-summarycard__figure,
+.bfh-goalhero__figure,
+.bfh-nwsummary__figure,
+.bfh-invhero__figure,
+.bfh-cashhero__figure,
+.bfh-report__headlinevalue,
+.bfh-metric__value,
+.bfh-summary__value,
+.bfh-detail__amount,
+.bfh-goalcard__current,
+.bfh-tip__value,
+.bfh-fact__value,
+.bfh-health__number,
+.bfh-sheet .bfh-amountfield__box input[inputmode='decimal'] {
+  font-family: var(--font-display);
+}

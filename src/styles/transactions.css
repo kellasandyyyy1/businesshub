@@ -33,7 +33,7 @@
   background: transparent;
   outline: none;
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   color: var(--ink);
 }
 .bfh-search input::placeholder {
@@ -64,7 +64,7 @@
   background-size: 3px 3px, 3px 3px;
   background-repeat: no-repeat;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   line-height: 1.6;
@@ -78,7 +78,7 @@
 }
 .bfh-filter option {
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   text-transform: none;
   letter-spacing: 0;
   color: var(--ink);
@@ -113,7 +113,7 @@
 }
 
 .bfh-summary__value {
-  font-size: 15px;
+  font-size: var(--fs-lead);
   font-weight: var(--weight-medium);
   letter-spacing: -0.02em;
   line-height: 1.2;
@@ -136,7 +136,7 @@
   padding: 12px 8px 8px;
   border-bottom: var(--hairline) solid var(--b);
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   font-weight: var(--weight-regular);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
@@ -167,7 +167,7 @@
   width: 1%;
   white-space: nowrap;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--fs-caption);
   color: var(--ink2);
 }
 
@@ -177,7 +177,7 @@
 
 .bfh-row__name {
   display: block;
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   font-weight: var(--weight-medium);
   line-height: 1.3;
   color: var(--ink);
@@ -192,7 +192,7 @@
   border: var(--hairline) solid var(--b2);
   border-radius: var(--radius-pill);
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   font-weight: var(--weight-medium);
   line-height: 1.6;
   text-transform: uppercase;
@@ -203,17 +203,21 @@
 td.bfh-cell-cat,
 th.bfh-cell-cat {
   white-space: nowrap;
-  font-size: 12px;
-  color: var(--ink2);
 }
+/* The header keeps the label size every other column header uses. */
 td.bfh-cell-cat {
   display: table-cell;
+  font-size: var(--fs-small);
+  color: var(--ink2);
 }
 td.bfh-cell-cat span {
   margin-left: 6px;
   vertical-align: middle;
 }
+/* Tailwind's preflight makes every svg a block, which stacked the icon above
+   its label; it sits inline beside the name instead. */
 td.bfh-cell-cat svg {
+  display: inline-block;
   vertical-align: middle;
 }
 
@@ -225,7 +229,7 @@ th.bfh-cell-amount {
 }
 td.bfh-cell-amount {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--fs-small);
   font-weight: var(--weight-medium);
   color: var(--ink);
   font-variant-numeric: tabular-nums;
@@ -235,7 +239,7 @@ td.bfh-cell-amount {
   width: 1%;
   white-space: nowrap;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   color: var(--ink3);
@@ -284,7 +288,7 @@ td.bfh-cell-amount {
 
 .bfh-empty {
   margin: 18px 0;
-  font-size: 12px;
+  font-size: var(--fs-small);
   color: var(--ink2);
   text-align: center;
 }
@@ -336,15 +340,17 @@ td.bfh-cell-amount {
   max-width: 100vw;
   background: var(--card);
   border-left: var(--hairline) solid var(--b);
-  animation: bfh-slide-in 300ms ease;
+  box-shadow: -24px 0 48px -32px rgb(0 0 0 / 0.35);
+  animation: bfh-slide-in var(--duration-sheet) var(--ease-sheet) both;
+  will-change: transform, opacity;
 }
 
+/* A short travel with a fade reads as the panel arriving; a full-width slide
+   reads as the page being pushed. */
 @keyframes bfh-slide-in {
   from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
+    opacity: 0;
+    transform: translateX(24px);
   }
 }
 
@@ -376,7 +382,7 @@ td.bfh-cell-amount {
 }
 
 .bfh-field__value {
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   line-height: 1.45;
   color: var(--ink);
   overflow-wrap: anywhere;
@@ -402,7 +408,7 @@ td.bfh-cell-amount {
   border-radius: var(--radius-sm);
   background: transparent;
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: var(--fs-small);
   font-weight: var(--weight-medium);
   color: var(--ink2);
   cursor: pointer;
@@ -431,9 +437,8 @@ td.bfh-cell-amount {
   inset: 0;
   border: 0;
   padding: 0;
-  background: rgb(10 10 10 / 0.4);
-  backdrop-filter: blur(3px);
-  animation: bfh-fade var(--duration-micro) var(--ease-out-soft);
+  background: rgb(10 10 10 / 0.36);
+  animation: bfh-fade 260ms var(--ease-out-soft) both;
 }
 
 .bfh-modal__panel {
@@ -447,17 +452,16 @@ td.bfh-cell-amount {
   border-radius: var(--radius-lg);
   background: var(--card);
   box-shadow: var(--shadow-modal);
-  animation: bfh-modal-in 200ms var(--ease-out-soft);
+  animation: bfh-modal-in var(--duration-sheet) var(--ease-sheet) both;
+  will-change: transform, opacity;
 }
 
+/* A small rise and a near-imperceptible scale: enough to read as the dialog
+   arriving, not so much that it lurches. */
 @keyframes bfh-modal-in {
   from {
     opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
+    transform: translateY(12px) scale(0.985);
   }
 }
 
@@ -499,7 +503,7 @@ td.bfh-cell-amount {
   border-radius: var(--radius-xs);
   background: var(--bg);
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   color: var(--ink);
   outline: none;
   transition: border-color var(--duration-micro) var(--ease-out-soft);
@@ -528,7 +532,7 @@ td.bfh-cell-amount {
 
 .bfh-formerror {
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   color: var(--ink2);
@@ -547,7 +551,7 @@ td.bfh-cell-amount {
   border-radius: var(--radius-xs);
   background: var(--bg);
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   color: var(--ink2);
@@ -604,7 +608,7 @@ td.bfh-cell-amount {
   border: var(--hairline) solid var(--b);
   border-radius: 999px;
   background: transparent;
-  font-size: 12px;
+  font-size: var(--fs-small);
   color: var(--ink2);
   cursor: pointer;
   transition:
@@ -639,7 +643,7 @@ td.bfh-cell-amount {
   align-items: center;
   gap: 6px;
   margin: 0;
-  font-size: 11px;
+  font-size: var(--fs-caption);
   line-height: 1.4;
   color: var(--ink2);
 }

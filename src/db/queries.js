@@ -223,6 +223,7 @@ export async function addTransactionWithDraw(record, { alsoPersonal = false } = 
         category: PERSONAL_DRAW_CATEGORY,
         status: record.status ?? 'cleared',
         paymentMethod: record.paymentMethod ?? '',
+        paymentMethodId: record.paymentMethodId ?? null,
         notes: 'Auto-recorded from business transfer',
         clientId: null,
         receiptUrl: null,

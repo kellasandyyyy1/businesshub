@@ -1,4 +1,4 @@
-import { IconTableExport } from '@tabler/icons-react'
+import { IconFileTypeCsv, IconFileTypeXls } from '@tabler/icons-react'
 import { useMemo, useState } from 'react'
 
 import {
@@ -12,7 +12,9 @@ import {
 } from '../../components/personal/reports/ReportViews'
 import usePersonalReportsData from '../../hooks/usePersonalReports'
 import useSettings from '../../hooks/useSettings'
-import { downloadCSV, downloadXLSX } from '../../lib/export'
+import { downloadCSV, downloadXLSX, exportWithToast } from '../../lib/export'
+import { useToast } from '../../context/ToastContext'
+import useSelectedInView from '../../hooks/useSelectedInView'
 import { recurringExpenses } from '../../lib/expenses'
 import { buildSeries, shiftMonths, sum } from '../../lib/ledger'
 import {
@@ -30,19 +32,25 @@ import {
   spendingSummary,
 } from '../../lib/personalReports'
 
+/**
+ * Each report says in one line what question it answers. `period` marks the
+ * ones the period chips apply to — the rest pick a month, or describe today,
+ * and showing chips that change nothing would be a control that lies.
+ */
 const REPORTS = [
-  { id: 'spending', label: 'Spending Summary', short: 'Spending' },
-  { id: 'income', label: 'Income Breakdown', short: 'Income' },
-  { id: 'savings', label: 'Savings Report', short: 'Savings' },
-  { id: 'monthly', label: 'Monthly Snapshot', short: 'Monthly' },
-  { id: 'networth', label: 'Net Worth Over Time', short: 'Net Worth' },
-  { id: 'recurring', label: 'Subscriptions & Recurring', short: 'Recurring' },
-  { id: 'category', label: 'Category Deep Dive', short: 'Deep Dive' },
+  { id: 'spending', label: 'Spending', blurb: 'Where your money went.', period: true },
+  { id: 'income', label: 'Income', blurb: 'What came in, and from where.', period: true },
+  { id: 'savings', label: 'Savings', blurb: 'How much you kept, and how your goals are doing.', period: true },
+  { id: 'monthly', label: 'Month in review', short: 'Month', blurb: 'One month, start to finish.' },
+  { id: 'networth', label: 'Net worth', blurb: 'What you own less what you owe, over time.' },
+  { id: 'recurring', label: 'Subscriptions', blurb: 'Charges that repeat every month.' },
+  { id: 'category', label: 'One category', short: 'Category', blurb: 'Every payment in a single category.', period: true },
 ]
 
 export default function PersonalReports() {
   const data = usePersonalReportsData()
   const { symbol } = useSettings()
+  const toast = useToast()
 
   const today = new Date().toISOString().slice(0, 10)
   const [type, setType] = useState('spending')
@@ -57,7 +65,7 @@ export default function PersonalReports() {
     [preset, today, custom],
   )
 
-  const transactions = data?.transactions ?? []
+  const transactions = useMemo(() => data?.transactions ?? [], [data])
 
   const expenseCategories = useMemo(
     () => (data?.categories ?? []).filter((c) => c.type === 'expense'),
@@ -120,72 +128,37 @@ export default function PersonalReports() {
     [data, transactions, today],
   )
 
+  const ready = Boolean(data && view)
+  // The period row comes and goes with the report, so it re-centres on each return.
+  const presetRow = useSelectedInView(preset, ready && `${type}`)
+  const reportRow = useSelectedInView(type, ready)
+
   if (!data || !view) return <div className="bfh-page" />
 
   const current = REPORTS.find((r) => r.id === type)
-  const periodLabel = type === 'monthly' ? view.label : period.label
+  const periodLabel = current.period ? period.label : type === 'monthly' ? view.label : 'As of today'
 
   const exportReport = async (extension) => {
     const { columns, rows } = reportExport(type, view, { period, symbol })
     const filename = reportFilename(current.label, periodLabel, extension, today)
-    if (extension === 'csv') downloadCSV(rows, columns, filename)
-    else await downloadXLSX(rows, columns, filename, current.label)
+    await exportWithToast(toast, () =>
+      extension === 'csv' ? downloadCSV(rows, columns, filename) : downloadXLSX(rows, columns, filename, current.label),
+    )
   }
 
   return (
     <div className="bfh-page bfh-preports">
-      <div className="bfh-block bfh-personalhead">
-        <h1 className="bfh-personalhead__title">Personal Reports</h1>
-
-        <div className="bfh-preports__controls">
-          <div className="bfh-periods" role="group" aria-label="Reporting period">
-            {PERIOD_PRESETS.map((option) => (
-              <button
-                key={option.id}
-                type="button"
-                className="bfh-period"
-                aria-pressed={preset === option.id}
-                onClick={() => setPreset(option.id)}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-
-          <button type="button" className="bfh-ghostaction" onClick={() => exportReport('csv')}>
-            <IconTableExport size={12} stroke={1.5} aria-hidden="true" />
-            Export
-          </button>
+      <div className="bfh-block bfh-pagehead">
+        <div>
+          <h1 className="bfh-pagehead__title">Reports</h1>
+          <p className="bfh-pagehead__sub">Pick a report to see where you stand.</p>
         </div>
       </div>
-
-      {preset === 'custom' && (
-        <div className="bfh-block bfh-preports__custom">
-          <label className="bfh-formfield">
-            <span className="bfh-micro">From</span>
-            <input
-              type="date"
-              value={custom.from || period.from}
-              max={custom.to || today}
-              onChange={(e) => setCustom((c) => ({ ...c, from: e.target.value }))}
-            />
-          </label>
-          <label className="bfh-formfield">
-            <span className="bfh-micro">To</span>
-            <input
-              type="date"
-              value={custom.to || period.to}
-              min={custom.from || undefined}
-              onChange={(e) => setCustom((c) => ({ ...c, to: e.target.value }))}
-            />
-          </label>
-        </div>
-      )}
 
       <div className="bfh-block bfh-preports__grid">
         {/* One list, two shapes: a column beside the report on a desktop and a
             scrolling tab row above it on a phone, which the stylesheet does. */}
-        <nav className="bfh-preportnav" aria-label="Report types">
+        <nav className="bfh-preportnav" aria-label="Reports" ref={reportRow}>
           {REPORTS.map((item) => (
             <button
               key={item.id}
@@ -194,73 +167,132 @@ export default function PersonalReports() {
               aria-current={type === item.id ? 'true' : undefined}
               onClick={() => setType(item.id)}
             >
-              <span className="bfh-preportnav__dot" aria-hidden="true" />
               <span className="bfh-preportnav__full">{item.label}</span>
-              <span className="bfh-preportnav__short">{item.short}</span>
+              <span className="bfh-preportnav__short">{item.short ?? item.label}</span>
             </button>
           ))}
         </nav>
 
-        <section className="bfh-card bfh-preport">
+        <section className="bfh-card bfh-preport" aria-labelledby="bfh-preport-title">
           <header className="bfh-preport__head">
-            <div>
-              <h2 className="bfh-preport__title">{current.label}</h2>
-              <span className="bfh-micro">{periodLabel}</span>
-            </div>
-            <div className="bfh-preport__actions">
-              <button type="button" className="bfh-ghostaction" onClick={() => exportReport('csv')}>
-                Export CSV
-              </button>
-              <button type="button" className="bfh-ghostaction" onClick={() => exportReport('xlsx')}>
-                Export Excel
-              </button>
-            </div>
+            <h2 className="bfh-preport__title" id="bfh-preport-title">
+              {current.label}
+            </h2>
+            <p className="bfh-preport__blurb">
+              {current.blurb}
+              {!current.period && type !== 'monthly' && <span> {periodLabel}.</span>}
+            </p>
           </header>
 
-          {type === 'spending' && (
-            <SpendingSummary
-              view={view}
-              series={series}
-              symbol={symbol}
-              icons={data.categoryIcons}
-              period={period}
-            />
+          {/* The period belongs to the report it changes, so it sits inside
+              it — and only on the reports it actually changes. */}
+          {current.period && (
+            <div className="bfh-preport__period">
+              <div className="bfh-chiprow" role="radiogroup" aria-label="Period" ref={presetRow}>
+                {PERIOD_PRESETS.map((option) => (
+                  <button
+                    key={option.id}
+                    type="button"
+                    role="radio"
+                    className="bfh-choicechip"
+                    aria-checked={preset === option.id}
+                    onClick={() => setPreset(option.id)}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+
+              {preset === 'custom' ? (
+                <div className="bfh-preports__custom">
+                  <label className="bfh-formfield">
+                    <span className="bfh-fieldlabel">From</span>
+                    <input
+                      type="date"
+                      value={custom.from || period.from}
+                      max={custom.to || today}
+                      onChange={(e) => setCustom((c) => ({ ...c, from: e.target.value }))}
+                    />
+                  </label>
+                  <label className="bfh-formfield">
+                    <span className="bfh-fieldlabel">To</span>
+                    <input
+                      type="date"
+                      value={custom.to || period.to}
+                      min={custom.from || undefined}
+                      onChange={(e) => setCustom((c) => ({ ...c, to: e.target.value }))}
+                    />
+                  </label>
+                </div>
+              ) : (
+                <span className="bfh-preport__range">{period.label}</span>
+              )}
+            </div>
           )}
-          {type === 'income' && (
-            <IncomeBreakdown
-              view={view}
-              series={series}
-              months={incomeMonths}
-              symbol={symbol}
-              icons={data.categoryIcons}
-              period={period}
-            />
-          )}
-          {type === 'savings' && (
-            <SavingsReport view={view} goals={data.goals} symbol={symbol} today={today} />
-          )}
-          {type === 'monthly' && (
-            <MonthlySnapshot
-              view={view}
-              symbol={symbol}
-              month={month}
-              today={today}
-              onMonth={(step) => setMonth((m) => shiftMonths(`${m}-01`, step).slice(0, 7))}
-            />
-          )}
-          {type === 'networth' && (
-            <NetWorthOverTime history={view.history} items={view.items} symbol={symbol} />
-          )}
-          {type === 'recurring' && <Recurring view={view} symbol={symbol} />}
-          {type === 'category' && (
-            <CategoryDeepDive
-              view={view}
-              categories={expenseCategories}
-              selected={activeCategory}
-              onSelect={setCategory}
-              symbol={symbol}
-            />
-          )}
+
+          <div className="bfh-preport__body">
+            {type === 'spending' && (
+              <SpendingSummary
+                view={view}
+                series={series}
+                symbol={symbol}
+                icons={data.categoryIcons}
+                period={period}
+              />
+            )}
+            {type === 'income' && (
+              <IncomeBreakdown
+                view={view}
+                series={series}
+                months={incomeMonths}
+                symbol={symbol}
+                icons={data.categoryIcons}
+                period={period}
+              />
+            )}
+            {type === 'savings' && (
+              <SavingsReport view={view} goals={data.goals} symbol={symbol} today={today} />
+            )}
+            {type === 'monthly' && (
+              <MonthlySnapshot
+                view={view}
+                symbol={symbol}
+                month={month}
+                today={today}
+                onMonth={(step) => setMonth((m) => shiftMonths(`${m}-01`, step).slice(0, 7))}
+              />
+            )}
+            {type === 'networth' && (
+              <NetWorthOverTime history={view.history} items={view.items} symbol={symbol} />
+            )}
+            {type === 'recurring' && <Recurring view={view} symbol={symbol} />}
+            {type === 'category' && (
+              <CategoryDeepDive
+                view={view}
+                categories={expenseCategories}
+                selected={activeCategory}
+                onSelect={setCategory}
+                symbol={symbol}
+              />
+            )}
+          </div>
+
+          {/* Last, after the report has been read, and saying what it saves. */}
+          <footer className="bfh-preport__downloads">
+            <span className="bfh-preport__downloadlabel">
+              Download {current.label.toLowerCase()} · {periodLabel}
+            </span>
+            <div className="bfh-preport__actions">
+              <button type="button" className="bfh-btn-outline" onClick={() => exportReport('csv')}>
+                <IconFileTypeCsv size={17} stroke={1.5} aria-hidden="true" />
+                CSV
+              </button>
+              <button type="button" className="bfh-btn-outline" onClick={() => exportReport('xlsx')}>
+                <IconFileTypeXls size={17} stroke={1.5} aria-hidden="true" />
+                Excel
+              </button>
+            </div>
+          </footer>
         </section>
       </div>
     </div>

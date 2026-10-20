@@ -1,4 +1,4 @@
-import { IconFileSpreadsheet, IconFileText } from '@tabler/icons-react'
+import { IconDownload, IconFileTypeCsv, IconFileTypeXls } from '@tabler/icons-react'
 import { useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 
@@ -9,11 +9,20 @@ import {
   downloadCSV,
   downloadXLSX,
   exportFilename,
+  exportWithToast,
   resolvePeriod,
 } from '../../lib/export'
+import { useToast } from '../../context/ToastContext'
 import { EXPORT_TYPES, TRANSACTION_COLUMNS, buildExport } from '../../lib/exportTypes'
+import { formatFullDate } from '../../lib/format'
+import useSelectedInView from '../../hooks/useSelectedInView'
 
 const ALL_COLUMNS = TRANSACTION_COLUMNS.map((c) => c.key)
+
+const FORMATS = [
+  { id: 'csv', name: 'CSV', note: 'Opens anywhere', Icon: IconFileTypeCsv },
+  { id: 'xlsx', name: 'Excel', note: 'Excel & Sheets', Icon: IconFileTypeXls },
+]
 
 /**
  * The mobile export flow. The type is fixed by whatever opened the sheet —
@@ -22,6 +31,7 @@ const ALL_COLUMNS = TRANSACTION_COLUMNS.map((c) => c.key)
 export default function ExportSheet({ typeId, defaultPreset = 'this-month', clientId, onClose }) {
   const data = useExportData()
   const trapRef = useFocusTrap()
+  const toast = useToast()
   const [preset, setPreset] = useState(defaultPreset)
   const [format, setFormat] = useState('csv')
 
@@ -50,12 +60,17 @@ export default function ExportSheet({ typeId, defaultPreset = 'this-month', clie
   }, [data, typeId, period.from, period.to, type.defaultGrouping, clientId])
 
   const rowCount = result.rows.length
+  const filename = exportFilename(typeId, period.slug, format === 'csv' ? 'csv' : 'xlsx', today)
+  // The chosen period may sit past the edge of the row; bring it into view.
+  const chipRow = useSelectedInView(preset, Boolean(data))
 
   const run = () => {
     if (rowCount === 0) return
-    const filename = exportFilename(typeId, period.slug, format === 'csv' ? 'csv' : 'xlsx', today)
-    if (format === 'csv') downloadCSV(result.rows, result.columns, filename)
-    else downloadXLSX(result.rows, result.columns, filename, type.label)
+    exportWithToast(toast, () =>
+      format === 'csv'
+        ? downloadCSV(result.rows, result.columns, filename)
+        : downloadXLSX(result.rows, result.columns, filename, type.label),
+    )
     onClose()
   }
 
@@ -63,7 +78,7 @@ export default function ExportSheet({ typeId, defaultPreset = 'this-month', clie
      identity transform behind, which would otherwise become this fixed
      overlay's containing block and strand it mid-page. */
   return createPortal(
-    <div className="bfh-exportsheet" role="dialog" aria-modal="true" aria-label="Export">
+    <div className="bfh-exportsheet" role="dialog" aria-modal="true" aria-labelledby="bfh-exportsheet-title">
       <button
         type="button"
         className="bfh-moredrawer__backdrop"
@@ -75,20 +90,35 @@ export default function ExportSheet({ typeId, defaultPreset = 'this-month', clie
         <span className="bfh-moredrawer__handle" aria-hidden="true" />
 
         <div className="bfh-exportsheet__body">
-          <div className="bfh-exportsheet__type">
-            <span className="bfh-micro">Exporting</span>
-            <span className="bfh-exportsheet__typename">{type.label}</span>
-          </div>
+          <header className="bfh-exportsheet__type">
+            <span className="bfh-micro">Export</span>
+            <h2 className="bfh-exportsheet__typename" id="bfh-exportsheet-title">
+              {type.label}
+            </h2>
+            <span className="bfh-exportsheet__range">
+              {formatFullDate(period.from)} – {formatFullDate(period.to)} · {rowCount} row{rowCount === 1 ? '' : 's'}
+            </span>
+          </header>
 
-          <div>
-            <span className="bfh-micro">Period</span>
-            <div className="bfh-exportsheet__pills" role="group" aria-label="Time period">
+          <div className="bfh-exportsheet__group">
+            <span className="bfh-fieldlabel" id="bfh-exportsheet-period">
+              Time period
+            </span>
+            {/* One swipeable row with every label whole — squeezing seven
+                periods into the sheet's width is what made them overlap. */}
+            <div
+              className="bfh-chiprow bfh-exportsheet__chips"
+              role="radiogroup"
+              aria-labelledby="bfh-exportsheet-period"
+              ref={chipRow}
+            >
               {PERIOD_PRESETS.filter((p) => p.id !== 'custom').map((option) => (
                 <button
                   key={option.id}
                   type="button"
-                  className="bfh-period"
-                  aria-pressed={preset === option.id}
+                  role="radio"
+                  className="bfh-choicechip"
+                  aria-checked={preset === option.id}
                   onClick={() => setPreset(option.id)}
                 >
                   {option.label}
@@ -97,41 +127,37 @@ export default function ExportSheet({ typeId, defaultPreset = 'this-month', clie
             </div>
           </div>
 
-          <div>
-            <span className="bfh-micro">Format</span>
-            <div className="bfh-export__formats" role="radiogroup" aria-label="File format">
-              <button
-                type="button"
-                role="radio"
-                aria-checked={format === 'csv'}
-                className="bfh-export__format"
-                onClick={() => setFormat('csv')}
-              >
-                <IconFileText size={18} stroke={1.5} aria-hidden="true" />
-                <span className="bfh-export__formatname">CSV</span>
-                <span className="bfh-micro">Universal</span>
-              </button>
-              <button
-                type="button"
-                role="radio"
-                aria-checked={format === 'xlsx'}
-                className="bfh-export__format"
-                onClick={() => setFormat('xlsx')}
-              >
-                <IconFileSpreadsheet size={18} stroke={1.5} aria-hidden="true" />
-                <span className="bfh-export__formatname">XLSX</span>
-                <span className="bfh-micro">Excel / Sheets</span>
-              </button>
+          <div className="bfh-exportsheet__group">
+            <span className="bfh-fieldlabel" id="bfh-exportsheet-format">
+              File format
+            </span>
+            <div className="bfh-exp__formats" role="radiogroup" aria-labelledby="bfh-exportsheet-format">
+              {FORMATS.map(({ id, name, note, Icon }) => (
+                <button
+                  key={id}
+                  type="button"
+                  role="radio"
+                  aria-checked={format === id}
+                  className="bfh-exp__format"
+                  onClick={() => setFormat(id)}
+                >
+                  <Icon size={22} stroke={1.5} aria-hidden="true" />
+                  <span className="bfh-exp__formatbody">
+                    <span className="bfh-exp__formatname">{name}</span>
+                    <span className="bfh-exp__formatnote">{note}</span>
+                  </span>
+                </button>
+              ))}
             </div>
           </div>
         </div>
 
         <footer className="bfh-exportsheet__foot">
           <button type="button" className="bfh-btn-primary" onClick={run} disabled={rowCount === 0}>
-            {rowCount === 0
-              ? 'No data to export'
-              : `Export ${rowCount} row${rowCount === 1 ? '' : 's'}`}
+            <IconDownload size={16} stroke={1.75} aria-hidden="true" />
+            {rowCount === 0 ? 'Nothing in this period' : `Download ${format === 'csv' ? 'CSV' : 'Excel'}`}
           </button>
+          <span className="bfh-exp__filename">{filename}</span>
         </footer>
       </div>
     </div>,

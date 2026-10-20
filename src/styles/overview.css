@@ -1,0 +1,341 @@
+/* ==========================================================================
+   Complete picture — business and personal on one page
+
+   Read top to bottom: the one figure, what to notice, then each side's month.
+   ========================================================================== */
+
+.bfh-ovsection__title {
+  margin: 0 0 10px;
+  font-size: var(--fs-body);
+  font-weight: var(--weight-semibold);
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+/* ---- The headline -------------------------------------------------------- */
+
+.bfh-ovhero {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 24px;
+}
+
+.bfh-ovhero__figure {
+  font-family: var(--font-display);
+  font-size: 44px;
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.bfh-ovhero__context {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: 1.45;
+  color: var(--ink2);
+}
+
+/* What the total is made of: one bar, two parts, a 2px gap between them. */
+.bfh-ovhero__bar {
+  display: flex;
+  gap: 2px;
+  height: 8px;
+  margin-top: 14px;
+  overflow: hidden;
+  border-radius: 4px;
+}
+.bfh-ovhero__segment {
+  flex-basis: 0;
+  min-width: 4px;
+  border-radius: 4px;
+}
+
+.bfh-ovhero__segment[data-kind='business'],
+.bfh-ovhero__swatch[data-kind='business'] {
+  background: var(--ink);
+}
+.bfh-ovhero__segment[data-kind='personal'],
+.bfh-ovhero__swatch[data-kind='personal'] {
+  background: rgb(var(--ink-c) / 0.35);
+}
+
+.bfh-ovhero__parts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 24px;
+  margin: 10px 0 0;
+}
+
+.bfh-ovhero__part {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.bfh-ovhero__part dt {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--fs-small);
+  color: var(--ink2);
+}
+.bfh-ovhero__part dd {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  font-size: var(--fs-lead);
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.bfh-ovhero__swatch {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.bfh-ovhero__share {
+  font-size: var(--fs-small);
+  font-weight: var(--weight-regular);
+  color: var(--ink2);
+}
+
+/* ---- What stands out ----------------------------------------------------- */
+
+.bfh-ovnotes__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bfh-ovnote {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-md);
+  background: var(--card);
+}
+
+/* A problem is the one thing on the page drawn heavier than everything else. */
+.bfh-ovnote[data-tone='warn'] {
+  border: 1.5px solid var(--ink);
+}
+
+.bfh-ovnote__icon {
+  flex: none;
+  margin-top: 1px;
+  color: var(--ink2);
+}
+.bfh-ovnote[data-tone='warn'] .bfh-ovnote__icon {
+  color: var(--ink);
+}
+
+.bfh-ovnote__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.bfh-ovnote__text {
+  font-size: var(--fs-body-sm);
+  line-height: 1.5;
+  color: var(--ink);
+}
+.bfh-ovnote[data-tone='warn'] .bfh-ovnote__text {
+  font-weight: var(--weight-medium);
+}
+
+.bfh-ovnote__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--ink-c) / 0.3);
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.bfh-ovnote__action:hover {
+  text-decoration-color: var(--ink);
+}
+
+/* ---- Each side's month --------------------------------------------------- */
+
+.bfh-ovsides {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.bfh-ovside {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  padding: 20px;
+}
+
+.bfh-ovside__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bfh-ovside__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 9px;
+  background: var(--bg);
+  color: var(--ink2);
+}
+
+.bfh-ovside__title {
+  flex: 1;
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: var(--weight-semibold);
+  color: var(--ink);
+}
+
+.bfh-ovside__verdict {
+  flex: none;
+  padding: 3px 10px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-small);
+  font-weight: var(--weight-medium);
+  color: var(--ink2);
+  white-space: nowrap;
+}
+.bfh-ovside__verdict[data-negative] {
+  border-color: var(--invert-bg);
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.bfh-ovside__result {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bfh-ovside__label {
+  font-size: var(--fs-small);
+  color: var(--ink2);
+}
+
+.bfh-ovside__figure {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.bfh-ovflow {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+}
+
+.bfh-ovflow__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 6px 12px;
+}
+.bfh-ovflow__row dt {
+  font-size: var(--fs-body-sm);
+  color: var(--ink2);
+}
+.bfh-ovflow__row dd {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-medium);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.bfh-ovflow__track {
+  grid-column: 1 / -1;
+  display: block;
+  height: 6px;
+  border-radius: 3px;
+  background: rgb(var(--ink-c) / 0.07);
+}
+.bfh-ovflow__fill {
+  display: block;
+  height: 100%;
+  min-width: 0;
+  border-radius: 3px;
+}
+.bfh-ovflow__fill[data-kind='in'] {
+  background: var(--ink);
+}
+.bfh-ovflow__fill[data-kind='out'] {
+  background: rgb(var(--ink-c) / 0.35);
+}
+
+.bfh-ovside__action {
+  align-self: stretch;
+  justify-content: center;
+  min-height: 40px;
+  margin-top: auto;
+}
+
+/* ---- Tablet and phone ---------------------------------------------------- */
+
+@media (max-width: 860px) {
+  .bfh-ovsides {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .bfh-ovhero {
+    padding: 20px 18px;
+  }
+  .bfh-ovhero__figure {
+    font-size: 36px;
+  }
+  .bfh-ovhero__part dd {
+    font-size: var(--fs-body);
+  }
+  .bfh-ovside {
+    padding: 18px;
+  }
+  .bfh-ovside__figure {
+    font-size: 28px;
+  }
+  .bfh-ovside__action {
+    min-height: 44px;
+  }
+}

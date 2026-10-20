@@ -83,6 +83,8 @@ function budgetWarnings({ budgets, transactions, today }) {
 
   return {
     type: 'budget-warning',
+    // Past the cap is a problem; nearing it is a warning.
+    tone: worst.ratio >= 1 ? 'neg' : 'warn',
     title:
       breached.length === 1
         ? `${worst.name} is at ${pct}% of budget`
@@ -156,7 +158,7 @@ const SAVINGS_DROP_PCT = 15
 const SPIKE_MULTIPLE = 2
 /** Under this, the multiple is arithmetic rather than money worth a word. */
 const SPIKE_FLOOR = 1000
-const NET_WORTH_MILESTONES = [100_000, 250_000, 500_000, 1_000_000, 2_000_000, 5_000_000]
+export const NET_WORTH_MILESTONES = [100_000, 250_000, 500_000, 1_000_000, 2_000_000, 5_000_000]
 
 const sumAmounts = (rows) => rows.reduce((total, r) => total + (Number(r.amount) || 0), 0)
 

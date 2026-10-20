@@ -5,7 +5,9 @@ import { Link } from 'react-router-dom'
 import BarChart from '../../components/common/BarChart'
 import BreakdownCard, { BreakdownRow } from '../../components/common/BreakdownCard'
 import LedgerTable from '../../components/common/LedgerTable'
+import { StatusCell } from '../../components/common/TxList'
 import MetricCard from '../../components/common/MetricCard'
+import PeriodSummary from '../../components/common/PeriodSummary'
 import PeriodSwitcher from '../../components/common/PeriodSwitcher'
 import GoalsStrip from '../../components/personal/GoalsStrip'
 import { categoryIcon } from '../../config/categoryIcons'
@@ -15,6 +17,7 @@ import useSettings from '../../hooks/useSettings'
 import { formatCurrency, formatDate, formatPercent, percentChange } from '../../lib/format'
 import { buildSeries, groupTotals, inRange, periodBounds } from '../../lib/ledger'
 import { personalMetrics } from '../../lib/personal'
+import { amountLabel } from '../../lib/txDisplay'
 
 const RECENT = 8
 
@@ -22,19 +25,6 @@ const BREAKDOWN_TABS = [
   { id: 'expense', label: 'Expenses' },
   { id: 'income', label: 'Income' },
 ]
-
-/**
- * An arrowed change against the previous period, the same shape the business
- * metric cards use. formatPercent drops the sign, so the arrow is what carries
- * direction and the hairline says whether that direction is welcome — earning
- * more is good, spending more is the one worth a second look.
- */
-function changeBadge(current, previous, upIsGood) {
-  const change = percentChange(current, previous)
-  if (change === null) return { badge: '—', good: true }
-  const up = change > 0
-  return { badge: `${up ? '↑' : '↓'} ${formatPercent(change)}`, good: upIsGood ? up : !up }
-}
 
 export default function PersonalDashboard() {
   const data = usePersonalData()
@@ -77,15 +67,49 @@ export default function PersonalDashboard() {
     [rows, tab],
   )
 
-  const recent = useMemo(() => rows.slice(0, RECENT), [rows])
+  // The latest activity, whatever the window: an empty week should still show
+  // what happened before it.
+  const recent = useMemo(() => (transactions ?? []).slice(0, RECENT), [transactions])
 
   if (!data) return <div className="bfh-page" />
 
-  const { income, expenses, previousIncome, previousExpenses, leftOver, saved, savingsRate } =
-    metrics
+  const { income, expenses, previousIncome, previousExpenses, leftOver, savingsRate } = metrics
 
-  const incomeBadge = changeBadge(income, previousIncome, true)
-  const spentBadge = changeBadge(expenses, previousExpenses, false)
+  const previousRate =
+    previousIncome > 0 ? (Math.max(previousIncome - previousExpenses, 0) / previousIncome) * 100 : null
+  // Points, not percent of a percent: 40% to 46% reads as +6, not +15%.
+  const rateChange = savingsRate !== null && previousRate !== null ? savingsRate - previousRate : null
+  const versus = (previous) => (previous ? `vs previous ${period.name}` : 'nothing earlier to compare')
+
+  const empty = income === 0 && expenses === 0
+  const money = (v) => formatCurrency(v, symbol)
+
+  // The headline is whichever figure answers "how did I do?" for this window.
+  let summary
+  if (income === 0) {
+    summary = {
+      headline: money(expenses),
+      headlineLabel: 'spent',
+      sentence: 'No income is recorded in this window, so this spending came from savings or earlier pay.',
+      delta: { value: percentChange(expenses, previousExpenses), goodWhen: 'down' },
+      sentenceTone: expenses > 0 ? 'warn' : undefined,
+    }
+  } else if (leftOver < 0) {
+    summary = {
+      headline: money(-leftOver),
+      headlineLabel: 'overspent',
+      delta: { value: percentChange(expenses, previousExpenses), goodWhen: 'down' },
+      sentenceTone: 'warn',
+      sentence: `You spent ${money(expenses)} against ${money(income)} coming in — ${money(-leftOver)} more than you earned.`,
+    }
+  } else {
+    summary = {
+      headline: money(leftOver),
+      headlineLabel: 'left over',
+      delta: { value: percentChange(leftOver, previousIncome - previousExpenses), goodWhen: 'up' },
+      sentence: `You earned ${money(income)} and spent ${money(expenses)}, so you kept ${Math.round(savingsRate)}% of your income.`,
+    }
+  }
 
   const spendChange = percentChange(expenses, previousExpenses)
   const note =
@@ -120,14 +144,13 @@ export default function PersonalDashboard() {
       header: 'Amount',
       className: 'bfh-cell-amount',
       // Direction is carried by the sign, never by colour.
-      render: (tx) =>
-        `${tx.type === 'expense' ? '−' : ''}${formatCurrency(tx.amount, symbol)}`,
+      render: (tx) => amountLabel(tx, symbol),
     },
     {
       key: 'status',
       header: 'Status',
       className: 'bfh-cell-status',
-      render: (tx) => <span className="bfh-status-pill">{tx.status}</span>,
+      render: (tx) => <StatusCell tx={tx} />,
     },
   ]
 
@@ -144,99 +167,119 @@ export default function PersonalDashboard() {
       <PeriodSwitcher />
 
       <div className="bfh-block">
-        <div className="bfh-metrics">
-          <MetricCard
-            label="Take-home income"
-            value={formatCurrency(income, symbol)}
-            badge={incomeBadge.badge}
-            good={incomeBadge.good}
-            context="total income"
-          />
-          <MetricCard
-            label="Total spent"
-            value={formatCurrency(expenses, symbol)}
-            badge={spentBadge.badge}
-            good={spentBadge.good}
-            context="total spent"
-          />
-          <MetricCard
-            label="Saved"
-            value={formatCurrency(saved, symbol)}
-            badge={savingsRate === null ? '—' : `${Math.round(savingsRate)}%`}
-            // With no income there is nothing to have saved from, so the card
-            // stays quiet rather than flagging an empty period as a problem.
-            good={savingsRate === null || saved > 0}
-            context="savings rate"
-          />
-          <MetricCard
-            label="Left over"
-            value={formatCurrency(leftOver, symbol)}
-            badge={leftOver < 0 ? 'deficit' : 'surplus'}
-            good={leftOver >= 0}
-            context="this period"
-          />
-        </div>
-      </div>
-
-      <div className="bfh-block bfh-income__split">
-        <BarChart
-          title="Spending over time"
-          sub={`Last ${period.label}`}
-          series={series}
+        <PeriodSummary
+          {...summary}
+          inLabel="Money in"
+          outLabel="Money out"
+          moneyIn={income}
+          moneyOut={expenses}
           symbol={symbol}
-          variant="hatched"
-          note={note}
-          ariaLabel="Personal spending over time"
+          empty={empty}
+          hasHistory={transactions.length > 0}
+          addTo="/personal/transactions?new=1"
         />
-
-        <BreakdownCard title="By category" tabs={BREAKDOWN_TABS} tab={tab} onTab={setTab}>
-          {breakdown.length === 0 ? (
-            <p className="bfh-empty">
-              No {tab === 'expense' ? 'spending' : 'income'} in this period.
-            </p>
-          ) : (
-            <ul className="bfh-breakdown__list">
-              {breakdown.map((entry) => (
-                <BreakdownRow
-                  key={entry.key}
-                  icon={categoryIcon(data.categoryIcons[entry.key])}
-                  name={entry.name}
-                  value={entry.value}
-                  share={entry.share}
-                  max={max}
-                  symbol={symbol}
-                />
-              ))}
-            </ul>
-          )}
-        </BreakdownCard>
       </div>
+
+      {!empty && (
+        <>
+          <div className="bfh-block">
+            <div className="bfh-metrics">
+              <MetricCard
+                label="Income"
+                value={money(income)}
+                delta={{ value: percentChange(income, previousIncome), goodWhen: 'up' }}
+                context={versus(previousIncome)}
+              />
+              <MetricCard
+                label="Spent"
+                value={money(expenses)}
+                delta={{ value: percentChange(expenses, previousExpenses), goodWhen: 'down' }}
+                context={versus(previousExpenses)}
+              />
+              <MetricCard
+                label="Savings rate"
+                value={savingsRate === null ? '—' : `${Math.round(savingsRate)}%`}
+                delta={{ value: rateChange, goodWhen: 'up', format: 'points' }}
+                context={
+                  savingsRate === null
+                    ? 'no income this period'
+                    : rateChange === null
+                      ? 'of your income kept'
+                      : versus(previousIncome)
+                }
+              />
+              <MetricCard
+                label="Daily spending"
+                value={money(expenses / period.days)}
+                // Same days in both windows, so this moves exactly as Spent
+                // does; the arrow stays, the colour would only repeat it.
+                delta={{ value: percentChange(expenses, previousExpenses), goodWhen: 'down', quiet: true }}
+                context={previousExpenses ? 'a day, vs before' : 'average per day'}
+              />
+            </div>
+          </div>
+
+          <div className="bfh-block bfh-income__split">
+            <BarChart
+              title="Spending over time"
+              sub={`Last ${period.name}`}
+              series={series}
+              symbol={symbol}
+              note={note}
+              ariaLabel="Personal spending over time"
+            />
+
+            <BreakdownCard title="By category" tabs={BREAKDOWN_TABS} tab={tab} onTab={setTab}>
+              {breakdown.length === 0 ? (
+                <p className="bfh-empty">
+                  No {tab === 'expense' ? 'spending' : 'income'} in this period.
+                </p>
+              ) : (
+                <ul className="bfh-breakdown__list">
+                  {breakdown.map((entry) => (
+                    <BreakdownRow
+                      key={entry.key}
+                      icon={categoryIcon(data.categoryIcons[entry.key])}
+                      name={entry.name}
+                      value={entry.value}
+                      share={entry.share}
+                      max={max}
+                      symbol={symbol}
+                    />
+                  ))}
+                </ul>
+              )}
+            </BreakdownCard>
+          </div>
+        </>
+      )}
 
       <div className="bfh-block">
         <GoalsStrip goals={data.goals} symbol={symbol} today={today} />
       </div>
 
-      <div className="bfh-block">
-        <LedgerTable
-          title="Recent transactions"
-          headerAction={
-            <Link className="bfh-micro bfh-link" to="/personal/transactions">
-              View all →
-            </Link>
-          }
-          columns={columns}
-          rows={recent}
-          total={recent.length}
-          mobileMeta={(tx) => [tx.category].filter(Boolean)}
-          amountOf={(tx) =>
-            `${tx.type === 'expense' ? '−' : ''}${formatCurrency(tx.amount, symbol)}`
-          }
-          emptyIcon={IconArrowsExchange}
-          emptyHeading="No personal transactions yet"
-          emptyBody="Add one to start tracking what comes in and what goes out."
-          onOpen={() => {}}
-        />
-      </div>
+      {recent.length > 0 && (
+        <div className="bfh-block">
+          <LedgerTable
+            title="Recent transactions"
+            headerAction={
+              <Link className="bfh-micro bfh-link" to="/personal/transactions">
+                View all →
+              </Link>
+            }
+            columns={columns}
+            rows={recent}
+            total={recent.length}
+            mobileMeta={(tx) => [tx.category].filter(Boolean)}
+            categoryIcons={data.categoryIcons}
+            symbol={symbol}
+            emptyIcon={IconArrowsExchange}
+            emptyHeading="No personal transactions yet"
+            emptyBody="Add one to start tracking what comes in and what goes out."
+            onOpen={() => {}}
+          />
+        </div>
+      )}
     </div>
   )
 }

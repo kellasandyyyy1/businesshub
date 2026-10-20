@@ -5,7 +5,10 @@ import { useState } from 'react'
 import CategoryModal from './CategoryModal'
 import { categoryIcon } from '../../config/categoryIcons'
 import { useProfile } from '../../context/ProfileContext'
+import { useToast } from '../../context/ToastContext'
 import { db } from '../../db/db'
+import { removeWithUndo } from '../../lib/softDelete'
+import { short } from '../../lib/toastCopy'
 
 const PROFILES = [
   { id: 'business', label: 'Business' },
@@ -29,7 +32,7 @@ export default function CategoriesSection({ categoryUse }) {
   const [activeType, setActiveType] = useState('expense')
   const [editing, setEditing] = useState(null) // null | {} | category
   const [error, setError] = useState(null)
-  const [confirming, setConfirming] = useState(null)
+  const toast = useToast()
 
   const rows = useLiveQuery(
     () =>
@@ -46,13 +49,17 @@ export default function CategoriesSection({ categoryUse }) {
     // the rows keep a name nothing in the list matches any more.
     const used = categoryUse?.[category.name] ?? 0
     if (used > 0) {
-      setConfirming(null)
       setError(`${category.name} is used by ${used} transaction${used === 1 ? '' : 's'}`)
       return
     }
-    await db.categories.delete(category.id)
-    setConfirming(null)
     setError(null)
+    await removeWithUndo(
+      toast,
+      'categories',
+      category.id,
+      `${short(category.name)} category removed`,
+      `${short(category.name)} restored`,
+    )
   }
 
   const profileLabel = activeProfile === 'personal' ? 'Personal' : 'Business'
@@ -144,15 +151,8 @@ export default function CategoriesSection({ categoryUse }) {
                     <button
                       type="button"
                       className="bfh-iconaction"
-                      aria-label={
-                        confirming === category.id
-                          ? `Confirm delete ${category.name}`
-                          : `Delete ${category.name}`
-                      }
-                      data-confirming={confirming === category.id ? 'true' : undefined}
-                      onClick={() =>
-                        confirming === category.id ? remove(category) : setConfirming(category.id)
-                      }
+                      aria-label={`Delete ${category.name}`}
+                      onClick={() => remove(category)}
                     >
                       <IconTrash size={13} stroke={1.5} aria-hidden="true" />
                     </button>

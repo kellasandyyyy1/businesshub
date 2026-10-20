@@ -6,13 +6,16 @@ import SummaryStrip from '../components/transactions/SummaryStrip'
 import Toolbar from '../components/transactions/Toolbar'
 import TransactionModal from '../components/transactions/TransactionModal'
 import TransactionTable from '../components/transactions/TransactionTable'
-import { db } from '../db/db'
+import { useToast } from '../context/ToastContext'
 import { useAssistantActions } from '../context/AssistantActionsContext'
 import { usePeriod } from '../context/PeriodContext'
 import { useProfile } from '../context/ProfileContext'
 import useDebounced from '../hooks/useDebounced'
 import useSettings from '../hooks/useSettings'
+import { useMethodList } from '../hooks/usePaymentMethods'
 import { shiftDays } from '../lib/format'
+import { removeWithUndo } from '../lib/softDelete'
+import { txNoun } from '../lib/toastCopy'
 import { DATE_RANGES, filterTransactions, summarise, useTransactionsData } from '../hooks/useTransactions'
 
 const PAGE_SIZE = 25
@@ -23,6 +26,7 @@ export default function Transactions() {
   const { profile } = useProfile()
   const data = useTransactionsData(profile)
   const { symbol } = useSettings()
+  const toast = useToast()
   const { periodId } = usePeriod()
   const { pendingAction, clearAction } = useAssistantActions()
   const [params, setParams] = useSearchParams()
@@ -30,6 +34,8 @@ export default function Transactions() {
   const [search, setSearch] = useState('')
   const [type, setType] = useState('all')
   const [category, setCategory] = useState('all')
+  const [method, setMethod] = useState('all')
+  const methods = useMethodList() ?? []
   const [dateRange, setDateRange] = useState(periodId)
   const [page, setPage] = useState(1)
 
@@ -71,15 +77,16 @@ export default function Transactions() {
             search: debouncedSearch,
             type,
             category,
+            method,
             dateRange,
             today,
           })
         : [],
-    [transactions, debouncedSearch, type, category, dateRange, today],
+    [transactions, debouncedSearch, type, category, method, dateRange, today],
   )
 
   // Any change to the filters invalidates the page cursor.
-  useEffect(() => setPage(1), [debouncedSearch, type, category, dateRange])
+  useEffect(() => setPage(1), [debouncedSearch, type, category, method, dateRange])
 
   if (!data) return <div className="bfh-page" />
 
@@ -90,31 +97,63 @@ export default function Transactions() {
     : { from: '1970-01-01', to: today }
 
   const summary = summarise(filtered)
+  const filtersActive =
+    search.trim() !== '' || type !== 'all' || category !== 'all' || method !== 'all' || dateRange !== periodId
+  const clearFilters = () => {
+    setSearch('')
+    setType('all')
+    setCategory('all')
+    setMethod('all')
+    setDateRange(periodId)
+  }
+  const changeType = (next) => {
+    setType(next)
+    // A category from the other side of the ledger would match nothing.
+    const kept = data.categories.find((c) => c.name === category)
+    if (kept && next !== 'all' && next !== 'transfer' && kept.type !== next) setCategory('all')
+  }
+  const rangeLabel = activeRange?.label ?? 'All time'
+  const count = `${filtered.length} ${filtered.length === 1 ? 'transaction' : 'transactions'}`
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const safePage = Math.min(page, pageCount)
   const rows = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
   const selected = filtered.find((t) => t.id === selectedId) ?? null
 
+  // Gone from the list at once, with five seconds to take it back.
   const remove = async (tx) => {
-    await db.transactions.delete(tx.id)
     if (selectedId === tx.id) setSelectedId(null)
+    await removeWithUndo(toast, 'transactions', tx.id, `${txNoun(tx.type)} deleted`, `${txNoun(tx.type)} restored`)
   }
 
   return (
     <div className="bfh-page">
+      <div className="bfh-block bfh-pagehead">
+        <div>
+          <h1 className="bfh-pagehead__title">Transactions</h1>
+          <p className="bfh-pagehead__sub">
+            {count} · {rangeLabel}
+          </p>
+        </div>
+      </div>
+
       <div className="bfh-block">
         <Toolbar
           search={search}
           onSearch={setSearch}
           type={type}
-          onType={setType}
+          onType={changeType}
           category={category}
           onCategory={setCategory}
+          method={method}
+          onMethod={setMethod}
+          methods={methods}
           dateRange={dateRange}
           onDateRange={setDateRange}
           categories={data.categories}
           onAdd={() => setEditing({})}
           exportRange={exportRange}
+          filtersActive={filtersActive}
+          onClear={clearFilters}
         />
       </div>
 
@@ -138,6 +177,7 @@ export default function Transactions() {
           onDelete={remove}
           onAdd={() => setEditing({})}
           filtered={transactions.length > 0}
+          onClearFilters={filtersActive ? clearFilters : null}
         />
       </div>
 
@@ -147,6 +187,7 @@ export default function Transactions() {
           tx={selected}
           client={data.clientsById[selected.clientId]}
           symbol={symbol}
+          categoryIcons={data.categoryIcons}
           onClose={() => setSelectedId(null)}
           onEdit={(tx) => setEditing(tx)}
           onDelete={remove}
@@ -161,7 +202,6 @@ export default function Transactions() {
           transaction={editing}
           categories={data.categories}
           clients={data.clients}
-          paymentMethods={data.paymentMethods}
           onClose={() => setEditing(null)}
         />
       )}

@@ -164,3 +164,19 @@ export async function downloadXLSX(rows, columns, filename, sheetName) {
     filename,
   )
 }
+
+/**
+ * Runs a download and says how it went: "Export ready" once the file is on
+ * its way, or an error the user can retry. Every export button goes through
+ * this so none of them succeeds or fails silently.
+ */
+export async function exportWithToast(toast, run) {
+  try {
+    await run()
+  } catch {
+    toast.error("Couldn't create the file. Try again.")
+    return false
+  }
+  toast.info('Export ready')
+  return true
+}

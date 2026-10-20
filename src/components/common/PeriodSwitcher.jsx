@@ -1,7 +1,7 @@
 import { PERIODS, usePeriod } from '../../context/PeriodContext'
 
 /**
- * The 7d/30d/90d/12m pills, bound to the window every page reads from.
+ * The period pills, worded in full ("30 days") since they have the row to themselves, bound to the window every page reads from.
  *
  * The topbar carries the same control from 768px up, so this row only shows on
  * a phone — `.bfh-periodpills` handles that and scrolls it sideways.
@@ -19,7 +19,7 @@ export default function PeriodSwitcher() {
           aria-pressed={periodId === option.id}
           onClick={() => setPeriodId(option.id)}
         >
-          {option.label}
+          {option.name}
         </button>
       ))}
     </div>

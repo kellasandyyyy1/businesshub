@@ -7,32 +7,17 @@ import {
 } from '@tabler/icons-react'
 
 import EmptyState from '../EmptyState'
+import TxList, { StatusCell } from '../common/TxList'
 import { useDevice } from '../../context/BreakpointContext'
 
 import { categoryIcon } from '../../config/categoryIcons'
-import { formatAmount, formatCurrency, formatDate } from '../../lib/format'
+import { useMethodList } from '../../hooks/usePaymentMethods'
+import { methodLabel } from '../../lib/paymentMethods'
+import { formatDate } from '../../lib/format'
+import { amountLabel } from '../../lib/txDisplay'
 
-/** Same row, restated as a card — a six-column table cannot fit a phone. */
-function MobileCard({ tx, symbol, onOpen }) {
-  const signed = tx.type === 'income' ? tx.amount : -tx.amount
-  return (
-    <button type="button" className="bfh-txcard" onClick={() => onOpen(tx)}>
-      <span className="bfh-txcard__top">
-        <span className="bfh-txcard__name">{tx.description}</span>
-        <span className="bfh-txcard__amount">{formatAmount(signed, symbol)}</span>
-      </span>
-      <span className="bfh-txcard__meta">
-        <span className="bfh-chip">{tx.category}</span>
-        <span className="bfh-chip">{formatDate(tx.date)}</span>
-        <span className="bfh-chip">{tx.status}</span>
-      </span>
-    </button>
-  )
-}
-
-function Row({ tx, categoryIcons, symbol, selected, onOpen, onEdit, onDelete }) {
+function Row({ tx, method, categoryIcons, symbol, selected, onOpen, onEdit, onDelete }) {
   const Icon = categoryIcon(categoryIcons[tx.category])
-  const signed = tx.type === 'income' ? tx.amount : -tx.amount
 
   // Keyboard users get the same detail panel the click opens.
   const onKeyDown = (e) => {
@@ -54,6 +39,7 @@ function Row({ tx, categoryIcons, symbol, selected, onOpen, onEdit, onDelete }) 
 
       <td className="bfh-cell-desc">
         <span className="bfh-row__name">{tx.description}</span>
+        {method && <span className="bfh-txmethod bfh-row__method">{method}</span>}
         <span className="bfh-chip">{tx.category}</span>
       </td>
 
@@ -62,9 +48,11 @@ function Row({ tx, categoryIcons, symbol, selected, onOpen, onEdit, onDelete }) 
         <span>{tx.category}</span>
       </td>
 
-      <td className="bfh-cell-amount">{formatCurrency(signed, symbol)}</td>
+      <td className="bfh-cell-amount" data-type={tx.type}>{amountLabel(tx, symbol)}</td>
 
-      <td className="bfh-cell-status">{tx.status}</td>
+      <td className="bfh-cell-status">
+        <StatusCell tx={tx} />
+      </td>
 
       <td className="bfh-cell-actions">
         <span className="bfh-row__actions">
@@ -111,19 +99,23 @@ export default function TransactionTable({
   onDelete,
   onAdd,
   filtered,
+  onClearFilters,
 }) {
   const { isMobile } = useDevice()
+  const methods = useMethodList() ?? []
   const first = total === 0 ? 0 : (page - 1) * pageSize + 1
   const last = Math.min(page * pageSize, total)
 
   return (
     <section className="bfh-card bfh-table-card">
       {isMobile ? (
-        <div className="bfh-cardlist">
-          {rows.map((tx) => (
-            <MobileCard key={tx.id} tx={tx} symbol={symbol} onOpen={onOpen} />
-          ))}
-        </div>
+        <TxList
+          rows={rows}
+          onOpen={onOpen}
+          categoryIcons={categoryIcons}
+          symbol={symbol}
+          selectedId={selectedId}
+        />
       ) : (
       <table className="bfh-table">
         <thead>
@@ -148,6 +140,7 @@ export default function TransactionTable({
             <Row
               key={tx.id}
               tx={tx}
+              method={methodLabel(tx, methods)}
               categoryIcons={categoryIcons}
               symbol={symbol}
               selected={tx.id === selectedId}
@@ -162,7 +155,14 @@ export default function TransactionTable({
 
       {rows.length === 0 &&
         (filtered ? (
-          <p className="bfh-empty">No transactions match these filters.</p>
+          <div className="bfh-empty bfh-empty--action">
+            <p>No transactions match these filters.</p>
+            {onClearFilters && (
+              <button type="button" className="bfh-btn-ghost bfh-btn-ghost--solid" onClick={onClearFilters}>
+                Clear filters
+              </button>
+            )}
+          </div>
         ) : (
           <EmptyState
             icon={IconArrowsExchange}

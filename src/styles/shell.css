@@ -37,7 +37,7 @@
 
 .bfh-micro {
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   /* A proportional face has a lighter stroke than the mono it replaced; the
      extra weight is what keeps these readable at 9px. */
   font-weight: var(--weight-medium);
@@ -104,7 +104,7 @@
 
 .bfh-logo {
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   font-weight: var(--weight-medium);
   line-height: 1.2;
   color: var(--ink);
@@ -136,7 +136,7 @@
 
 .bfh-logo__name {
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: var(--fs-body);
   font-weight: var(--weight-medium);
   line-height: 1.1;
   letter-spacing: -0.01em;
@@ -145,7 +145,7 @@
 
 .bfh-logo__tag {
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   color: var(--ink3);
@@ -173,7 +173,7 @@
   background: var(--invert-bg);
   color: var(--invert-fg);
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: var(--fs-small);
   font-weight: var(--weight-medium);
   line-height: 1.2;
   cursor: pointer;
@@ -259,7 +259,7 @@
 }
 
 .bfh-profileswitch__label {
-  font-size: 12px;
+  font-size: var(--fs-small);
   font-weight: var(--weight-medium);
   line-height: 1;
   color: var(--ink);
@@ -267,7 +267,7 @@
 
 .bfh-profileswitch__sub {
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   line-height: 1.4;
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
@@ -358,7 +358,7 @@
   gap: 8px;
   padding: 7px 16px;
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   line-height: 1.3;
   color: var(--ink2);
   text-decoration: none;
@@ -405,7 +405,7 @@
   border-radius: var(--radius-pill);
   background: var(--surface-fill);
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   line-height: 1.5;
   letter-spacing: var(--tracking-micro);
   color: var(--ink2);
@@ -498,7 +498,7 @@
   background: var(--invert-bg);
   color: var(--invert-fg);
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: var(--fs-label-lg);
   font-weight: var(--weight-medium);
   letter-spacing: 0.5px;
 }
@@ -511,7 +511,7 @@
 }
 
 .bfh-profile__name {
-  font-size: 12px;
+  font-size: var(--fs-small);
   font-weight: var(--weight-medium);
   line-height: 1.3;
   color: var(--ink);
@@ -550,7 +550,7 @@
 }
 
 .bfh-greeting {
-  font-size: 15px;
+  font-size: var(--fs-lead);
   font-weight: var(--weight-medium);
   line-height: 1.25;
   color: var(--ink);
@@ -561,7 +561,7 @@
 
 .bfh-greeting__sub {
   margin-top: 2px;
-  font-size: 10px;
+  font-size: var(--fs-label-lg);
 }
 
 /* ---- Period switcher ----------------------------------------------------- */
@@ -578,7 +578,7 @@
   border-radius: var(--radius-xs);
   background: transparent;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: var(--fs-label-lg);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   line-height: 1.2;
@@ -774,7 +774,7 @@
 
 .bfh-boundary__note {
   margin: 6px 0 12px;
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   line-height: 1.5;
   color: var(--ink2);
 }
@@ -838,7 +838,7 @@
 }
 
 .bfh-notifmenu__title {
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   font-weight: var(--weight-medium);
   color: var(--ink);
 }
@@ -859,14 +859,14 @@
 
 .bfh-notifmenu__emptyhead {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   font-weight: var(--weight-medium);
   color: var(--ink);
 }
 
 .bfh-notifmenu__emptybody {
   margin: 4px 0 0;
-  font-size: 12px;
+  font-size: var(--fs-small);
   line-height: 1.5;
   color: var(--ink2);
 }
@@ -922,7 +922,7 @@
 }
 
 .bfh-notifmenu__itemtitle {
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   font-weight: var(--weight-medium);
   line-height: 1.35;
   color: var(--ink);
@@ -930,7 +930,7 @@
 
 .bfh-notifmenu__itembody {
   margin-top: 2px;
-  font-size: 12px;
+  font-size: var(--fs-small);
   line-height: 1.45;
   color: var(--ink2);
 }
@@ -979,7 +979,7 @@
   border-radius: 20px;
   background: var(--invert-bg);
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: var(--fs-label-lg);
   font-weight: var(--weight-semibold);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
@@ -1110,14 +1110,14 @@
 }
 
 .bfh-modeopt__name {
-  font-size: 14px;
+  font-size: var(--fs-body);
   font-weight: var(--weight-medium);
   line-height: 1.2;
   color: var(--ink);
 }
 
 .bfh-modeopt__desc {
-  font-size: 11px;
+  font-size: var(--fs-caption);
   line-height: 1.4;
   color: var(--ink2);
 }
@@ -1134,7 +1134,7 @@
 .bfh-modeopt__now {
   flex: none;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   color: var(--bg);
@@ -1189,7 +1189,7 @@
   align-items: center;
   gap: 5px;
   padding-right: 18px;
-  font-size: 11px;
+  font-size: var(--fs-caption);
   font-weight: var(--weight-medium);
   line-height: 1.3;
   color: var(--ink);
@@ -1201,7 +1201,7 @@
 }
 
 .bfh-modehint__body {
-  font-size: 10px;
+  font-size: var(--fs-label-lg);
   line-height: 1.4;
   color: var(--ink2);
 }

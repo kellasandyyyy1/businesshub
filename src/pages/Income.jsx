@@ -1,22 +1,27 @@
-import { IconTrendingUp } from '@tabler/icons-react'
+import { IconPlus, IconTrendingUp } from '@tabler/icons-react'
 import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 import DetailPanel from '../components/transactions/DetailPanel'
 import TransactionModal from '../components/transactions/TransactionModal'
 import IncomeMetrics from '../components/income/IncomeMetrics'
 import BarChart from '../components/common/BarChart'
+import EmptyPeriod from '../components/common/EmptyPeriod'
 import LedgerTable from '../components/common/LedgerTable'
+import { StatusCell } from '../components/common/TxList'
 import PeriodSwitcher from '../components/common/PeriodSwitcher'
 import RevenueBreakdown from '../components/income/RevenueBreakdown'
 import { usePeriod } from '../context/PeriodContext'
 import { useProfile } from '../context/ProfileContext'
-import { db } from '../db/db'
+import { useToast } from '../context/ToastContext'
 import useDebounced from '../hooks/useDebounced'
 import useIncomeData from '../hooks/useIncome'
 import useSettings from '../hooks/useSettings'
 import { categoryIcon } from '../config/categoryIcons'
 import { formatCurrency, formatDate } from '../lib/format'
 import { incomeMetrics } from '../lib/income'
+import { removeWithUndo } from '../lib/softDelete'
+import { txNoun } from '../lib/toastCopy'
 import { buildSeries, groupTotals, inRange, periodBounds } from '../lib/ledger'
 
 const PAGE_SIZE = 20
@@ -25,12 +30,22 @@ export default function Income() {
   const { profile, isPersonal } = useProfile()
   const data = useIncomeData(profile)
   const { symbol } = useSettings()
+  const toast = useToast()
   const { periodId, period } = usePeriod()
 
   const [search, setSearch] = useState('')
   const [visible, setVisible] = useState(PAGE_SIZE)
   const [selectedId, setSelectedId] = useState(null)
   const [editing, setEditing] = useState(null) // null | {} | transaction
+  const [params, setParams] = useSearchParams()
+
+  // The + button lands here with ?new=1 and opens this page's own form, already
+  // set to income — rather than leaving for Transactions with a blank one.
+  useEffect(() => {
+    if (params.get('new') === null) return
+    setEditing({ type: 'income' })
+    setParams({}, { replace: true })
+  }, [params, setParams])
 
   const debouncedSearch = useDebounced(search, 300)
   const today = new Date().toISOString().slice(0, 10)
@@ -90,6 +105,9 @@ export default function Income() {
   if (!data) return <div className="bfh-page" />
 
   const shown = tableRows.slice(0, visible)
+  // Nothing in the window: one card that says so replaces the empty cards,
+  // chart, breakdown and table that would otherwise stack up below it.
+  const empty = rows.length === 0
   const selected = rows.find((t) => t.id === selectedId) ?? null
   const clientOf = (tx) => (tx.clientId ? (data.clientsById[tx.clientId]?.name ?? '') : '')
 
@@ -138,74 +156,104 @@ export default function Income() {
       key: 'status',
       header: 'Status',
       className: 'bfh-cell-status',
-      render: (tx) => <span className="bfh-status-pill">{tx.status}</span>,
+      render: (tx) => <StatusCell tx={tx} />,
     },
   ]
 
+  // Gone from the list at once, with five seconds to take it back.
   const remove = async (tx) => {
-    await db.transactions.delete(tx.id)
     if (selectedId === tx.id) setSelectedId(null)
+    await removeWithUndo(toast, 'transactions', tx.id, `${txNoun(tx.type)} deleted`, `${txNoun(tx.type)} restored`)
   }
 
   return (
     <div className="bfh-page">
       <div className="bfh-block bfh-pagehead">
-        <h1 className="bfh-pagehead__title">Income</h1>
+        <div>
+          <h1 className="bfh-pagehead__title">Income</h1>
+          <p className="bfh-pagehead__sub">
+            {rows.length} {rows.length === 1 ? 'payment' : 'payments'} received · Last {period.name}
+          </p>
+        </div>
+        <button
+          type="button"
+          className="bfh-btn-primary bfh-btn-primary--inline bfh-pagehead__action"
+          onClick={() => setEditing({ type: 'income' })}
+        >
+          <IconPlus size={14} stroke={1.75} aria-hidden="true" />
+          <span>Add income</span>
+        </button>
       </div>
 
       <PeriodSwitcher />
 
-      <div className="bfh-block">
-        <IncomeMetrics metrics={metrics} symbol={symbol} />
-      </div>
+      {empty ? (
+        <div className="bfh-block">
+          <EmptyPeriod
+            hasHistory={income.length > 0}
+            emptyTitle={`No income in the last ${period.name}`}
+            newTitle="No income recorded yet"
+            newBody="Add a payment you received and this page will show where your money comes from and how steady it is."
+            addLabel="Add income"
+            onAdd={() => setEditing({ type: 'income' })}
+          />
+        </div>
+      ) : (
+        <>
+          <div className="bfh-block">
+            <IncomeMetrics metrics={metrics} symbol={symbol} period={period} isPersonal={isPersonal} />
+          </div>
 
-      <div className="bfh-block bfh-income__split">
-        <BarChart
-          title="Revenue over time"
-          sub={`Last ${period.label}`}
-          series={series}
-          symbol={symbol}
-        />
-        {/* Personal income has no clients to break down by, so that tab is
-            dropped rather than shown empty. */}
-        <RevenueBreakdown
-          byCategory={byCategory}
-          byClient={byClient}
-          showClients={!isPersonal}
-          symbol={symbol}
-        />
-      </div>
+          <div className="bfh-block bfh-income__split">
+            <BarChart
+              title={isPersonal ? 'Income over time' : 'Revenue over time'}
+              sub={`Last ${period.name}`}
+              series={series}
+              symbol={symbol}
+            />
+            {/* Personal income has no clients to break down by, so that tab is
+                dropped rather than shown empty. */}
+            <RevenueBreakdown
+              byCategory={byCategory}
+              byClient={byClient}
+              showClients={!isPersonal}
+              symbol={symbol}
+            />
+          </div>
 
-      <div className="bfh-block">
-        <LedgerTable
-          title="Income transactions"
-          columns={columns}
-          rows={shown}
-          total={tableRows.length}
-          search={search}
-          onSearch={setSearch}
-          searchPlaceholder="Search income…"
-          searchLabel="Search income"
-          mobileMeta={(tx) => [tx.category, clientOf(tx)].filter(Boolean)}
-          amountOf={(tx) => formatCurrency(tx.amount, symbol)}
-          emptyIcon={IconTrendingUp}
-          emptyHeading="No income in this period"
-          emptyBody={
-            isPersonal
-              ? 'Add an income transaction to start tracking what comes in.'
-              : 'Add an income transaction to start tracking revenue.'
-          }
-          emptyAction="Add income"
-          noMatchLabel="No income matches that search."
-          onAdd={() => setEditing({ type: 'income' })}
-          searching={debouncedSearch.trim().length > 0}
-          selectedId={selectedId}
-          onOpen={(tx) => setSelectedId(tx.id)}
-          onLoadMore={() => setVisible((n) => n + PAGE_SIZE)}
-          hasMore={shown.length < tableRows.length}
-          tableClass="bfh-table--income"
-        />
-      </div>
+          <div className="bfh-block">
+            <LedgerTable
+              title="Income transactions"
+              columns={columns}
+              rows={shown}
+              total={tableRows.length}
+              search={search}
+              onSearch={setSearch}
+              searchPlaceholder="Search income…"
+              searchLabel="Search income"
+              mobileMeta={(tx) => [tx.category, clientOf(tx)].filter(Boolean)}
+              categoryIcons={data.categoryIcons}
+              symbol={symbol}
+              emptyIcon={IconTrendingUp}
+              emptyHeading="No income in this period"
+              emptyBody={
+                isPersonal
+                  ? 'Add an income transaction to start tracking what comes in.'
+                  : 'Add an income transaction to start tracking revenue.'
+              }
+              emptyAction="Add income"
+              noMatchLabel="No income matches that search."
+              onAdd={() => setEditing({ type: 'income' })}
+              searching={debouncedSearch.trim().length > 0}
+              selectedId={selectedId}
+              onOpen={(tx) => setSelectedId(tx.id)}
+              onLoadMore={() => setVisible((n) => n + PAGE_SIZE)}
+              hasMore={shown.length < tableRows.length}
+              tableClass="bfh-table--income"
+            />
+          </div>
+        </>
+      )}
 
       {selected && (
         <DetailPanel
@@ -213,6 +261,7 @@ export default function Income() {
           tx={selected}
           client={data.clientsById[selected.clientId]}
           symbol={symbol}
+          categoryIcons={data.categoryIcons}
           onClose={() => setSelectedId(null)}
           onEdit={(tx) => setEditing(tx)}
           onDelete={remove}
@@ -225,7 +274,6 @@ export default function Income() {
           transaction={editing}
           categories={data.categories}
           clients={data.clients}
-          paymentMethods={data.paymentMethods}
           onClose={() => setEditing(null)}
         />
       )}

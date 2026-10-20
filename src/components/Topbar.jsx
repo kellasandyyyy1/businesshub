@@ -7,6 +7,7 @@ import {
   IconUser,
 } from '@tabler/icons-react'
 import { useState } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import ModeSheet from './ModeSheet'
 import NotificationsMenu from './NotificationsMenu'
@@ -18,11 +19,19 @@ import useGreeting from '../hooks/useGreeting'
 import { useIsMobile } from '../hooks/useMediaQuery'
 import useSettings from '../hooks/useSettings'
 
+// Pages with their own period choice, or none at all: a second switch up
+// here would change nothing on them and suggest that it should.
+const PERIODLESS = new Set(['/personal/goals', '/personal/net-worth', '/reports', '/personal/reports', '/invoices', '/cashflow', '/insights', '/clients', '/overview', '/export'])
+
 export default function Topbar({ onOpenMenu, onAsk }) {
   const [bellOpen, setBellOpen] = useState(false)
   const settings = useSettings()
   const alerts = useAlerts()
   const { periodId, setPeriodId } = usePeriod()
+  // Goals and net worth are standing totals, not a window of time; a period
+  // switch there would change nothing and suggest that it should.
+  const { pathname } = useLocation()
+  const periodless = PERIODLESS.has(pathname)
   const { isPersonal, showSwitcher } = useProfile()
   const { greeting, mode } = useGreeting()
   const isMobile = useIsMobile()
@@ -93,19 +102,21 @@ export default function Topbar({ onOpenMenu, onAsk }) {
       </div>
 
       <div className="flex flex-none items-center gap-2">
-        <div className="bfh-periods" role="group" aria-label="Reporting period">
-          {PERIODS.map((p) => (
-            <button
-              key={p.id}
-              type="button"
-              className="bfh-period"
-              aria-pressed={periodId === p.id}
-              onClick={() => setPeriodId(p.id)}
-            >
-              {p.label}
-            </button>
-          ))}
-        </div>
+        {!periodless && (
+          <div className="bfh-periods" role="group" aria-label="Reporting period">
+            {PERIODS.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                className="bfh-period"
+                aria-pressed={periodId === p.id}
+                onClick={() => setPeriodId(p.id)}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* The floating button is out of thumb reach on a phone, so the ask
             control also lives here at mobile widths. */}

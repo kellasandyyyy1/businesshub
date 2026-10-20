@@ -347,7 +347,11 @@ export function monthlySnapshot(transactions = [], month) {
 export function netWorthHistory(items = [], today) {
   if (!items.length) return []
 
-  const stamped = items.filter((i) => i.updatedAt)
+  // Stamps are ISO strings, but a restored backup or an older entry can carry
+  // a millisecond timestamp instead; read both as the same calendar date.
+  const stamped = items
+    .filter((i) => i.updatedAt && !Number.isNaN(new Date(i.updatedAt).getTime()))
+    .map((i) => ({ ...i, updatedAt: new Date(i.updatedAt).toISOString() }))
   if (!stamped.length) return []
 
   const first = stamped.reduce((min, i) => (i.updatedAt < min ? i.updatedAt : min), stamped[0].updatedAt)

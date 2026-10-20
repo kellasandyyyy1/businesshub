@@ -15,6 +15,7 @@ import {
 import { formatCurrency } from '../../lib/format'
 
 const SCENARIOS = ['conservative', 'expected', 'optimistic']
+const SCENARIO_WORDS = { conservative: 'Worst case', expected: 'Most likely', optimistic: 'Best case' }
 
 const SYSTEM = `You are a financial forecaster. Based on the business data provided, return ONLY valid JSON — no markdown, no backticks:
 {
@@ -106,18 +107,20 @@ export default function AiForecast({ symbol }) {
       <header className="bfh-forecast__head">
         <div>
           <h2 className="bfh-panel__title">AI forecast</h2>
-          <div className="bfh-micro">
-            {generatedAt ? `Generated ${timeAgo(generatedAt)}` : 'Not generated yet'}
-          </div>
+          <p className="bfh-forecast__sub">
+            {generatedAt
+              ? `Best, likely and worst case for the months ahead · made ${timeAgo(generatedAt)}`
+              : 'Let AI sketch a best, likely and worst case for the months ahead from your history.'}
+          </p>
         </div>
 
-        <button type="button" className="bfh-ghostaction" onClick={generate} disabled={loading}>
+        <button type="button" className="bfh-btn-outline bfh-forecast__go" onClick={generate} disabled={loading}>
           {forecast ? (
-            <IconRefresh size={12} stroke={1.5} aria-hidden="true" />
+            <IconRefresh size={15} stroke={1.5} aria-hidden="true" />
           ) : (
-            <IconSparkles size={12} stroke={1.5} aria-hidden="true" />
+            <IconSparkles size={15} stroke={1.5} aria-hidden="true" />
           )}
-          {forecast ? 'Regenerate' : 'Generate AI forecast'}
+          {forecast ? 'Refresh' : 'Make a forecast'}
         </button>
       </header>
 
@@ -126,17 +129,18 @@ export default function AiForecast({ symbol }) {
 
       {active && !loading && (
         <>
-          <div className="bfh-periods bfh-forecast__tabs" role="group" aria-label="Scenario">
+          <div className="bfh-segment bfh-forecast__tabs" role="radiogroup" aria-label="Scenario">
             {SCENARIOS.map((id) => (
               <button
                 key={id}
                 type="button"
-                className="bfh-period"
-                aria-pressed={scenario === id}
+                role="radio"
+                className="bfh-segment__option"
+                aria-checked={scenario === id}
                 onClick={() => setScenario(id)}
                 disabled={!forecast.scenarios[id]}
               >
-                {id}
+                {SCENARIO_WORDS[id]}
               </button>
             ))}
           </div>

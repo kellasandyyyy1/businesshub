@@ -2,7 +2,9 @@
 @import 'tailwindcss';
 @import './styles/shell.css';
 @import './styles/dashboard.css';
+@import './styles/charts.css';
 @import './styles/transactions.css';
+@import './styles/ledger.css';
 @import './styles/income.css';
 @import './styles/expenses.css';
 @import './styles/howitworks.css';
@@ -20,6 +22,11 @@
 @import './styles/export.css';
 @import './styles/pwa.css';
 @import './styles/responsive.css';
+@import './styles/sheets.css';
+@import './styles/overview.css';
+@import './styles/signal.css';
+@import './styles/payments.css';
+@import './styles/toast.css';
 
 /* Tailwind is used for utility layout only.
    Every color comes from the tokens above — never from Tailwind's palette. */

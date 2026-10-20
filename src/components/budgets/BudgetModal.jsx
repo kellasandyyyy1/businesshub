@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 
 import { BUDGET_PERIODS, db } from '../../db/db'
 import { BUSINESS_PROFILE, addBudget } from '../../db/queries'
+import { useToast } from '../../context/ToastContext'
 import useFocusTrap from '../../hooks/useFocusTrap'
+import { removeWithUndo } from '../../lib/softDelete'
+import { short } from '../../lib/toastCopy'
 
 const emptyBudget = () => ({ name: '', category: '', amount: '', period: 'monthly' })
 
@@ -18,9 +21,9 @@ export default function BudgetModal({ budget, categories, onClose }) {
       : emptyBudget(),
   )
   const [errors, setErrors] = useState({})
-  const [confirming, setConfirming] = useState(false)
   const firstField = useRef(null)
   const trapRef = useFocusTrap()
+  const toast = useToast()
   const isEdit = Boolean(budget?.id)
 
   useEffect(() => {
@@ -54,14 +57,27 @@ export default function BudgetModal({ budget, categories, onClose }) {
       period: form.period,
     }
 
-    if (isEdit) await db.budgets.update(budget.id, record)
-    else await addBudget(BUSINESS_PROFILE, record)
+    try {
+      if (isEdit) await db.budgets.update(budget.id, record)
+      else await addBudget(BUSINESS_PROFILE, record)
+    } catch {
+      toast.error("Couldn't save. Try again.")
+      return
+    }
+    toast.success(`${(/budget/i.test(record.name) ? short(record.name) : `${short(record.name)} budget`)} ${isEdit ? 'updated' : 'created'}`)
     onClose()
   }
 
+  // Straight away, no second tap — the toast that follows carries Undo.
   const remove = async () => {
-    await db.budgets.delete(budget.id)
     onClose()
+    await removeWithUndo(
+      toast,
+      'budgets',
+      budget.id,
+      `${/budget/i.test(budget.name) ? short(budget.name) : `${short(budget.name)} budget`} removed`,
+      'Budget restored',
+    )
   }
 
   // Only expenses have budgets; income categories would never be spent against.
@@ -131,9 +147,9 @@ export default function BudgetModal({ budget, categories, onClose }) {
             <button
               type="button"
               className="bfh-btn-ghost bfh-modal__delete"
-              onClick={() => (confirming ? remove() : setConfirming(true))}
+              onClick={remove}
             >
-              {confirming ? 'Confirm delete' : 'Delete'}
+              Delete
             </button>
           )}
           <button type="button" className="bfh-btn-ghost" onClick={onClose}>

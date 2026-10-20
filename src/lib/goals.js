@@ -20,6 +20,8 @@ export function daysUntil(deadline, today) {
  *   completed  the target is met, whatever the date
  *   overdue    the deadline has passed and it is not
  *   behind     less has been put aside than the time elapsed would suggest
+ *   not-started nothing put aside yet, and not yet late — "on track" would
+ *              be a strange thing to tell someone who has not begun
  *   on-track   everything else
  *
  * "Behind" measures saving against the clock: a goal a third of the way
@@ -27,6 +29,11 @@ export function daysUntil(deadline, today) {
  * clock to be behind, so an unfinished goal is simply on track.
  */
 export function goalStatus(goal, today) {
+  const status = clockStatus(goal, today)
+  return status === 'on-track' && !(Number(goal?.current) > 0) ? 'not-started' : status
+}
+
+function clockStatus(goal, today) {
   const target = Number(goal?.target) || 0
   const current = Number(goal?.current) || 0
 
@@ -53,6 +60,7 @@ export const STATUS_LABELS = {
   completed: 'Completed',
   overdue: 'Overdue',
   behind: 'Behind',
+  'not-started': 'Not started',
   'on-track': 'On track',
 }
 

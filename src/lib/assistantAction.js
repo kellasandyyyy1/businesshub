@@ -8,13 +8,15 @@
  * blank for the person to fill in rather than guessed at.
  */
 
+import { matchMethod, methodFields } from './paymentMethods'
+
 const TYPES = new Set(['income', 'expense'])
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
 
 const todayISO = () => new Date().toISOString().slice(0, 10)
 
 /** Matches the model's guess against the categories this business really has. */
-function resolveCategory(guess, categories, type) {
+export function resolveCategory(guess, categories, type) {
   if (!guess) return ''
   const wanted = String(guess).trim().toLowerCase()
   const allowed = categories.filter((c) => c.type === type || type === 'transfer')
@@ -34,7 +36,7 @@ function resolveCategory(guess, categories, type) {
  * @returns a transaction-shaped object for the modal, or null if the action is
  *   not one we know how to carry out.
  */
-export function normalizeAction(action, categories = []) {
+export function normalizeAction(action, categories = [], methods = []) {
   if (action?.type !== 'ADD_TRANSACTION') return null
 
   const prefill = action.prefill ?? {}
@@ -52,6 +54,9 @@ export function normalizeAction(action, categories = []) {
     type,
     category: resolveCategory(prefill.category, categories, type),
     date,
+    // Only a method the user has saved — matched on its name, or the one saved
+    // name it is part of. No match, or more than one, leaves it empty.
+    ...methodFields(matchMethod(prefill.paymentMethod, methods, { partial: true })),
     notes: String(prefill.notes ?? '').trim(),
     status: 'cleared',
   }

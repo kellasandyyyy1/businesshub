@@ -12,7 +12,7 @@ export default function FAB({ onClick }) {
 
   return (
     <button type="button" className="bfh-fab" onClick={onClick} aria-label="Add transaction">
-      <IconPlus size={20} stroke={1.75} aria-hidden="true" />
+      <IconPlus size={22} stroke={2} aria-hidden="true" />
     </button>
   )
 }

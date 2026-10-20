@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { useProfile } from '../../context/ProfileContext'
+import { useToast } from '../../context/ToastContext'
 import { putSetting } from '../../db/db'
 import {
   isPushConfigured,
@@ -136,6 +137,7 @@ export default function NotificationsSection({ settings }) {
   const [pushOn, setPushOn] = useState(false)
   const [busy, setBusy] = useState(false)
   const [failure, setFailure] = useState(null)
+  const toast = useToast()
 
   // localStorage is not available during the first render on every host. No
   // failure is surfaced here: an untouched toggle has nothing to report yet.
@@ -153,10 +155,19 @@ export default function NotificationsSection({ settings }) {
     if (pushOn) {
       await unsubscribeFromPush()
       setPushOn(false)
+      toast.info('Push notifications off')
     } else {
       const result = await subscribeToPush()
-      if (result.ok) setPushOn(true)
-      else setFailure(result.reason)
+      if (result.ok) {
+        setPushOn(true)
+        toast.info('Push notifications on')
+      } else if (result.reason === 'server') {
+        // Nothing the user can fix here — say so and let it go.
+        toast.error("Couldn't reach the notification server. Try again later.")
+      } else {
+        // Denied or unsupported needs explaining, so it stays beside the switch.
+        setFailure(result.reason)
+      }
     }
     setBusy(false)
   }

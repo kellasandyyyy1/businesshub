@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { useNotifications } from '../hooks/useNotifications'
+import { notificationTone } from '../lib/signal'
 
 /**
  * What currently needs attention, hung under the bell.
@@ -69,6 +70,9 @@ export default function NotificationsMenu({ onClose }) {
           {items.map((item) => (
             <li key={item.type}>
               <button type="button" className="bfh-notifmenu__item" onClick={() => open(item.link)}>
+                {notificationTone(item) && (
+                  <span className={`dot dot-${notificationTone(item)}`} aria-hidden="true" />
+                )}
                 <span className="bfh-notifmenu__body">
                   <span className="bfh-notifmenu__itemtitle">{item.title}</span>
                   <span className="bfh-notifmenu__itembody">{item.body}</span>

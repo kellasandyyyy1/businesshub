@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 
 import { db } from '../../db/db'
 import { addNetWorthEntry } from '../../db/queries'
+import { useToast } from '../../context/ToastContext'
 import useFocusTrap from '../../hooks/useFocusTrap'
+import { removeWithUndo } from '../../lib/softDelete'
+import { short } from '../../lib/toastCopy'
 import { NET_WORTH_TYPES, categoriesFor } from '../../lib/netWorth'
 
 const toForm = (item, defaultType) => ({
@@ -16,9 +19,9 @@ const toForm = (item, defaultType) => ({
 export default function NetWorthModal({ item, defaultType, symbol, onClose }) {
   const [form, setForm] = useState(() => toForm(item, defaultType))
   const [errors, setErrors] = useState({})
-  const [confirming, setConfirming] = useState(false)
   const firstField = useRef(null)
   const trapRef = useFocusTrap()
+  const toast = useToast()
   const isEdit = Boolean(item?.id)
 
   useEffect(() => {
@@ -60,14 +63,28 @@ export default function NetWorthModal({ item, defaultType, symbol, onClose }) {
 
     // A balance that has not been re-stated is stale, so every save restamps it
     // — that timestamp is what the summary's "updated" line reports.
-    if (isEdit) await db.netWorth.update(item.id, { ...record, updatedAt: new Date().toISOString() })
-    else await addNetWorthEntry('personal', record)
+    try {
+      if (isEdit) await db.netWorth.update(item.id, { ...record, updatedAt: new Date().toISOString() })
+      else await addNetWorthEntry('personal', record)
+    } catch {
+      toast.error("Couldn't save. Try again.")
+      return
+    }
+    const side = record.type === 'liability' ? 'debts' : 'assets'
+    toast.success(isEdit ? `${short(record.name)} updated` : `${short(record.name)} added to ${side}`)
     onClose()
   }
 
+  // Straight away, no second tap — the toast that follows carries Undo.
   const remove = async () => {
-    await db.netWorth.delete(item.id)
     onClose()
+    await removeWithUndo(
+      toast,
+      'netWorth',
+      item.id,
+      `${short(item.name)} removed from ${item.type === 'liability' ? 'debts' : 'assets'}`,
+      `${short(item.name)} restored`,
+    )
   }
 
   return (
@@ -81,20 +98,22 @@ export default function NetWorthModal({ item, defaultType, symbol, onClose }) {
 
       <form className="bfh-modal__panel" ref={trapRef} onSubmit={onSubmit}>
         <header className="bfh-modal__head">
-          <h2 className="bfh-panel__title">{isEdit ? 'Edit item' : 'Add item'}</h2>
-          <span className="bfh-micro">{isEdit ? `#${item.id}` : 'Net worth'}</span>
+          <h2 className="bfh-panel__title">
+            {isEdit ? 'Edit' : 'Add'} {form.type === 'liability' ? 'a debt' : 'an asset'}
+          </h2>
         </header>
 
         <div className="bfh-form">
           <div className="bfh-formfield bfh-formfield--wide">
-            <span className="bfh-micro">Type</span>
-            <div className="bfh-toggle" role="group" aria-label="Item type">
+            <span className="bfh-fieldlabel">Is this…</span>
+            <div className="bfh-segment bfh-segment--fill" role="radiogroup" aria-label="Item type">
               {NET_WORTH_TYPES.map((t) => (
                 <button
                   key={t}
                   type="button"
-                  className="bfh-toggle__option"
-                  aria-pressed={form.type === t}
+                  role="radio"
+                  className="bfh-segment__option"
+                  aria-checked={form.type === t}
                   onClick={() =>
                     setForm((f) => ({
                       ...f,
@@ -105,14 +124,14 @@ export default function NetWorthModal({ item, defaultType, symbol, onClose }) {
                     }))
                   }
                 >
-                  {t}
+                  {t === 'liability' ? 'Something I owe' : 'Something I own'}
                 </button>
               ))}
             </div>
           </div>
 
           <label className="bfh-formfield bfh-formfield--wide">
-            <span className="bfh-micro">Name</span>
+            <span className="bfh-fieldlabel">Name</span>
             <input
               ref={firstField}
               value={form.name}
@@ -123,7 +142,7 @@ export default function NetWorthModal({ item, defaultType, symbol, onClose }) {
           </label>
 
           <label className="bfh-formfield">
-            <span className="bfh-micro">Category</span>
+            <span className="bfh-fieldlabel">Category</span>
             <select value={form.category} onChange={set('category')}>
               <option value="">Select…</option>
               {options.map((c) => (
@@ -136,7 +155,7 @@ export default function NetWorthModal({ item, defaultType, symbol, onClose }) {
           </label>
 
           <label className="bfh-formfield">
-            <span className="bfh-micro">Amount</span>
+            <span className="bfh-fieldlabel">Amount</span>
             <span className="bfh-moneyfield">
               <span className="bfh-moneyfield__symbol" aria-hidden="true">
                 {symbol}
@@ -147,7 +166,7 @@ export default function NetWorthModal({ item, defaultType, symbol, onClose }) {
           </label>
 
           <label className="bfh-formfield bfh-formfield--wide">
-            <span className="bfh-micro">Notes</span>
+            <span className="bfh-fieldlabel">Notes</span>
             <textarea rows={2} value={form.notes} onChange={set('notes')} />
           </label>
         </div>
@@ -157,12 +176,12 @@ export default function NetWorthModal({ item, defaultType, symbol, onClose }) {
             <button
               type="button"
               className="bfh-btn-ghost bfh-modal__delete bfh-btn--dashed"
-              onClick={() => (confirming ? remove() : setConfirming(true))}
+              onClick={remove}
             >
-              {confirming ? 'Confirm remove' : 'Remove'}
+              Remove
             </button>
           )}
-          <button type="button" className="bfh-btn-ghost" onClick={onClose}>
+          <button type="button" className="bfh-btn-text" onClick={onClose}>
             Cancel
           </button>
           <button type="submit" className="bfh-btn-primary">

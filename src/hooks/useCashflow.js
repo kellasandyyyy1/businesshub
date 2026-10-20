@@ -3,7 +3,6 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/db'
 import { BUSINESS_PROFILE, ofProfile } from '../db/queries'
 import { buildEvents, buildProjection } from '../lib/cashflow'
-import { shiftDays } from '../lib/format'
 
 /** Built before the profile split, so it reads the business side. */
 const inProfile = ofProfile(BUSINESS_PROFILE)
@@ -41,15 +40,19 @@ export function useCashflowData(days) {
     const { income, expenses } = buildEvents({ transactions, invoices, today, days })
     const series = buildProjection({ currentCash, income, expenses, today, days })
 
-    // The headline "expected" figures always describe the next 30 days,
-    // whatever horizon the chart is showing.
-    const in30 = shiftDays(today, 30)
-    const expectedIncome = income
-      .filter((e) => e.date <= in30)
-      .reduce((total, e) => total + e.amount, 0)
-    const expectedExpenses = expenses
-      .filter((e) => e.date <= in30)
-      .reduce((total, e) => total + e.amount, 0)
+    // Everything below describes the same window the chart shows. The
+    // headline once used a fixed 30 days beside a 90-day chart, so its figures
+    // never added up to the line drawn under them.
+    const expectedIncome = income.reduce((total, e) => total + e.amount, 0)
+    const expectedExpenses = expenses.reduce((total, e) => total + e.amount, 0)
+    // Months the cash lasts at the last 90 days' pace of spending — the same
+    // burn the Insights page and the low-runway notice use.
+    const from = new Date(Date.parse(`${today}T00:00:00Z`) - 89 * 86_400_000).toISOString().slice(0, 10)
+    const burn =
+      cleared.filter((t) => t.type === 'expense' && t.date >= from && t.date <= today).reduce((total, t) => total + t.amount, 0) / 3
+    const runwayMonths = burn > 0 ? Math.max(currentCash, 0) / burn : null
+
+    const lowest = series.reduce((low, point) => (point.balance < low.balance ? point : low), series[0])
 
     return {
       today,
@@ -58,7 +61,9 @@ export function useCashflowData(days) {
       openingBalance: hasOpeningBalance ? Number(openingBalance) : 0,
       expectedIncome,
       expectedExpenses,
-      projectedCash: currentCash + expectedIncome - expectedExpenses,
+      projectedCash: series[series.length - 1]?.balance ?? currentCash,
+      lowest,
+      runwayMonths,
       income,
       expenses,
       series,

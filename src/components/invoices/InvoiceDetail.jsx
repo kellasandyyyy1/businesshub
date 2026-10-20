@@ -1,10 +1,29 @@
-import { IconArrowLeft, IconX } from '@tabler/icons-react'
+import { IconArrowLeft, IconCheck, IconFileTypePdf, IconPencil, IconSend, IconX } from '@tabler/icons-react'
 import { useEffect } from 'react'
 
 import StatusPill from './StatusPill'
+import { useToast } from '../../context/ToastContext'
 import { db } from '../../db/db'
 import { formatCurrency, formatFullDate } from '../../lib/format'
-import { amountPaid, balanceOf, issueDateOf } from '../../lib/invoice'
+import { amountPaid, balanceOf, dueLabel, issueDateOf } from '../../lib/invoice'
+
+/**
+ * What the invoice is waiting on, as a sentence with the money in it, and
+ * the one thing to do about it.
+ */
+function standing(invoice, balance, money, today) {
+  const when = dueLabel(invoice, today)
+  switch (invoice.effectiveStatus) {
+    case 'draft':
+      return { title: 'Draft — not sent yet', body: 'Send it to your client, then mark it as sent so Dual can track the due date.' }
+    case 'paid':
+      return { title: `${when} in full`, body: `${money(invoice.total)} received. Nothing more to do.` }
+    case 'overdue':
+      return { title: `${money(balance)} is ${when}`, body: `It was due ${formatFullDate(invoice.dueDate)}. Worth a follow-up with your client.` }
+    default:
+      return { title: `${money(balance)} · ${when}`, body: `Due ${formatFullDate(invoice.dueDate)}. Mark it as paid when the money arrives.` }
+  }
+}
 
 export default function InvoiceDetail({ invoice, client, business, symbol, onClose, onEdit }) {
   useEffect(() => {
@@ -15,25 +34,47 @@ export default function InvoiceDetail({ invoice, client, business, symbol, onClo
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [onClose])
 
+  const toast = useToast()
+  const today = new Date().toISOString().slice(0, 10)
+  const money = (v) => formatCurrency(v, symbol)
   const paid = amountPaid(invoice)
   const balance = balanceOf(invoice)
   const payments = invoice.payments ?? []
 
   const markPaid = async () => {
     const now = new Date().toISOString()
-    await db.invoices.update(invoice.id, {
-      status: 'paid',
-      paidAt: now,
-      // Record the settling payment so the history below reflects reality.
-      payments: [
-        ...payments,
-        { date: now.slice(0, 10), amount: balance, method: 'Recorded manually' },
-      ],
-    })
+    try {
+      await db.invoices.update(invoice.id, {
+        status: 'paid',
+        paidAt: now,
+        // Record the settling payment so the history below reflects reality.
+        payments: [
+          ...payments,
+          { date: now.slice(0, 10), amount: balance, method: 'Recorded manually' },
+        ],
+      })
+    } catch {
+      toast.error("Couldn't save. Try again.")
+      return
+    }
+    toast.success(`${invoice.invoiceNumber} marked as paid · ${money(balance)}`)
   }
 
+  const markSent = async () => {
+    try {
+      await db.invoices.update(invoice.id, { status: 'sent', sentAt: invoice.sentAt ?? new Date().toISOString() })
+    } catch {
+      toast.error("Couldn't save. Try again.")
+      return
+    }
+    toast.success(`${invoice.invoiceNumber} marked as sent`)
+  }
+
+  const status = invoice.effectiveStatus
+  const banner = standing(invoice, balance, money, today)
+
   return (
-    <aside className="bfh-panel bfh-panel--wide" aria-label="Invoice detail">
+    <aside className="bfh-panel bfh-panel--wide bfh-invdetail" aria-label="Invoice detail">
       <header className="bfh-panel__head">
         <button type="button" className="bfh-panel__back" onClick={onClose}>
           <IconArrowLeft size={16} stroke={1.5} aria-hidden="true" />
@@ -41,7 +82,7 @@ export default function InvoiceDetail({ invoice, client, business, symbol, onClo
         </button>
         <h2 className="bfh-panel__heading">{invoice.invoiceNumber}</h2>
         <span className="bfh-panel__head-right">
-          <StatusPill status={invoice.effectiveStatus} />
+          <StatusPill invoice={invoice} today={today} />
           <button
             type="button"
             className="bfh-iconaction bfh-panel__close"
@@ -54,6 +95,11 @@ export default function InvoiceDetail({ invoice, client, business, symbol, onClo
       </header>
 
       <div className="bfh-panel__body">
+        <div className="bfh-invdetail__standing" data-status={status} role="status">
+          <span className="bfh-invdetail__standingtitle">{banner.title}</span>
+          <span className="bfh-invdetail__standingbody">{banner.body}</span>
+        </div>
+
         {/* The printable document. @media print isolates exactly this block. */}
         <article className="bfh-doc">
           <header className="bfh-doc__head">
@@ -153,18 +199,28 @@ export default function InvoiceDetail({ invoice, client, business, symbol, onClo
         )}
       </div>
 
-      <footer className="bfh-panel__foot">
-        {invoice.effectiveStatus !== 'paid' && (
-          <button type="button" className="bfh-btn-ghost" onClick={markPaid}>
+      {/* The main button is always the next step for this invoice. */}
+      <footer className="bfh-panel__foot bfh-invdetail__foot">
+        <button type="button" className="bfh-btn-outline" onClick={() => window.print()}>
+          <IconFileTypePdf size={17} stroke={1.5} aria-hidden="true" />
+          PDF
+        </button>
+        <button type="button" className="bfh-btn-outline" onClick={() => onEdit(invoice)}>
+          <IconPencil size={15} stroke={1.5} aria-hidden="true" />
+          Edit
+        </button>
+        {status === 'draft' && (
+          <button type="button" className="bfh-btn-primary" onClick={markSent}>
+            <IconSend size={15} stroke={1.75} aria-hidden="true" />
+            Mark as sent
+          </button>
+        )}
+        {(status === 'sent' || status === 'viewed' || status === 'overdue') && (
+          <button type="button" className="bfh-btn-primary" onClick={markPaid}>
+            <IconCheck size={15} stroke={2} aria-hidden="true" />
             Mark as paid
           </button>
         )}
-        <button type="button" className="bfh-btn-ghost" onClick={() => window.print()}>
-          Download PDF
-        </button>
-        <button type="button" className="bfh-btn-primary" onClick={() => onEdit(invoice)}>
-          Edit
-        </button>
       </footer>
     </aside>
   )

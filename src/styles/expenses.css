@@ -7,7 +7,15 @@
   margin: 10px 0 0;
   padding-top: 10px;
   border-top: var(--hairline) solid var(--b);
-  color: var(--ink3);
+  /* A full sentence, so it reads as one: sentence case in the body face,
+     not the uppercase label register. */
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--weight-regular);
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink2);
 }
 
 /* ---- Recurring tab ----------------------------------------------------------- */
@@ -19,7 +27,7 @@
 .bfh-recurring__freq {
   flex: none;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   color: var(--ink3);
@@ -37,7 +45,7 @@
 
 .bfh-recurring__annual {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: var(--fs-label-lg);
   color: var(--ink3);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -84,7 +92,7 @@
 
 .bfh-budgetcard__figures {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--fs-small);
   color: var(--ink2);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -107,7 +115,7 @@
 }
 
 .bfh-budgetcard__pct {
-  font-size: 11px;
+  font-size: var(--fs-caption);
   font-weight: var(--weight-medium);
   color: var(--ink);
 }

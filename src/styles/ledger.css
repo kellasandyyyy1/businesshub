@@ -1,0 +1,314 @@
+/* ==========================================================================
+   Ledger — the transaction, income and expense lists, on both profiles.
+   ========================================================================== */
+
+/* ---- Page head: what this page is, how much is in it, the one action ------ */
+
+.bfh-pagehead__sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-body-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink2);
+}
+
+.bfh-pagehead__action {
+  flex: none;
+  gap: 6px;
+}
+
+/* The floating + already adds on a phone; a second button would crowd the
+   title. */
+@media (max-width: 767px) {
+  .bfh-pagehead__action {
+    display: none;
+  }
+}
+
+/* ---- Type switch: All / Money in / Money out / Transfers ------------------ */
+
+.bfh-toolbar-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bfh-segment {
+  display: inline-flex;
+  align-self: flex-start;
+  gap: 2px;
+  max-width: 100%;
+  padding: 3px;
+  overflow-x: auto;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-sm);
+  background: var(--surface-fill);
+  scrollbar-width: none;
+}
+.bfh-segment::-webkit-scrollbar {
+  display: none;
+}
+
+.bfh-segment__option {
+  flex: none;
+  min-height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: calc(var(--radius-sm) - 3px);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-sm);
+  color: var(--ink2);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--duration-micro) var(--ease-out-soft),
+    color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-segment__option:hover {
+  color: var(--ink);
+}
+.bfh-segment__option[aria-checked='true'] {
+  background: var(--bg);
+  color: var(--ink);
+  font-weight: var(--weight-medium);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08), 0 0 0 1px var(--b);
+}
+
+@media (max-width: 767px) {
+  .bfh-segment {
+    display: flex;
+    align-self: stretch;
+  }
+  .bfh-segment__option {
+    flex: 1 0 auto;
+    min-height: 40px;
+  }
+}
+
+.bfh-clearfilters {
+  flex: none;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-sm);
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--ink-c) / 0.3);
+  text-underline-offset: 3px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.bfh-clearfilters:hover {
+  text-decoration-color: var(--ink);
+}
+
+.bfh-empty--action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin: 28px 0;
+}
+.bfh-empty--action p {
+  margin: 0;
+}
+.bfh-empty--action .bfh-btn-ghost {
+  width: auto;
+}
+
+/* ---- Status: only pending is worth a tag --------------------------------- */
+
+.bfh-status-quiet {
+  font-size: var(--fs-small);
+  color: var(--ink3);
+}
+
+.bfh-status-pill[data-status='pending'] {
+  border-style: dashed;
+  color: var(--ink);
+}
+
+/* Money in gets its plus sign; the figure itself stays ink. */
+.bfh-cell-amount {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Phone list: grouped by day, like a bank statement ------------------- */
+
+.bfh-txlist {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.bfh-txlist__dayhead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 4px 6px;
+  font-size: var(--fs-small);
+  font-weight: var(--weight-medium);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink2);
+}
+
+.bfh-txlist__rows {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-md);
+  background: var(--card);
+}
+.bfh-txlist__rows li + li {
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-txitem {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 60px;
+  padding: 10px 14px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-txitem:active,
+.bfh-txitem[data-selected] {
+  background: var(--surface-fill);
+}
+
+.bfh-txitem__icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--ink2);
+}
+
+.bfh-txitem__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.bfh-txitem__name {
+  overflow: hidden;
+  font-size: var(--fs-body);
+  font-weight: var(--weight-medium);
+  line-height: 1.3;
+  color: var(--ink);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bfh-txitem__meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--fs-small);
+  line-height: 1.3;
+  color: var(--ink2);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bfh-txitem__pending {
+  flex: none;
+  padding: 0 6px;
+  border: var(--hairline) dashed var(--b2);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-caption);
+  color: var(--ink);
+}
+
+.bfh-txitem__amount {
+  font-size: var(--fs-body);
+  font-weight: var(--weight-medium);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  white-space: nowrap;
+}
+/* Money in and money out are both ordinary, so both stay ink; the sign says
+   which is which. Colour is kept for problems, never for an outflow. */
+.bfh-txitem__amount[data-type='transfer'] {
+  color: var(--ink3);
+}
+
+/* The list carries its own frame; the card it sits in steps back on a phone. */
+@media (max-width: 767px) {
+  .bfh-table-card:has(.bfh-txlist) {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .bfh-table-card:has(.bfh-txlist) .bfh-ledger__head {
+    padding: 0 4px 10px;
+  }
+}
+
+/* ---- Desktop table details ------------------------------------------------ */
+
+/* The category has its own column on a wide table; the copy under the name is
+   only for the tablet width where that column is dropped, and there it reads
+   as a plain caption rather than a badge. */
+.bfh-cell-desc .bfh-chip {
+  display: none;
+}
+@media (max-width: 860px) {
+  .bfh-cell-desc .bfh-chip {
+    display: block;
+    margin: 2px 0 0;
+    padding: 0;
+    border: 0;
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    font-weight: var(--weight-regular);
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--ink2);
+  }
+}
+
+.bfh-cell-status .bfh-status-quiet {
+  font-family: var(--font-sans);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* Money in, money out, net: three short figures that fit side by side even on
+   a phone, so they stay one glance instead of a stack of three cards. */
+@media (max-width: 620px) {
+  .bfh-summary--triple {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .bfh-summary--triple .bfh-summary__cell {
+    padding: 12px;
+  }
+  .bfh-summary--triple .bfh-summary__cell + .bfh-summary__cell {
+    border-top: 0;
+    border-left: var(--hairline) solid var(--b);
+  }
+  .bfh-summary--triple .bfh-summary__value {
+    font-size: var(--fs-body-sm);
+    font-weight: var(--weight-semibold);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+}

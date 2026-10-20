@@ -36,7 +36,14 @@ export default function AppShell() {
   // The form lives on whichever transactions page belongs to the open profile;
   // sending a personal user to /transactions would only bounce them back.
   const { isPersonal } = useProfile()
-  const addTransactionPath = isPersonal ? '/personal/transactions?new=1' : '/transactions?new=1'
+  // On Income or Expenses, + opens that page's own form, set to the right
+  // type; everywhere else it goes to the transactions page.
+  const onLedgerPage = /^\/(personal\/)?(income|expenses)$/.test(pathname)
+  const addTransactionPath = onLedgerPage
+    ? `${pathname}?new=1`
+    : isPersonal
+      ? '/personal/transactions?new=1'
+      : '/transactions?new=1'
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
 
@@ -171,7 +178,9 @@ export default function AppShell() {
         </button>
 
         <BottomNav onOpenMore={() => setMoreOpen(true)} moreOpen={moreOpen} />
-        <FAB onClick={() => navigate(addTransactionPath)} />
+        {/* Export has its own pinned Download bar where the + would sit, and
+            adding a transaction is not what that page is for. */}
+        {pathname !== '/export' && <FAB onClick={() => navigate(addTransactionPath)} />}
 
         {moreOpen && <MoreDrawer onClose={() => setMoreOpen(false)} />}
         {assistantOpen && <AIAssistant onClose={closeAssistant} />}

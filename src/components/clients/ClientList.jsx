@@ -1,4 +1,4 @@
-import { IconPlus, IconSearch, IconUsers } from '@tabler/icons-react'
+import { IconSearch, IconUsers } from '@tabler/icons-react'
 
 import EmptyState from '../EmptyState'
 
@@ -14,6 +14,10 @@ export default function ClientList({
   onAdd,
   symbol,
   hasAny,
+  sorts,
+  sort,
+  onSort,
+  owingCount,
 }) {
   return (
     <aside className="bfh-clientlist" aria-label="Clients">
@@ -28,6 +32,23 @@ export default function ClientList({
             aria-label="Search clients"
           />
         </div>
+        {hasAny && (
+          <div className="bfh-chiprow bfh-clientlist__sorts" role="radiogroup" aria-label="Sort clients">
+            {sorts.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                role="radio"
+                className="bfh-choicechip"
+                aria-checked={sort === s.id}
+                onClick={() => onSort(s.id)}
+              >
+                {s.label}
+                {s.id === 'owed' && owingCount > 0 && <span className="bfh-choicechip__count">{owingCount}</span>}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="bfh-clientlist__rows">
@@ -44,11 +65,23 @@ export default function ClientList({
               {initialsOf(client.name)}
             </span>
             <span className="bfh-clientrow__body">
-              <span className="bfh-clientrow__name">{client.name}</span>
-              <span className="bfh-micro">{client.company}</span>
+              <span className="bfh-clientrow__name">
+                {client.overdue > 0 && <span className="dot dot-neg" aria-hidden="true" />}
+                <span className="bfh-clientrow__nametext">{client.name}</span>
+                {client.overdue > 0 && <span className="bfh-sr">, has an overdue invoice</span>}
+              </span>
+              {/* A client billed as a person stores their name as the company too;
+                  saying it twice tells nobody anything, so the email shows instead. */}
+              <span className="bfh-clientrow__sub">
+                {client.company && client.company !== client.name ? client.company : client.email || 'Individual'}
+              </span>
             </span>
-            <span className="bfh-clientrow__revenue">
-              {formatAmount(client.revenue, symbol)}
+            {/* What they have paid, and — when it matters — what they owe. */}
+            <span className="bfh-clientrow__money">
+              <span className="bfh-clientrow__revenue">{formatAmount(client.revenue, symbol)}</span>
+              <span className="bfh-clientrow__owed" data-owing={client.outstanding > 0 || undefined}>
+                {client.outstanding > 0 ? `${formatAmount(client.outstanding, symbol)} owed` : 'earned'}
+              </span>
             </span>
           </button>
         ))}
@@ -59,20 +92,14 @@ export default function ClientList({
           ) : (
             <EmptyState
               icon={IconUsers}
-              heading="No clients added"
-              body="Clients tie invoices and income back to who paid them."
-              actionLabel="Add first client"
+              heading="No clients yet"
+              body="Add the people and businesses you bill. Invoices and payments then show who paid what, and who still owes you."
+              actionLabel="Add your first client"
               onAction={onAdd}
             />
           ))}
       </div>
 
-      <div className="bfh-clientlist__foot">
-        <button type="button" className="bfh-btn-ghost bfh-btn-ghost--solid" onClick={onAdd}>
-          <IconPlus size={14} stroke={1.75} aria-hidden="true" />
-          <span>Add client</span>
-        </button>
-      </div>
     </aside>
   )
 }

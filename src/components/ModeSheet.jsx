@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { PROFILE_HOME } from '../config/nav'
 import { useProfile } from '../context/ProfileContext'
+import { useToast } from '../context/ToastContext'
 import useFocusTrap from '../hooks/useFocusTrap'
 
 const OPTIONS = [
@@ -33,6 +34,7 @@ const OPTIONS = [
  * button, and its parent is inside a stacking context that would trap it.
  */
 export default function ModeSheet({ onClose }) {
+  const toast = useToast()
   const { profile, switchProfile } = useProfile()
   const navigate = useNavigate()
   const trapRef = useFocusTrap()
@@ -51,6 +53,7 @@ export default function ModeSheet({ onClose }) {
     if (id !== profile) {
       switchProfile(id)
       navigate(PROFILE_HOME[id])
+      toast.info(id === 'personal' ? 'Switched to Personal' : 'Switched to Business')
     }
     onClose()
   }

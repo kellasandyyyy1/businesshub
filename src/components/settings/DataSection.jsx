@@ -9,6 +9,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { useEffect, useRef, useState } from 'react'
 
 import { useProfile } from '../../context/ProfileContext'
+import { useToast } from '../../context/ToastContext'
 import { db, putSetting } from '../../db/db'
 import { ofProfile } from '../../db/queries'
 import {
@@ -233,8 +234,8 @@ export default function DataSection({ settings }) {
   const fileInput = useRef(null)
   const [dragging, setDragging] = useState(false)
   const [pending, setPending] = useState(null)
-  const [error, setError] = useState(null)
   const [done, setDone] = useState(null)
+  const toast = useToast()
   const [clearing, setClearing] = useState(false)
 
   // Live, so the strip and the button lines answer for what is there now —
@@ -250,33 +251,32 @@ export default function DataSection({ settings }) {
   }, [], null)
 
   useEffect(() => {
-    if (!error) return undefined
-    const timer = setTimeout(() => setError(null), 5000)
-    return () => clearTimeout(timer)
-  }, [error])
-
-  useEffect(() => {
     if (!done) return undefined
     const timer = setTimeout(() => setDone(null), 4000)
     return () => clearTimeout(timer)
   }, [done])
 
   const runExport = async (mode) => {
-    const payload = await collectExport(db, mode)
-    downloadJson(exportFilename(mode), payload)
-    await putSetting('lastExport', new Date().toISOString())
+    try {
+      const payload = await collectExport(db, mode)
+      downloadJson(exportFilename(mode), payload)
+    } catch {
+      toast.error("Couldn't create the backup. Try again.")
+      return
+    }
+    toast.info('Backup downloaded')
+    await putSetting('lastExport', new Date().toISOString()).catch(() => {})
   }
 
   const readFile = async (file) => {
     if (!file) return
-    setError(null)
     try {
       const parsed = JSON.parse(await file.text())
       const problem = validateExport(parsed)
-      if (problem) return setError(problem)
+      if (problem) return toast.error(problem)
       setPending({ parsed, preview: buildPreview(parsed) })
     } catch {
-      setError('Could not read this file. Make sure it is a valid Dual backup.')
+      toast.error("That file isn't a Dual backup.")
     }
     return undefined
   }
@@ -376,13 +376,6 @@ export default function DataSection({ settings }) {
         <h3 className="bfh-datablock__title">Restore from backup</h3>
         <p className="bfh-settings__note">Import a previously exported Dual backup file.</p>
 
-        {error && (
-          <p className="bfh-restore__warn bfh-restore__warn--inline" role="alert">
-            <IconAlertCircle size={13} stroke={1.5} aria-hidden="true" />
-            {error}
-          </p>
-        )}
-
         {done ? (
           <div className="bfh-restoredone" role="status">
             <IconCheck size={14} stroke={2} aria-hidden="true" />
@@ -450,6 +443,7 @@ export default function DataSection({ settings }) {
           onDone={(choice) => {
             setPending(null)
             setDone(choice)
+            toast.success('Backup restored')
           }}
         />
       )}

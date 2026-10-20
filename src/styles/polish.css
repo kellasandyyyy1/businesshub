@@ -17,7 +17,7 @@
 
 .bfh-emptystate__heading {
   margin: 4px 0 0;
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   font-weight: var(--weight-medium);
   line-height: 1.3;
   color: var(--ink);
@@ -26,7 +26,7 @@
 .bfh-emptystate__body {
   margin: 0;
   max-width: 34ch;
-  font-size: 12px;
+  font-size: var(--fs-small);
   line-height: 1.5;
   color: var(--ink2);
 }
@@ -123,7 +123,7 @@
 
 .bfh-onboard__note {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   line-height: 1.55;
   color: var(--ink2);
 }
@@ -172,7 +172,7 @@
 }
 .bfh-onboard__summary dd {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   color: var(--ink);
 }
 
@@ -195,7 +195,7 @@
 }
 .bfh-shortcuts dd {
   margin: 0;
-  font-size: 12px;
+  font-size: var(--fs-small);
   color: var(--ink2);
 }
 
@@ -206,7 +206,7 @@
   border: var(--hairline) solid var(--b2);
   border-radius: var(--radius-xs);
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: var(--fs-label-lg);
   font-weight: var(--weight-medium);
   text-align: center;
   color: var(--ink);
@@ -262,7 +262,7 @@
 .bfh-onboard__note--wide {
   max-width: 420px;
   margin-top: 10px;
-  font-size: 14px;
+  font-size: var(--fs-body);
   line-height: 1.6;
 }
 
@@ -302,7 +302,7 @@
 }
 
 .bfh-onboard__featurelabel {
-  font-size: 12px;
+  font-size: var(--fs-small);
   font-weight: var(--weight-medium);
   line-height: 1.35;
   color: var(--ink);
@@ -310,7 +310,7 @@
 
 .bfh-onboard__featuresub {
   margin-top: 2px;
-  font-size: 11px;
+  font-size: var(--fs-caption);
   line-height: 1.45;
   color: var(--ink2);
 }
@@ -325,7 +325,7 @@
   border: var(--hairline) solid var(--b);
   border-radius: var(--radius-sm);
   background: var(--bg);
-  font-size: 12px;
+  font-size: var(--fs-small);
   color: var(--ink2);
 }
 .bfh-onboard__shortcut svg {
@@ -338,7 +338,7 @@
   border: var(--hairline) solid var(--b2);
   border-radius: var(--radius-xs);
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   color: var(--ink3);
 }
 
@@ -350,7 +350,7 @@
   border-radius: var(--radius-sm);
   background: transparent;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: var(--fs-label-lg);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   color: var(--ink2);
@@ -391,7 +391,7 @@
 .bfh-aihint__text {
   flex: 1;
   min-width: 0;
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   color: var(--ink);
 }
 
@@ -400,7 +400,7 @@
   border: 0;
   background: transparent;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: var(--fs-label-lg);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   color: var(--ink3);
@@ -426,7 +426,7 @@
     row-gap: 4px;
   }
   .bfh-aihint__text {
-    font-size: 12px;
+    font-size: var(--fs-small);
     line-height: 1.5;
   }
   .bfh-aihint__try {
@@ -507,7 +507,7 @@
 }
 
 .bfh-modepick__title {
-  font-size: 14px;
+  font-size: var(--fs-body);
   font-weight: var(--weight-medium);
   line-height: 1.2;
   color: var(--ink);
@@ -515,7 +515,7 @@
 
 .bfh-modepick__desc {
   margin-top: 3px;
-  font-size: 12px;
+  font-size: var(--fs-small);
   line-height: 1.5;
   color: var(--ink2);
 }
@@ -527,7 +527,7 @@
   border: var(--hairline) solid var(--b2);
   border-radius: 20px;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   color: var(--ink3);

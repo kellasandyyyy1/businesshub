@@ -1,7 +1,7 @@
 import { IconSearch } from '@tabler/icons-react'
 
 import EmptyState from '../EmptyState'
-import { formatDate } from '../../lib/format'
+import TxList from './TxList'
 import { useDevice } from '../../context/BreakpointContext'
 
 /**
@@ -11,7 +11,8 @@ import { useDevice } from '../../context/BreakpointContext'
  * The columns are passed in because the two ledgers do not show the same
  * things: income names the client it came from, expenses carry a minus sign.
  * Everything else — the search field, the empty state, load-more, the row
- * click — is identical, so it lives here once.
+ * click — is identical, so it lives here once. On a phone the rows become the
+ * day-grouped TxList, which signs its own amounts.
  */
 export default function LedgerTable({
   title,
@@ -24,7 +25,8 @@ export default function LedgerTable({
   searchLabel,
   headerAction,
   mobileMeta,
-  amountOf,
+  categoryIcons,
+  symbol,
   emptyIcon,
   emptyHeading,
   emptyBody,
@@ -84,30 +86,14 @@ export default function LedgerTable({
           />
         )
       ) : isMobile ? (
-        <div className="bfh-cardlist">
-          {rows.map((tx) => (
-            <button
-              key={tx.id}
-              type="button"
-              className="bfh-txcard"
-              onClick={() => onOpen(tx)}
-            >
-              <span className="bfh-txcard__top">
-                <span className="bfh-txcard__name">{tx.description}</span>
-                <span className="bfh-txcard__amount">{amountOf(tx)}</span>
-              </span>
-              <span className="bfh-txcard__meta">
-                {mobileMeta(tx).map((chip) => (
-                  <span key={chip} className="bfh-chip">
-                    {chip}
-                  </span>
-                ))}
-                <span className="bfh-chip">{formatDate(tx.date)}</span>
-                <span className="bfh-chip">{tx.status}</span>
-              </span>
-            </button>
-          ))}
-        </div>
+        <TxList
+          rows={rows}
+          onOpen={onOpen}
+          categoryIcons={categoryIcons}
+          symbol={symbol}
+          metaOf={mobileMeta}
+          selectedId={selectedId}
+        />
       ) : (
         <table className={`bfh-table ${tableClass}`}>
           <thead>

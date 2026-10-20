@@ -1,47 +1,40 @@
 import MetricCard from '../common/MetricCard'
-import { formatAmount, formatPercent, percentChange } from '../../lib/format'
+import { formatAmount, percentChange } from '../../lib/format'
+import { monthlyCaption } from '../../lib/ledger'
 
-/** An arrowed change badge, or an em dash when there is nothing to compare to. */
-function changeBadge(current, previous) {
-  const change = percentChange(current, previous)
-  if (change === null) return { badge: '—', good: true }
-  const up = change >= 0
-  return { badge: `${up ? '↑' : '↓'} ${formatPercent(change)}`, good: up }
-}
-
-/** The four cards at the top of the Income page. More revenue is better. */
-export default function IncomeMetrics({ metrics, symbol }) {
-  const revenue = changeBadge(metrics.total, metrics.previousTotal)
-  const average = changeBadge(metrics.average, metrics.previousAverage)
+/**
+ * The four cards at the top of the Income page. More coming in is better.
+ * A business earns revenue; a household earns income — the words follow the
+ * profile, the figures do not change.
+ */
+export default function IncomeMetrics({ metrics, symbol, period, isPersonal }) {
   const share = (value) => `${Math.round(value * 100)}%`
+  const noun = isPersonal ? 'income' : 'revenue'
 
   return (
     <div className="bfh-metrics">
       <MetricCard
-        label="Total revenue"
+        label={isPersonal ? 'Total income' : 'Total revenue'}
         value={formatAmount(metrics.total, symbol)}
-        badge={revenue.badge}
-        good={revenue.good}
-        context="vs last period"
+        delta={{ value: percentChange(metrics.total, metrics.previousTotal), goodWhen: 'up' }}
+        context={metrics.previousTotal ? `vs previous ${period.name}` : 'nothing earlier to compare'}
       />
       <MetricCard
-        label="Average per month"
+        label="Per month"
         value={formatAmount(metrics.average, symbol)}
-        badge={average.badge}
-        good={average.good}
-        context="monthly avg"
+        context={monthlyCaption(period)}
       />
       <MetricCard
-        label="Top source"
+        label={isPersonal ? 'Main source' : 'Top source'}
         value={metrics.topSource ?? '—'}
-        badge={metrics.topSource ? share(metrics.topSourceShare) : '—'}
-        context="of total revenue"
+        badge={metrics.topSource ? share(metrics.topSourceShare) : null}
+        context={metrics.topSource ? `of your ${noun}` : `no ${noun} yet`}
       />
       <MetricCard
-        label="Recurring revenue"
+        label="Repeats regularly"
         value={formatAmount(metrics.recurringTotal, symbol)}
-        badge={metrics.total > 0 ? share(metrics.recurringShare) : '—'}
-        context="recurring"
+        badge={metrics.total > 0 ? share(metrics.recurringShare) : null}
+        context={`of ${noun} comes in on a schedule`}
       />
     </div>
   )

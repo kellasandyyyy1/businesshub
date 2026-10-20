@@ -1,0 +1,215 @@
+/* ==========================================================================
+   Charts — one set of marks for every plot in the app.
+
+   Two tones and no hue: money in (or the only series) is solid ink, the
+   comparison series is a light tint of it. The grid recedes, the baseline
+   anchors, and exact figures live in the tooltip rather than on the axis.
+   ========================================================================== */
+
+:root {
+  --chart-primary: rgb(var(--ink-c));
+  --chart-secondary: rgb(var(--ink-c) / 0.22);
+  --chart-grid: rgb(var(--ink-c) / 0.06);
+  --chart-baseline: rgb(var(--ink-c) / 0.18);
+  --chart-band: rgb(var(--ink-c) / 0.045);
+}
+
+/* ---- Head and legend ---------------------------------------------------------- */
+
+.bfh-chart__head {
+  margin-bottom: 16px;
+}
+
+.bfh-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  flex: none;
+}
+
+.bfh-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-small);
+  color: var(--ink2);
+  white-space: nowrap;
+}
+
+.bfh-legend__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--chart-primary);
+}
+.bfh-legend__dot[data-tone='secondary'] {
+  background: var(--chart-secondary);
+}
+
+/* ---- Plot ----------------------------------------------------------------------- */
+
+.bfh-plot {
+  position: relative;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  outline: none;
+  /* A finger dragging across the plot reads values; it should not also
+     scroll the page sideways. Vertical scrolling stays with the page. */
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+.bfh-plot:focus-visible {
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px rgb(var(--ink-c) / 0.35);
+}
+.bfh-plot svg {
+  display: block;
+  overflow: visible;
+  cursor: crosshair;
+}
+
+.bfh-chart__axis {
+  font-family: var(--font-sans);
+  font-size: var(--fs-label);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  fill: var(--ink3);
+}
+.bfh-chart__axis[data-active],
+.bfh-chart__axis--strong {
+  fill: var(--ink);
+  font-weight: var(--weight-medium);
+}
+
+.bfh-plot__grid {
+  stroke: var(--chart-grid);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+.bfh-plot__baseline {
+  stroke: var(--chart-baseline);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.bfh-plot__band {
+  fill: var(--chart-band);
+}
+
+.bfh-plot__bar {
+  fill: var(--chart-primary);
+}
+.bfh-plot__bar[data-tone='secondary'] {
+  fill: var(--chart-secondary);
+}
+
+.bfh-plot__group {
+  transition: opacity var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-plot__group[data-dim] .bfh-plot__bar {
+  opacity: 0.45;
+}
+
+.bfh-plot__line {
+  fill: none;
+  stroke: var(--chart-primary);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.bfh-plot__areastop {
+  stop-color: rgb(var(--ink-c));
+}
+.bfh-plot__threshold {
+  stroke: var(--ink2);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+.bfh-plot__crosshair {
+  stroke: var(--chart-baseline);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+.bfh-plot__dot {
+  fill: var(--chart-primary);
+  stroke: var(--card);
+  stroke-width: 2;
+}
+
+/* ---- Tooltip ----------------------------------------------------------------------- */
+
+.bfh-tip {
+  position: absolute;
+  z-index: 2;
+  min-width: 120px;
+  max-width: 180px;
+  padding: 8px 10px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  box-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.35);
+  pointer-events: none;
+  animation: bfh-tip-in 140ms var(--ease-out-soft);
+}
+.bfh-tip[data-side='left'] {
+  transform: translateX(-100%);
+}
+
+@keyframes bfh-tip-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.bfh-tip__title {
+  margin-bottom: 4px;
+  font-size: var(--fs-label);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-micro);
+  text-transform: uppercase;
+  color: var(--ink3);
+  white-space: nowrap;
+}
+
+.bfh-tip__value {
+  font-size: var(--fs-lead);
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.bfh-tip__row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-small);
+  line-height: 1.6;
+}
+.bfh-tip__swatch {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--chart-primary);
+}
+.bfh-tip__swatch[data-tone='secondary'] {
+  background: var(--chart-secondary);
+}
+.bfh-tip__name {
+  flex: 1;
+  color: var(--ink2);
+}
+.bfh-tip__num {
+  font-weight: var(--weight-medium);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+/* On a phone the legend drops under the title instead of squeezing it. */
+@media (max-width: 480px) {
+  .bfh-chart__head {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

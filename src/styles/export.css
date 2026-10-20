@@ -1,294 +1,464 @@
 /* ==========================================================================
-   Export center
+   Export — pick what, when, and how; see it; download it
+
+   Numbered steps on the left, the live preview on the right on a desktop.
+   Below that the two stack, and on a phone the download bar stays pinned
+   above the bottom nav so it is never a scroll away.
    ========================================================================== */
 
-.bfh-export__grid {
+.bfh-exp__layout {
   display: grid;
-  grid-template-columns: 300px minmax(0, 1fr);
-  gap: 10px;
+  grid-template-columns: minmax(360px, 440px) minmax(0, 1fr);
+  gap: 16px;
   align-items: start;
   width: 100%;
 }
 
-@media (min-width: 768px) and (max-width: 1279px) {
-  .bfh-export__grid {
-    grid-template-columns: 260px minmax(0, 1fr);
-  }
-}
-
-@media (max-width: 767px) {
-  .bfh-export__grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-.bfh-export__builder {
+.bfh-exp__builder {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  min-width: 0;
+  padding: 0;
+  overflow: clip;
 }
 
-.bfh-export__section {
+/* ---- Steps ---------------------------------------------------------------- */
+
+.bfh-exp__step {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  padding: 20px 20px 22px;
+  min-width: 0;
+}
+.bfh-exp__step + .bfh-exp__step {
+  border-top: var(--hairline) solid var(--b);
 }
 
-/* ---- Export type list ------------------------------------------------------ */
-
-.bfh-export__types {
+.bfh-exp__steptitle {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.bfh-exp__stepnum {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-pill);
+  background: var(--invert-bg);
+  font-size: var(--fs-caption);
+  font-weight: var(--weight-semibold);
+  color: var(--invert-fg);
+}
+/* The hint sits under the title, lined up with the title's words. */
+.bfh-exp__hint {
+  margin: -6px 0 0;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink2);
+}
+.bfh-exp__step > .bfh-exp__hint {
+  padding-left: 32px;
 }
 
-.bfh-export__type {
+/* ---- 1. Report type: a radio list that reads like a menu ----------------- */
+
+.bfh-exp__types {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 9px 10px;
-  border: 0;
-  /* Reserved on every row so selecting one never shifts the text. */
-  border-left: 2px solid transparent;
-  background: transparent;
+  gap: 6px;
+}
+
+.bfh-exp__type {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 11px 12px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  font-family: var(--font-sans);
   text-align: left;
   cursor: pointer;
   transition:
+    border-color var(--duration-micro) var(--ease-out-soft),
     background-color var(--duration-micro) var(--ease-out-soft),
-    border-color var(--duration-micro) var(--ease-out-soft);
+    box-shadow var(--duration-micro) var(--ease-out-soft);
 }
-.bfh-export__types .bfh-export__type + .bfh-export__type {
-  border-top: var(--hairline) solid var(--b);
+.bfh-exp__type:hover {
+  border-color: var(--b2);
 }
-.bfh-export__type:hover {
-  background: var(--bg);
+.bfh-exp__type[aria-checked='true'] {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink) inset;
 }
-.bfh-export__type[aria-checked='true'] {
-  background: var(--bg);
-  border-left-color: var(--ink);
+.bfh-exp__type:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
 
-.bfh-export__typename {
-  font-size: 13px;
+.bfh-exp__radio {
+  position: relative;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  border: 1.5px solid var(--b2);
+  border-radius: 50%;
+  transition: border-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-exp__type[aria-checked='true'] .bfh-exp__radio {
+  border-color: var(--ink);
+}
+.bfh-exp__type[aria-checked='true'] .bfh-exp__radio::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+.bfh-exp__typebody {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.bfh-exp__typename {
+  font-size: var(--fs-body);
   font-weight: var(--weight-medium);
   color: var(--ink);
 }
-
-.bfh-export__typeblurb {
-  font-size: 11px;
+.bfh-exp__typeblurb {
+  font-size: var(--fs-small);
   line-height: 1.4;
   color: var(--ink2);
 }
 
-/* ---- Pills ------------------------------------------------------------------ */
+/* ---- 2. Period ------------------------------------------------------------ */
 
-.bfh-export__pills {
+/* One row of chips that scrolls sideways rather than squeezing; each keeps
+   its full label. The row bleeds to the card edge so the last chip is seen
+   to continue. */
+.bfh-exp__chips {
+  margin: 0 -20px;
+  padding: 0 20px 2px;
+  scroll-padding: 0 20px;
+}
+.bfh-exp__chips .bfh-choicechip {
+  flex: none;
+  white-space: nowrap;
+}
+
+.bfh-exp__dates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.bfh-exp__dates .bfh-formfield {
+  min-width: 0;
+}
+
+/* ---- 3. Group by ----------------------------------------------------------- */
+
+.bfh-exp__segment {
+  width: 100%;
+}
+
+/* ---- 4. Columns: toggle chips that wrap ------------------------------------ */
+
+.bfh-exp__cols {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
-
-.bfh-export__dates {
-  display: flex;
-  gap: 8px;
-  margin-top: 6px;
-}
-.bfh-export__dates .bfh-formfield {
-  flex: 1;
-}
-
-/* ---- Column checkboxes -------------------------------------------------------- */
-
-.bfh-export__checks {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 2px;
-}
-@media (max-width: 767px) {
-  .bfh-export__checks {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-.bfh-check {
-  display: flex;
+.bfh-exp__col {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  min-height: 30px;
-  cursor: pointer;
-}
-.bfh-check input {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.bfh-check__box {
-  display: grid;
-  place-items: center;
-  flex: none;
-  width: 16px;
-  height: 16px;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 12px;
   border: var(--hairline) solid var(--b2);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-pill);
   background: var(--bg);
-  transition:
-    background-color var(--duration-micro) var(--ease-out-soft),
-    border-color var(--duration-micro) var(--ease-out-soft);
-}
-/* A tick drawn in the inverted foreground, so the check needs no colour. */
-.bfh-check input:checked + .bfh-check__box {
-  background: var(--invert-bg);
-  border-color: var(--invert-bg);
-}
-.bfh-check input:checked + .bfh-check__box::after {
-  content: '';
-  width: 4px;
-  height: 8px;
-  margin-top: -2px;
-  border: solid var(--invert-fg);
-  border-width: 0 1.5px 1.5px 0;
-  transform: rotate(45deg);
-}
-.bfh-check input:focus-visible + .bfh-check__box {
-  border-color: var(--ink);
-}
-
-.bfh-check__label {
-  font-size: 13px;
-  color: var(--ink);
-}
-
-.bfh-export__checkactions {
-  display: flex;
-  gap: 12px;
-  padding-top: 4px;
-}
-
-/* ---- Format cards -------------------------------------------------------------- */
-
-.bfh-export__formats {
-  display: flex;
-  gap: 8px;
-}
-
-.bfh-export__format {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-  width: 80px;
-  padding: 10px;
-  border: var(--hairline) solid var(--b);
-  border-radius: var(--radius-sm);
-  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-sm);
   color: var(--ink2);
   cursor: pointer;
   transition:
+    background-color var(--duration-micro) var(--ease-out-soft),
     border-color var(--duration-micro) var(--ease-out-soft),
-    background-color var(--duration-micro) var(--ease-out-soft);
+    color var(--duration-micro) var(--ease-out-soft);
 }
-.bfh-export__format[aria-checked='true'] {
-  border-color: var(--ink);
-  background: var(--bg);
-  color: var(--ink);
+.bfh-exp__coltick {
+  display: none;
+}
+.bfh-exp__col[aria-pressed='true'] {
+  border-color: var(--invert-bg);
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+.bfh-exp__col[aria-pressed='true'] .bfh-exp__coltick {
+  display: block;
+}
+.bfh-exp__col:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
 
-.bfh-export__formatname {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: var(--weight-medium);
-  color: var(--ink);
-}
-
-/* ---- Submit --------------------------------------------------------------------- */
-
-.bfh-export__submit {
+.bfh-exp__colactions {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding-top: 14px;
-  border-top: var(--hairline) solid var(--b);
+  gap: 4px;
+  margin: -4px 0 0 -8px;
 }
-.bfh-export__submit .bfh-btn-primary {
-  font-size: 13px;
-  padding: 10px;
-}
-.bfh-export__submit .bfh-btn-primary:disabled {
+.bfh-exp__colactions .bfh-btn-text:disabled {
   opacity: 0.4;
   cursor: default;
 }
 
-/* ---- Preview ---------------------------------------------------------------------- */
+/* ---- 5. Format: two equal cards ------------------------------------------- */
 
-.bfh-export__preview {
+.bfh-exp__formats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.bfh-exp__format {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 10px;
   min-width: 0;
+  min-height: 60px;
+  padding: 10px 12px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  font-family: var(--font-sans);
+  text-align: left;
+  color: var(--ink2);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-micro) var(--ease-out-soft),
+    box-shadow var(--duration-micro) var(--ease-out-soft),
+    color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-exp__format svg {
+  flex: none;
+}
+.bfh-exp__format[aria-checked='true'] {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink) inset;
+  color: var(--ink);
+}
+.bfh-exp__format:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.bfh-exp__formatbody {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.bfh-exp__formatname {
+  font-size: var(--fs-body);
+  font-weight: var(--weight-semibold);
+  color: var(--ink);
+}
+.bfh-exp__formatnote {
+  overflow: hidden;
+  font-size: var(--fs-small);
+  color: var(--ink2);
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-.bfh-export__previewhead {
+/* ---- Download -------------------------------------------------------------- */
+
+.bfh-exp__submit {
   display: flex;
-  align-items: baseline;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: var(--hairline) solid var(--b);
+  background: var(--card);
+}
+.bfh-exp__summary {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.bfh-exp__summarymain {
+  font-size: var(--fs-body);
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.bfh-exp__filename {
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label-lg);
+  color: var(--ink3);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.bfh-exp__go {
+  flex: none;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 20px;
+}
+.bfh-exp__go:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ---- Preview ---------------------------------------------------------------- */
+
+.bfh-exp__preview {
+  position: sticky;
+  top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  padding: 20px;
+}
+.bfh-exp__previewhead {
+  display: flex;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  flex-wrap: wrap;
-  padding-bottom: 10px;
-  border-bottom: var(--hairline) solid var(--b);
+}
+.bfh-exp__previewtitle {
+  margin: 0 0 8px;
+  font-size: var(--fs-body);
+  font-weight: var(--weight-semibold);
+  color: var(--ink);
+}
+.bfh-exp__previewhead .bfh-exp__hint {
+  margin: 0;
+}
+.bfh-exp__empty {
+  margin: 0;
+  padding: 28px 0;
 }
 
-.bfh-export__previewmeta {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--ink2);
-}
-
-.bfh-export__scroll {
+/* The table scrolls inside its own box, with a fade on the right edge to say
+   there is more — the page itself never scrolls sideways. */
+.bfh-exp__scroll {
   overflow-x: auto;
+  margin: 0 -20px;
+  padding: 0 20px;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+}
+.bfh-exp__scroll:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -2px;
 }
 
 .bfh-export__table {
   width: 100%;
   border-collapse: collapse;
 }
-
 .bfh-export__table th {
-  padding: 0 10px 6px 0;
+  padding: 0 16px 8px 0;
   border-bottom: var(--hairline) solid var(--b);
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: var(--weight-regular);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-micro);
-  color: var(--ink3);
+  font-size: var(--fs-small);
+  font-weight: var(--weight-medium);
+  color: var(--ink2);
   text-align: left;
   white-space: nowrap;
 }
-
 .bfh-export__table td {
-  padding: 7px 10px 7px 0;
-  font-size: 13px;
+  padding: 9px 16px 9px 0;
+  border-bottom: var(--hairline) solid var(--b);
+  font-size: var(--fs-body-sm);
   color: var(--ink);
   white-space: nowrap;
 }
-
-/* The one place a zebra tint earns its keep: dense, scanned data. */
-.bfh-export__table tbody tr:nth-child(even) {
-  background: var(--bg);
+.bfh-export__table tbody tr:last-child td {
+  border-bottom: 0;
 }
-
 .bfh-export__table th.bfh-export__num,
 .bfh-export__table td.bfh-export__num {
   text-align: right;
-  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
-.bfh-export__table td.bfh-export__num {
-  font-size: 12px;
+
+/* ---- Tablet: one column, the report list in two ---------------------------- */
+
+@media (max-width: 1099px) {
+  .bfh-exp__layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .bfh-exp__preview {
+    position: static;
+  }
+  .bfh-exp__types {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
-/* ---- Mobile export sheet ------------------------------------------------------------ */
+/* ---- Phone ------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .bfh-exp__types {
+    display: flex;
+  }
+  .bfh-exp__step {
+    padding: 18px 16px 20px;
+  }
+  .bfh-exp__chips {
+    margin: 0 -16px;
+    padding: 0 16px 2px;
+    scroll-padding: 0 16px;
+  }
+  .bfh-exp__chips .bfh-choicechip,
+  .bfh-exp__col {
+    min-height: 40px;
+  }
+  .bfh-exp__step > .bfh-exp__hint {
+    padding-left: 32px;
+  }
+  .bfh-exp__preview {
+    padding: 16px;
+  }
+  .bfh-exp__scroll {
+    margin: 0 -16px;
+    padding: 0 16px;
+  }
+
+  /* Pinned above the bottom nav, so Download is always in reach. */
+  .bfh-exp__submit {
+    position: sticky;
+    z-index: 5;
+    padding: 12px 16px;
+    box-shadow: 0 -8px 20px -12px rgb(0 0 0 / 0.18);
+  }
+  .bfh-exp__go {
+    min-height: 48px;
+  }
+}
+
+/* ==========================================================================
+   Export sheet — the quick version, opened from a page's Export button
+   ========================================================================== */
 
 .bfh-exportsheet {
   position: fixed;
@@ -296,6 +466,7 @@
   z-index: 100;
   display: flex;
   align-items: flex-end;
+  justify-content: center;
 }
 
 .bfh-exportsheet__panel {
@@ -303,59 +474,144 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-height: 50vh;
+  max-width: 520px;
+  max-height: min(88vh, 640px);
   padding-bottom: env(safe-area-inset-bottom);
   background: var(--card);
   border-top-left-radius: var(--radius-lg);
   border-top-right-radius: var(--radius-lg);
-  animation: bfh-sheet-up 280ms var(--ease-out-soft);
+  box-shadow: var(--shadow-modal);
+  animation: bfh-sheet-up var(--duration-sheet-mobile) var(--ease-sheet) both;
 }
 
 .bfh-exportsheet__body {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 22px;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 4px 16px 16px;
+  padding: 6px 20px 20px;
 }
 
 .bfh-exportsheet__type {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
-
 .bfh-exportsheet__typename {
-  font-size: 15px;
-  font-weight: var(--weight-medium);
+  margin: 0;
+  font-size: 20px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.02em;
   color: var(--ink);
 }
+.bfh-exportsheet__range {
+  font-size: var(--fs-small);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink2);
+}
 
-.bfh-exportsheet__pills {
+.bfh-exportsheet__group {
   display: flex;
-  gap: 6px;
-  margin-top: 6px;
-  overflow-x: auto;
-  scrollbar-width: none;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
 }
-.bfh-exportsheet__pills::-webkit-scrollbar {
-  display: none;
+
+/* Full labels on one swipeable row — never squeezed into the sheet's width. */
+.bfh-exportsheet__chips {
+  margin: 0 -20px;
+  padding: 0 20px 2px;
+  scroll-padding: 0 20px;
 }
-.bfh-exportsheet__pills .bfh-period {
+.bfh-exportsheet__chips .bfh-choicechip {
+  flex: none;
+  min-height: 40px;
   white-space: nowrap;
 }
 
 .bfh-exportsheet__foot {
-  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 20px 14px;
   border-top: var(--hairline) solid var(--b);
 }
 .bfh-exportsheet__foot .bfh-btn-primary {
-  padding: 12px;
-  font-size: 13px;
+  gap: 8px;
+  min-height: 48px;
 }
 .bfh-exportsheet__foot .bfh-btn-primary:disabled {
   opacity: 0.4;
   cursor: default;
+}
+.bfh-exportsheet__foot .bfh-exp__filename {
+  text-align: center;
+}
+
+/* On a larger screen the sheet is a centred dialog rather than a drawer. */
+@media (min-width: 768px) {
+  .bfh-exportsheet {
+    align-items: center;
+    padding: 24px;
+  }
+  .bfh-exportsheet__panel {
+    border-radius: var(--radius-lg);
+    animation-name: bfh-modal-in;
+  }
+  .bfh-exportsheet .bfh-moredrawer__handle {
+    display: none;
+  }
+}
+
+/* ---- Refinements ----------------------------------------------------------- */
+
+/* The global phone rule makes primary buttons full width; here the button sits
+   beside the summary, so it keeps its own width. */
+.bfh-exp__submit .bfh-exp__go {
+  width: auto;
+}
+
+/* Report types stay compact: the description is for the one being considered,
+   not nine paragraphs to read past. */
+.bfh-exp__type {
+  min-height: 0;
+  padding: 10px 12px;
+}
+
+.bfh-exp__type {
+  align-items: center;
+  min-height: 46px;
+}
+.bfh-exp__type[aria-checked='false'] .bfh-exp__typeblurb {
+  display: none;
+}
+.bfh-exp__type[aria-checked='true'] {
+  align-items: flex-start;
+}
+
+/* Download stays in view at every size: pinned to the bottom of the window
+   while the builder scrolls past, above the bottom nav on a phone. */
+.bfh-exp__submit {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+}
+
+/* Tablet: the bottom nav is back, so the pinned bar sits on top of it, with
+   room on the right for the floating assistant button. */
+/* Below 1024px the page scrolls inside .bfh-main, whose bottom padding already
+   clears the bottom nav plus 16px — and a sticky element sticks inside that
+   padding. Pulling it down by the 16px sets the bar flush on the nav; adding
+   the nav height again is what left it floating mid-screen. */
+@media (max-width: 1023px) {
+  .bfh-exp__submit {
+    bottom: -16px;
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .bfh-exp__submit {
+    padding-right: 88px;
+  }
 }

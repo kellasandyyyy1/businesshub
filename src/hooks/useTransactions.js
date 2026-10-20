@@ -32,7 +32,6 @@ export function useTransactionsData(profile = BUSINESS_PROFILE) {
       clients,
       clientsById: Object.fromEntries(clients.map((c) => [c.id, c])),
       categoryIcons: Object.fromEntries(categories.map((c) => [c.name, c.icon])),
-      paymentMethods: [...new Set(transactions.map((t) => t.paymentMethod).filter(Boolean))].sort(),
     }
     // Re-runs on a profile switch; without this the previous profile's rows
     // would stay on screen until something else invalidated the query.
@@ -42,8 +41,10 @@ export function useTransactionsData(profile = BUSINESS_PROFILE) {
 /**
  * Applies the toolbar to the row set. Search matches description, category,
  * payment method, notes, and the amount as typed.
+ *
+ * `method` is a saved method's id, 'none' for rows without one, or 'all'.
  */
-export function filterTransactions(rows, { search, type, category, dateRange, today }) {
+export function filterTransactions(rows, { search, type, category, method = 'all', dateRange, today }) {
   const needle = search.trim().toLowerCase()
   const range = DATE_RANGES.find((r) => r.id === dateRange)
   const from = range?.days ? shiftDays(today, -range.days) : null
@@ -51,6 +52,8 @@ export function filterTransactions(rows, { search, type, category, dateRange, to
   return rows.filter((row) => {
     if (type !== 'all' && row.type !== type) return false
     if (category !== 'all' && row.category !== category) return false
+    if (method === 'none' && (row.paymentMethodId || row.paymentMethod)) return false
+    if (method !== 'all' && method !== 'none' && row.paymentMethodId !== method) return false
     if (from && row.date < from) return false
     if (!needle) return true
 

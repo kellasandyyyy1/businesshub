@@ -58,6 +58,10 @@ export function useClientsData() {
         .filter((i) => i.effectiveStatus !== 'paid' && i.effectiveStatus !== 'draft')
         .reduce((total, i) => total + balanceOf(i), 0)
 
+      const overdue = clientInvoices
+        .filter((i) => i.effectiveStatus === 'overdue')
+        .reduce((total, i) => total + balanceOf(i), 0)
+
       // Whichever the books saw most recently: money in, or an invoice settled.
       const lastIncome = clientTransactions.find((t) => t.type === 'income')?.date ?? null
       const lastSettled = clientInvoices
@@ -73,6 +77,7 @@ export function useClientsData() {
         invoices: clientInvoices,
         revenue,
         outstanding,
+        overdue,
         invoiceCount: clientInvoices.length,
         lastPayment,
         series: revenueSeries(clientTransactions, today),

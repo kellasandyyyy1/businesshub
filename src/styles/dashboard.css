@@ -43,8 +43,9 @@
 }
 
 .bfh-metric__value {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: var(--weight-medium);
+  font-variant-numeric: tabular-nums;
   letter-spacing: -0.03em;
   line-height: 1.15;
   color: var(--ink);
@@ -58,7 +59,7 @@
 }
 
 .bfh-metric__context {
-  font-size: 11px;
+  font-size: var(--fs-caption);
   line-height: 1.3;
   color: var(--ink3);
   white-space: nowrap;
@@ -73,7 +74,7 @@
   border: var(--hairline) solid var(--b2);
   border-radius: var(--radius-pill);
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   line-height: 1.6;
   letter-spacing: var(--tracking-micro);
   color: var(--ink2);
@@ -107,7 +108,7 @@
 
 .bfh-panel__title {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   font-weight: var(--weight-medium);
   line-height: 1.3;
   color: var(--ink);
@@ -123,42 +124,7 @@
   margin-bottom: 14px;
 }
 
-.bfh-legend {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: none;
-}
-
-.bfh-legend__item {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.bfh-legend__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: var(--radius-pill);
-}
-.bfh-legend__dot[data-variant='revenue'] {
-  background: var(--ink);
-}
-.bfh-legend__dot[data-variant='expenses'] {
-  background: var(--b2);
-}
-
-.bfh-chart__plot {
-  width: 100%;
-}
-
-.bfh-chart__axis {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: var(--tracking-micro);
-  text-transform: uppercase;
-  fill: var(--ink3);
-}
+/* Legend, plot and tooltip live in charts.css. */
 
 /* ---- Health --------------------------------------------------------------- */
 
@@ -186,7 +152,7 @@
 
 .bfh-health__total {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--fs-small);
   color: var(--ink3);
 }
 
@@ -197,7 +163,7 @@
   background: var(--invert-bg);
   color: var(--invert-fg);
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
   line-height: 1.6;
@@ -221,7 +187,7 @@
 
 .bfh-health__note {
   margin: 10px 0 0;
-  font-size: 12px;
+  font-size: var(--fs-small);
   line-height: 1.5;
   color: var(--ink2);
 }
@@ -236,7 +202,7 @@
 
 .bfh-attention__empty {
   margin: 10px 0 0;
-  font-size: 12px;
+  font-size: var(--fs-small);
   color: var(--ink2);
 }
 
@@ -285,14 +251,14 @@
 }
 
 .bfh-alert__title {
-  font-size: 11px;
+  font-size: var(--fs-caption);
   font-weight: var(--weight-medium);
   line-height: 1.35;
   color: var(--ink);
 }
 
 .bfh-alert__sub {
-  font-size: 10px;
+  font-size: var(--fs-label-lg);
   line-height: 1.35;
   color: var(--ink2);
 }
@@ -359,7 +325,7 @@
 }
 
 .bfh-tx__name {
-  font-size: 12px;
+  font-size: var(--fs-small);
   font-weight: var(--weight-medium);
   line-height: 1.35;
   color: var(--ink);
@@ -371,7 +337,7 @@
 .bfh-tx__amount {
   flex: none;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--fs-small);
   font-weight: var(--weight-medium);
   color: var(--ink);
   text-align: right;
@@ -384,7 +350,7 @@
   border: var(--hairline) solid var(--b2);
   border-radius: var(--radius-pill);
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   line-height: 1.6;
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
@@ -406,7 +372,7 @@
   border-radius: var(--radius-pill);
   background: transparent;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--fs-label);
   font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: var(--tracking-micro);
@@ -431,20 +397,161 @@
 
 .bfh-recent__emptyhead {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--fs-body-sm);
   font-weight: var(--weight-medium);
   color: var(--ink);
 }
 
 .bfh-recent__emptybody {
   margin: 4px 0 0;
-  font-size: 12px;
+  font-size: var(--fs-small);
   line-height: 1.5;
   color: var(--ink2);
 }
 
 .bfh-recent__empty .bfh-btn-primary {
   margin-top: 14px;
-  font-size: 12px;
+  font-size: var(--fs-small);
   font-weight: var(--weight-medium);
+}
+
+/* ---- Period summary — the answer the page leads with ------------------------ */
+
+.bfh-summarycard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bfh-summarycard__headline {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin: 4px 0 0;
+}
+
+.bfh-summarycard__figure {
+  font-size: 32px;
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.bfh-summarycard__figurelabel {
+  font-size: var(--fs-lead);
+  color: var(--ink2);
+}
+
+.bfh-summarycard__sentence {
+  max-width: 60ch;
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  color: var(--ink2);
+}
+
+.bfh-summarycard__emptytitle {
+  margin: 4px 0 0;
+  font-size: 18px;
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.bfh-summarycard__note {
+  margin: 2px 0 0;
+  font-size: var(--fs-body-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.bfh-summarycard__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.bfh-summarycard__actions > * {
+  flex: 0 1 auto;
+  width: auto;
+  text-decoration: none;
+}
+
+/* Money in against money out: two bars on one scale, so the gap between them
+   is the answer before a single number is read. */
+.bfh-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* Past this the bars are too long for the eye to compare their ends. */
+  max-width: 720px;
+  margin: 12px 0 0;
+  padding-top: 14px;
+  border-top: var(--hairline) solid var(--b);
+}
+
+.bfh-flow__row {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+}
+
+.bfh-flow__row dt {
+  font-size: var(--fs-body-sm);
+  color: var(--ink2);
+}
+
+.bfh-flow__row dd {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+}
+
+.bfh-flow__track {
+  display: block;
+  height: 8px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--chart-grid);
+}
+
+.bfh-flow__fill {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--chart-primary);
+  transition: width var(--duration-transform) var(--ease-out-soft);
+}
+.bfh-flow__fill[data-tone='secondary'] {
+  background: rgb(var(--ink-c) / 0.35);
+}
+
+.bfh-flow__value {
+  min-width: 92px;
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-medium);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--ink);
+}
+
+@media (max-width: 767px) {
+  .bfh-summarycard__figure {
+    font-size: 30px;
+  }
+  .bfh-flow__row {
+    grid-template-columns: 68px minmax(0, 1fr);
+    gap: 10px;
+  }
+  .bfh-flow__value {
+    min-width: 0;
+  }
 }
