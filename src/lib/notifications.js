@@ -1,4 +1,4 @@
-import { CAUTION_AT, PERIOD_WORD, budgetWindow, spendFor } from './budget'
+import { CAUTION_AT, PERIOD_WORD, budgetWindow, spendForBudget } from './budget'
 import { daysBetween, formatCurrency, formatFullDate, shiftDays } from './format'
 import { balanceOf, effectiveStatus } from './invoice'
 
@@ -66,15 +66,18 @@ function invoicesDueSoon({ invoices, today, money }) {
 
 /* ---- 3. Budget warnings ---------------------------------------------------- */
 
-function budgetWarnings({ budgets, transactions, today }) {
+function budgetWarnings({ budgets, transactions, today }, { type = 'budget-warning', link = '/budgets' } = {}) {
   const breached = []
 
   for (const budget of budgets) {
     if (!budget.amount || budget.amount <= 0) continue
     const window = budgetWindow(budget.period, today)
-    const spent = spendFor(transactions, budget.category, window)
+    const spent = spendForBudget(transactions, budget, window)
     const ratio = spent / budget.amount
-    if (ratio >= CAUTION_AT) breached.push({ ...budget, ratio })
+    // One-payee budgets (a subscription) are expected to be all but used each
+    // month; they only count once a charge comes in above the limit.
+    const threshold = budget.match ? 1 + Number.EPSILON : CAUTION_AT
+    if (ratio >= threshold) breached.push({ ...budget, ratio })
   }
 
   if (breached.length === 0) return null
@@ -82,7 +85,7 @@ function budgetWarnings({ budgets, transactions, today }) {
   const pct = Math.round(worst.ratio * 100)
 
   return {
-    type: 'budget-warning',
+    type,
     // Past the cap is a problem; nearing it is a warning.
     tone: worst.ratio >= 1 ? 'neg' : 'warn',
     title:
@@ -93,7 +96,7 @@ function budgetWarnings({ budgets, transactions, today }) {
       breached.length === 1
         ? `Spending ${PERIOD_WORD[worst.period] ?? 'so far'} has reached ${pct}% of what you set aside.`
         : `${worst.name} is furthest along at ${pct}%.`,
-    link: '/budgets',
+    link,
   }
 }
 
@@ -365,6 +368,12 @@ export const NOTIFICATION_TYPES = [
     setting: 'notifySpendingSpike',
     profile: 'personal',
   },
+  {
+    type: 'personal-budget-warning',
+    label: 'Personal budget warnings (80%+)',
+    setting: 'notifyBudgets',
+    profile: 'personal',
+  },
   // The same idea as the business one above, so it answers to the same switch.
   {
     type: 'personal-stale-pending',
@@ -430,6 +439,11 @@ export function buildNotifications({
       savingsRateDrop(personalContext),
       spendingSpike(personalContext),
       personalStalePending(personalContext),
+      // The household's own budgets, measured against its own spending.
+      budgetWarnings(
+        { budgets: personal.budgets ?? [], transactions: personal.transactions ?? [], today },
+        { type: 'personal-budget-warning', link: '/personal/budgets' },
+      ),
       netWorthMilestone(personalContext).item,
     ]
   }

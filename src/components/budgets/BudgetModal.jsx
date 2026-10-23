@@ -3,12 +3,13 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { categoryIcon } from '../../config/categoryIcons'
 import { BUDGET_PERIODS, db } from '../../db/db'
-import { BUSINESS_PROFILE, addBudget } from '../../db/queries'
+import { addBudget } from '../../db/queries'
+import { useProfile } from '../../context/ProfileContext'
 import { OWNER_DRAW_CATEGORY } from '../../db/defaults'
 import { useToast } from '../../context/ToastContext'
 import useDismiss from '../../hooks/useDismiss'
 import useFocusTrap from '../../hooks/useFocusTrap'
-import { PERIOD_WORD, budgetWindow, spendFor } from '../../lib/budget'
+import { PERIOD_WORD, budgetKey, budgetWindow, inBudget, spendForBudget } from '../../lib/budget'
 import { formatCurrency, shiftDays } from '../../lib/format'
 import { removeWithUndo } from '../../lib/softDelete'
 import { short } from '../../lib/toastCopy'
@@ -19,7 +20,8 @@ const MONTHS_IN = { monthly: 1, quarterly: 3, yearly: 12 }
 
 /** A suggestion people would actually type: to the nearest 100, 500 or 1,000. */
 function roundTo(value, up = false) {
-  const step = value >= 20000 ? 1000 : value >= 5000 ? 500 : 100
+  // Finer for small amounts — a ₱149 subscription is not "about ₱100".
+  const step = value >= 20000 ? 1000 : value >= 5000 ? 500 : value >= 1000 ? 100 : 10
   return (up ? Math.ceil(value / step) : Math.round(value / step)) * step
 }
 
@@ -37,7 +39,10 @@ export default function BudgetModal({ budget, categories, categoryIcons = {}, bu
     category: budget?.category ?? '',
     amount: budget?.amount ? String(budget.amount) : '',
     period: budget?.period ?? 'monthly',
+    match: budget?.match ?? '',
   }))
+  // Whole category, or only the payments in it that mention a word.
+  const [narrow, setNarrow] = useState(() => Boolean(budget?.match))
   const [errors, setErrors] = useState({})
   // The category list folds to the one picked, so on a phone the amount is
   // not pushed off the screen by fifteen chips.
@@ -46,6 +51,7 @@ export default function BudgetModal({ budget, categories, categoryIcons = {}, bu
   const trapRef = useFocusTrap()
   const toast = useToast()
   const [closing, dismiss] = useDismiss(onClose)
+  const { profile } = useProfile()
   const isEdit = Boolean(budget?.id)
   const today = new Date().toISOString().slice(0, 10)
   const money = (v) => formatCurrency(v, symbol)
@@ -61,8 +67,29 @@ export default function BudgetModal({ budget, categories, categoryIcons = {}, bu
   // Only expenses have budgets; income categories would never be spent against,
   // and an owner draw is pay, not spending to keep in check.
   const options = categories.filter((c) => c.type === 'expense' && c.name !== OWNER_DRAW_CATEGORY)
-  // Which categories another budget already covers.
-  const taken = new Map(budgets.filter((b) => b.id !== budget?.id).map((b) => [b.category, b]))
+  // The other budgets, by exactly what they watch — two may share a category
+  // as long as they watch different payments in it.
+  const others = budgets.filter((b) => b.id !== budget?.id)
+  const takenKeys = new Set(others.map(budgetKey))
+  const wholeTaken = new Set(others.filter((b) => !b.match).map((b) => b.category))
+  const draft = { category: form.category, match: narrow ? form.match : '' }
+
+  // Words worth offering: the payees this category has actually been paid to.
+  const payees = useMemo(() => {
+    if (!form.category) return []
+    const counts = new Map()
+    for (const t of expenses) {
+      if (t.category !== form.category) continue
+      const name = String(t.description ?? '').trim()
+      if (name) counts.set(name, (counts.get(name) ?? 0) + 1)
+    }
+    return [...counts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([name]) => name)
+      .filter((name) => !takenKeys.has(budgetKey({ category: form.category, match: name })))
+      .slice(0, 5)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expenses, form.category, budgets])
 
   // What the chosen category has cost: the average month over the last three
   // full months, and what is already spent in the period being set.
@@ -71,14 +98,24 @@ export default function BudgetModal({ budget, categories, categoryIcons = {}, bu
     const monthStart = `${today.slice(0, 7)}-01`
     const threeBack = new Date(`${monthStart}T00:00:00Z`)
     threeBack.setUTCMonth(threeBack.getUTCMonth() - 3)
-    const lastThree = spendFor(expenses, form.category, [threeBack.toISOString().slice(0, 10), shiftDays(monthStart, -1)])
-    const monthly = lastThree / 3
+    const span = [threeBack.toISOString().slice(0, 10), shiftDays(monthStart, -1)]
+    const lastThree = spendForBudget(expenses, draft, span)
+    // A whole category averages over all three months, quiet ones included. One
+    // payee — a subscription — averages over the months it was actually
+    // charged, so a plan started last month is not read as half its price.
+    const charged = new Set(
+      expenses
+        .filter((t) => t.date >= span[0] && t.date <= span[1] && inBudget(t, draft))
+        .map((t) => t.date.slice(0, 7)),
+    ).size
+    const monthly = lastThree / (draft.match ? Math.max(charged, 1) : 3)
     return {
       monthly,
       typical: monthly * MONTHS_IN[form.period],
-      soFar: spendFor(expenses, form.category, budgetWindow(form.period, today)),
+      soFar: spendForBudget(expenses, draft, budgetWindow(form.period, today)),
     }
-  }, [expenses, form.category, form.period, today])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expenses, form.category, form.period, form.match, narrow, today])
 
   const amount = Number(form.amount)
   const hasAmount = form.amount !== '' && amount > 0
@@ -91,8 +128,9 @@ export default function BudgetModal({ budget, categories, categoryIcons = {}, bu
   const pickCategory = (name) => {
     setForm((f) => ({ ...f, category: name }))
     setErrors((x) => ({ ...x, category: undefined }))
-    // One already budgeted stays open, so the note beside it can be read.
-    setChoosing(taken.has(name))
+    setChoosing(false)
+    // A category whose whole budget is taken can still hold narrower ones.
+    if (wholeTaken.has(name)) setNarrow(true)
     // Straight on to the next question.
     requestAnimationFrame(() => amountField.current?.focus({ preventScroll: true }))
   }
@@ -101,22 +139,27 @@ export default function BudgetModal({ budget, categories, categoryIcons = {}, bu
     e.preventDefault()
     const next = {}
     if (!form.category) next.category = 'Pick what this budget is for'
-    else if (taken.has(form.category)) next.category = `${form.category} already has a budget — edit that one instead`
+    else if (narrow && !form.match.trim()) next.match = 'Type the word to look for, e.g. Claude'
+    else if (takenKeys.has(budgetKey(draft))) {
+      if (narrow) next.match = `There is already a budget for “${form.match.trim()}” in ${form.category}`
+      else next.category = `${form.category} already has a whole-category budget — pick “Only some payments” to add another`
+    }
     if (!hasAmount) next.amount = 'Enter how much you can spend'
     setErrors(next)
     if (Object.keys(next).length) return
 
     const record = {
-      // Named after its category unless the user gave it a name of its own.
-      name: form.name.trim() || form.category,
+      // Named after what it watches unless the user gave it a name of its own.
+      name: form.name.trim() || (narrow ? form.match.trim() : form.category),
       category: form.category,
+      match: narrow ? form.match.trim() : '',
       amount,
       period: form.period,
     }
 
     try {
       if (isEdit) await db.budgets.update(budget.id, record)
-      else await addBudget(BUSINESS_PROFILE, record)
+      else await addBudget(profile, record)
     } catch {
       toast.error("Couldn't save. Try again.")
       return
@@ -136,6 +179,8 @@ export default function BudgetModal({ budget, categories, categoryIcons = {}, bu
       ? [...new Set([roundTo(history.typical), roundTo(history.typical * 1.1, true)])].filter((v) => v > 0)
       : []
   const use = hasAmount && history ? history.soFar / amount : null
+  // What the hint calls the money being watched.
+  const watching = narrow && form.match.trim() ? `“${form.match.trim()}”` : form.category
 
   return (
     <div
@@ -187,7 +232,7 @@ export default function BudgetModal({ budget, categories, categoryIcons = {}, bu
                 {options.map((c) => {
                   const Icon = categoryIcon(categoryIcons[c.name] ?? c.icon)
                   const selected = form.category === c.name
-                  const already = taken.has(c.name)
+                  const already = others.some((b) => b.category === c.name)
                   return (
                     <button
                       key={c.id}
@@ -210,6 +255,69 @@ export default function BudgetModal({ budget, categories, categoryIcons = {}, bu
             )}
             {errors.category && <span className="bfh-formerror">{errors.category}</span>}
           </div>
+
+          {/* 1b. All of it, or some of it */}
+          {form.category && (
+            <div className="bfh-formfield" data-invalid={errors.match ? 'true' : undefined}>
+              <span className="bfh-fieldlabel" id="bfh-budget-scope">
+                What counts
+              </span>
+              <div className="bfh-segment bfh-segment--fill" role="radiogroup" aria-labelledby="bfh-budget-scope">
+                {[
+                  { value: false, label: 'Whole category' },
+                  { value: true, label: 'Only some payments' },
+                ].map((o) => (
+                  <button
+                    key={o.label}
+                    type="button"
+                    role="radio"
+                    className="bfh-segment__option"
+                    aria-checked={narrow === o.value}
+                    onClick={() => {
+                      setNarrow(o.value)
+                      setErrors((x) => ({ ...x, match: undefined, category: undefined }))
+                    }}
+                  >
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+
+              {narrow && (
+                <>
+                  <input
+                    value={form.match}
+                    onChange={set('match')}
+                    placeholder="Payments that mention… e.g. Claude"
+                    autoComplete="off"
+                    aria-label="Only count payments that mention"
+                  />
+                  {payees.length > 0 && (
+                    <div className="bfh-budgetform__suggest" aria-label="From your payments">
+                      {payees.map((p) => (
+                        <button
+                          key={p}
+                          type="button"
+                          className="bfh-choicechip"
+                          aria-pressed={form.match.trim().toLowerCase() === p.toLowerCase()}
+                          onClick={() => {
+                            setForm((f) => ({ ...f, match: p }))
+                            setErrors((x) => ({ ...x, match: undefined }))
+                          }}
+                        >
+                          {p}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  <span className="bfh-fieldhint">
+                    Counts {form.category} payments whose description or note mentions this word.
+                  </span>
+                </>
+              )}
+              {errors.match && <span className="bfh-formerror">{errors.match}</span>}
+            </div>
+          )}
 
           {/* 2. How much, over what */}
           <div className="bfh-formfield">
@@ -261,7 +369,7 @@ export default function BudgetModal({ budget, categories, categoryIcons = {}, bu
               <>
                 <p>
                   You usually spend about <strong>{money(roundTo(history.typical))}</strong> {PER[form.period]} on{' '}
-                  {form.category}.
+                  {watching}.
                 </p>
                 <div className="bfh-budgetform__suggest">
                   {suggestions.map((value, i) => (
@@ -281,7 +389,7 @@ export default function BudgetModal({ budget, categories, categoryIcons = {}, bu
                 </div>
               </>
             ) : (
-              <p>No {form.category} spending in the last three months to go by.</p>
+              <p>No spending on {watching} in the last three months to go by.</p>
             )}
             {use !== null && history.soFar > 0 && (
               <p className="bfh-budgetform__sofar" data-over={use >= 1 || undefined}>

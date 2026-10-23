@@ -15,6 +15,7 @@ const TITLES = [
   ['/personal/net-worth', 'Net Worth'],
   ['/personal/expenses', 'Personal expenses'],
   ['/personal/reports', 'Personal reports'],
+  ['/personal/budgets', 'Personal budgets'],
   ['/personal/income', 'Personal income'],
   ['/personal/goals', 'Goals'],
   ['/personal', 'Personal'],

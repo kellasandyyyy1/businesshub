@@ -2,6 +2,7 @@ import {
   IconArrowsExchange,
   IconBulb,
   IconChartArea,
+  IconChartPie,
   IconFileInvoice,
   IconLayoutDashboard,
   IconReportAnalytics,
@@ -72,6 +73,8 @@ export const PERSONAL_NAV_GROUPS = [
   {
     label: 'Plan',
     items: [
+      // A pie rather than the business target mark, which Goals already uses here.
+      { to: '/personal/budgets', label: 'Budgets', icon: IconChartPie },
       { to: '/personal/goals', label: 'Goals', icon: IconTargetArrow },
       { to: '/personal/net-worth', label: 'Net Worth', icon: IconScale },
       { to: '/personal/reports', label: 'Reports', icon: IconReportAnalytics },

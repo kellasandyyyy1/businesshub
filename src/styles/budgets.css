@@ -334,3 +334,335 @@
 .bfh-budgetpicked .bfh-budgetcat {
   cursor: default;
 }
+
+/* ==========================================================================
+   Repeating charges — Spotify, Netflix, rent — each a tap from a limit
+   ========================================================================== */
+
+.bfh-subs {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px 18px 8px;
+}
+.bfh-subs__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding-bottom: 10px;
+}
+.bfh-subs__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--ink2);
+}
+.bfh-subs__title {
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: var(--weight-semibold);
+  color: var(--ink);
+}
+.bfh-subs__sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--ink2);
+}
+
+.bfh-subs__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.bfh-subs__row {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 60px;
+  padding: 10px 0;
+  border-top: var(--hairline) solid var(--b);
+}
+.bfh-subs__avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgb(var(--ink-c) / 0.06);
+  font-size: var(--fs-body);
+  font-weight: var(--weight-semibold);
+  color: var(--ink);
+}
+.bfh-subs__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.bfh-subs__name {
+  overflow: hidden;
+  font-size: var(--fs-body);
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.bfh-subs__meta {
+  overflow: hidden;
+  font-size: var(--fs-small);
+  color: var(--ink2);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.bfh-subs__cost {
+  font-size: var(--fs-body);
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.bfh-subs__per {
+  font-size: var(--fs-small);
+  font-weight: var(--weight-regular);
+  color: var(--ink2);
+}
+.bfh-subs__set {
+  min-height: 36px;
+  padding: 0 12px;
+  font-size: var(--fs-small);
+  white-space: nowrap;
+}
+.bfh-subs__limit {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  color: var(--ink2);
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--ink-c) / 0.25);
+  text-underline-offset: 3px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* Phone: the action drops under the name so nothing is squeezed. */
+@media (max-width: 767px) {
+  .bfh-subs {
+    padding: 16px 16px 6px;
+  }
+  .bfh-subs__row {
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    grid-template-areas:
+      'avatar body cost'
+      'avatar action action';
+    row-gap: 8px;
+  }
+  .bfh-subs__avatar {
+    grid-area: avatar;
+    align-self: start;
+  }
+  .bfh-subs__body {
+    grid-area: body;
+  }
+  .bfh-subs__cost {
+    grid-area: cost;
+  }
+  /* The action tucks under the price as a small link, so each row stays one
+     line of text plus a tap target, not a button the full height of a card. */
+  .bfh-subs__row {
+    grid-template-areas:
+      'avatar body cost'
+      'avatar body action';
+    row-gap: 2px;
+  }
+  .bfh-subs__set,
+  .bfh-subs__limit {
+    grid-area: action;
+    justify-self: end;
+  }
+  .bfh-subs__set {
+    min-height: 32px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font-weight: var(--weight-medium);
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: rgb(var(--ink-c) / 0.3);
+    text-underline-offset: 3px;
+    box-shadow: none;
+  }
+  .bfh-subs__limit {
+    min-height: 32px;
+    padding: 0;
+  }
+}
+
+/* ---- Budgets page: first run and phone ------------------------------------- */
+
+/* The starter list: the categories that cost the most, each one tap from a
+   budget — the way in when nothing has been set yet. */
+.bfh-budgetstart {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px;
+}
+.bfh-budgetstart__title {
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: var(--weight-semibold);
+  color: var(--ink);
+}
+.bfh-budgetstart__sub {
+  margin: 0 0 8px;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--ink2);
+}
+.bfh-budgetstart__list {
+  margin: 0 -8px;
+  padding: 0;
+  list-style: none;
+}
+.bfh-budgetstart__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 60px;
+  padding: 8px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-budgetstart__row:hover {
+  background: var(--bg);
+}
+.bfh-budgetstart__row:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -2px;
+}
+.bfh-budgetstart__list li + li .bfh-budgetstart__row {
+  border-top: var(--hairline) solid var(--b);
+  border-radius: 0;
+}
+.bfh-budgetstart__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: var(--hairline) solid var(--b);
+  border-radius: 11px;
+  background: var(--bg);
+  color: var(--ink);
+}
+.bfh-budgetstart__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.bfh-budgetstart__name {
+  font-size: var(--fs-body);
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+.bfh-budgetstart__meta {
+  font-size: var(--fs-small);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink2);
+}
+.bfh-budgetstart__chev {
+  flex: none;
+  color: var(--ink3);
+}
+.bfh-budgetstart__other {
+  align-self: flex-start;
+  gap: 6px;
+  min-height: 40px;
+  margin-top: 10px;
+}
+
+/* Nothing repeats yet: a one-line hint, not a whole empty card. */
+.bfh-subs[data-empty] {
+  padding: 12px 14px;
+  border-style: dashed;
+  background: transparent;
+  box-shadow: none;
+}
+.bfh-subs[data-empty] .bfh-subs__head {
+  align-items: center;
+  padding: 0;
+}
+.bfh-subs[data-empty] .bfh-subs__icon {
+  width: 32px;
+  height: 32px;
+}
+
+@media (max-width: 767px) {
+  .bfh-budgetspage .bfh-pagehead {
+    align-items: flex-start;
+  }
+  .bfh-budgetspage__add {
+    flex: none;
+    min-height: 40px;
+    padding: 0 14px;
+  }
+  .bfh-budgetstart {
+    padding: 16px;
+  }
+  .bfh-budgetstart__other {
+    align-self: stretch;
+    justify-content: center;
+    min-height: 44px;
+  }
+  /* Three figures in a row rather than stacked three tall. */
+  .bfh-budgetspage .bfh-summary--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .bfh-budgetspage .bfh-summary--3 .bfh-summary__cell {
+    padding: 12px;
+  }
+  /* Side by side, so the dividers run down between them, not along the top. */
+  .bfh-budgetspage .bfh-summary--3 .bfh-summary__cell + .bfh-summary__cell {
+    border-top: 0;
+    border-left: var(--hairline) solid var(--b);
+  }
+  .bfh-budgetspage .bfh-summary__value--lg {
+    font-size: var(--fs-body);
+  }
+}
+
+@media (max-width: 767px) {
+  /* Beats the shared outline-button rule, so it reads as a quiet link. */
+  .bfh-subs__row .bfh-subs__set.bfh-btn-outline {
+    width: auto;
+    min-height: 32px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .bfh-subs__body {
+    align-self: center;
+  }
+}

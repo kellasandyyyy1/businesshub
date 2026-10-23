@@ -3,7 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/db'
 import { BUSINESS_PROFILE, ofProfile } from '../db/queries'
 import { usePeriod } from '../context/PeriodContext'
-import { PERIOD_WORD, budgetWindow } from '../lib/budget'
+import { PERIOD_WORD, budgetWindow, budgetsForTotals, inBudget } from '../lib/budget'
 import { daysBetween, formatDayMonth, formatMonth, shiftDays } from '../lib/format'
 
 /** Built before the profile split, so it reads the business side. */
@@ -178,9 +178,7 @@ export function useDashboardData() {
       budgets.map(async (budget) => {
         const [from, to] = budgetWindow(budget.period, today)
         const rows = await db.transactions.where('date').between(from, to, true, true).filter(inProfile).toArray()
-        const spent = rows
-          .filter((r) => r.type === 'expense' && r.category === budget.category)
-          .reduce((t, r) => t + r.amount, 0)
+        const spent = rows.filter((r) => inBudget(r, budget)).reduce((t, r) => t + r.amount, 0)
         return { ...budget, spent, use: budget.amount > 0 ? spent / budget.amount : 0 }
       }),
     )
@@ -188,8 +186,10 @@ export function useDashboardData() {
       .filter((b) => b.use >= 0.9)
       .sort((a, b) => b.use - a.use)
 
-    const totalBudget = budgetStatus.reduce((t, b) => t + b.amount, 0)
-    const totalBudgetSpend = budgetStatus.reduce((t, b) => t + b.spent, 0)
+    // A narrower budget inside a whole-category one is already counted by it.
+    const counted = budgetsForTotals(budgetStatus)
+    const totalBudget = counted.reduce((t, b) => t + b.amount, 0)
+    const totalBudgetSpend = counted.reduce((t, b) => t + b.spent, 0)
 
     // ---- Attention list ---------------------------------------------------
     const pending = current.filter((r) => r.status === 'pending')

@@ -30,7 +30,7 @@ const PERSONAL_ITEMS = [
 
 /** Paths that live behind More, so the button can show as active for them. */
 const BUSINESS_MORE = ['/income', '/expenses', '/budgets', '/cashflow', '/reports', '/insights', '/settings']
-const PERSONAL_MORE = ['/personal/income', '/personal/expenses', '/personal/reports', '/settings']
+const PERSONAL_MORE = ['/personal/income', '/personal/expenses', '/personal/budgets', '/personal/reports', '/settings']
 
 export default function BottomNav({ onOpenMore, moreOpen }) {
   const { isMobile, isTablet } = useDevice()

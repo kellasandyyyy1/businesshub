@@ -101,16 +101,18 @@ export function useNotifications() {
     let personal = null
 
     if (activeMode === 'personal' || activeMode === 'both') {
-      const [personalTransactions, goals, netWorth] = await Promise.all([
+      const [personalTransactions, goals, netWorth, personalBudgets] = await Promise.all([
         db.transactions.filter(inPersonal).toArray(),
         db.goals.filter(inPersonal).toArray(),
         db.netWorth.filter(inPersonal).toArray(),
+        db.budgets.filter(inPersonal).toArray(),
       ])
 
       personal = {
         transactions: personalTransactions,
         goals,
         netWorth,
+        budgets: personalBudgets,
         ...sessionBaseline(goals, netWorth),
       }
     }

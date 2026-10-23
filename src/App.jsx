@@ -146,6 +146,7 @@ export default function App() {
             <Route path="/personal/goals" element={<PersonalGoals />} />
             <Route path="/personal/net-worth" element={<PersonalNetWorth />} />
             <Route path="/personal/reports" element={<PersonalReports />} />
+            <Route path="/personal/budgets" element={<Budgets />} />
           </Route>
 
           {/* Neither profile owns these; both need them. */}

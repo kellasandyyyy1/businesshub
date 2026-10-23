@@ -1,4 +1,4 @@
-import { budgetWindow, spendFor } from './budget'
+import { budgetWindow, spendForBudget } from './budget'
 import { PERIOD_DAYS, groupTotals, monthKey, shiftMonths, sum } from './ledger'
 
 /**
@@ -47,9 +47,17 @@ export function recurringExpenses(allExpenses, today) {
     .filter((g) => g.months.size >= 2)
     .map((g) => {
       const monthly = sum(g.rows) / g.rows.length
+      // The category it is usually filed under, so a budget for it can be set
+      // in the right place.
+      const byCategory = new Map()
+      for (const r of g.rows) byCategory.set(r.category, (byCategory.get(r.category) ?? 0) + 1)
+      const category = [...byCategory.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? ''
+      const last = g.rows.reduce((max, r) => (r.date > max ? r.date : max), '')
       return {
         key: g.key,
         description: g.description,
+        category,
+        lastCharged: last,
         monthsSeen: g.months.size,
         monthlyCost: monthly,
         annualised: monthly * 12,
@@ -109,7 +117,7 @@ export function budgetUsage(budgets, allExpenses, today) {
   const window = budgetWindow('monthly', today)
 
   return budgets.map((budget) => {
-    const spent = spendFor(allExpenses, budget.category, window)
+    const spent = spendForBudget(allExpenses, budget, window)
     const limit = Number(budget.amount) || 0
     return {
       id: budget.id,

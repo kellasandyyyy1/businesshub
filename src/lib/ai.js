@@ -13,7 +13,7 @@
 import { db } from '../db/db'
 import { BUSINESS_PROFILE, ofProfile } from '../db/queries'
 import { balanceOf, effectiveStatus } from './invoice'
-import { budgetWindow, spendFor } from './budget'
+import { budgetWindow, spendForBudget } from './budget'
 import { detectRecurring } from './cashflow'
 import { shiftDays } from './format'
 
@@ -473,9 +473,9 @@ async function businessContext(months) {
   const allTransactions = await db.transactions.filter(inProfile).toArray()
   lines.push('BUDGETS (name, category, period, budgeted, spent this period):')
   for (const budget of budgets) {
-    const spent = spendFor(allTransactions, budget.category, budgetWindow(budget.period, today))
+    const spent = spendForBudget(allTransactions, budget, budgetWindow(budget.period, today))
     lines.push(
-      `${budget.name}, ${budget.category}, ${budget.period}, ${money(budget.amount)}, ${money(spent)}`,
+      `${budget.name}, ${budget.category}${budget.match ? ` (payments mentioning "${budget.match}")` : ''}, ${budget.period}, ${money(budget.amount)}, ${money(spent)}`,
     )
   }
   lines.push('')

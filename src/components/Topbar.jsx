@@ -21,7 +21,7 @@ import useSettings from '../hooks/useSettings'
 
 // Pages with their own period choice, or none at all: a second switch up
 // here would change nothing on them and suggest that it should.
-const PERIODLESS = new Set(['/personal/goals', '/personal/net-worth', '/reports', '/personal/reports', '/invoices', '/cashflow', '/insights', '/clients', '/overview', '/export'])
+const PERIODLESS = new Set(['/personal/goals', '/personal/net-worth', '/reports', '/personal/reports', '/invoices', '/cashflow', '/insights', '/clients', '/overview', '/export', '/budgets', '/personal/budgets'])
 
 export default function Topbar({ onOpenMenu, onAsk }) {
   const [bellOpen, setBellOpen] = useState(false)

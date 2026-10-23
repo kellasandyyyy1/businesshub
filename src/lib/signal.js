@@ -39,7 +39,11 @@ export function dueTone(invoice, today) {
 }
 
 /** Budget use (spent ÷ cap) to a tone: ink below 80%, amber to 100%, red past it. */
-export function budgetTone(use) {
+export function budgetTone(use, budget) {
+  // A budget for one payee — a subscription — is used up by its single charge
+  // every month, so "nearly there" is just normal. It only signals when the
+  // charge comes in above the limit: a price rise, or a second charge.
+  if (budget?.match) return use > 1 ? 'neg' : null
   if (use >= 1) return 'neg'
   if (use >= 0.8) return 'warn'
   return null
@@ -74,6 +78,7 @@ const NOTIFICATION_TONES = {
   'spending-spike': 'neg',
   'invoices-due-soon': 'warn',
   'budget-warning': 'warn',
+  'personal-budget-warning': 'warn',
   'stale-pending': 'warn',
   'personal-stale-pending': 'warn',
   'goal-deadline': 'warn',

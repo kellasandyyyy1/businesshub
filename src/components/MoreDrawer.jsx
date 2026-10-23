@@ -1,6 +1,7 @@
 import {
   IconBulb,
   IconChartArea,
+  IconChartPie,
   IconReportAnalytics,
   IconSettings,
   IconTableExport,
@@ -29,6 +30,7 @@ const BUSINESS_ITEMS = [
 const PERSONAL_ITEMS = [
   { to: '/personal/income', label: 'Income', icon: IconTrendingUp },
   { to: '/personal/expenses', label: 'Expenses', icon: IconTrendingDown },
+  { to: '/personal/budgets', label: 'Budgets', icon: IconChartPie },
   { to: '/personal/reports', label: 'Reports', icon: IconReportAnalytics },
   { to: '/settings', label: 'Settings', icon: IconSettings },
 ]

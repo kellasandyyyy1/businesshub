@@ -14,7 +14,7 @@ import { budgetTone } from '../../lib/signal'
 export default function BudgetCard({ budget, iconName, symbol, onEdit }) {
   const Icon = categoryIcon(iconName)
   const pct = Math.round(budget.use * 100)
-  const tone = budgetTone(budget.use)
+  const tone = budgetTone(budget.use, budget)
   const overspent = budget.remaining < 0
 
   return (
@@ -57,7 +57,14 @@ export default function BudgetCard({ budget, iconName, symbol, onEdit }) {
         </span>
       </span>
 
-      <span className="bfh-micro bfh-budget__cat">{budget.category}</span>
+      {/* Only when it adds something: a budget named after its category would
+          otherwise say the same word twice. */}
+      {(budget.match || budget.name !== budget.category) && (
+        <span className="bfh-micro bfh-budget__cat">
+          {budget.category}
+          {budget.match ? ` · only “${budget.match}”` : ''}
+        </span>
+      )}
     </button>
   )
 }
