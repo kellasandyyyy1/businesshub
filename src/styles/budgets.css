@@ -204,3 +204,133 @@
   margin: 0 calc(var(--card-padding) * -1);
   padding: 0 var(--card-padding);
 }
+
+/* ==========================================================================
+   Budget form
+   ========================================================================== */
+
+/* Categories as tappable chips with their icon, wrapping — the question is
+   answered by picking, not by opening a dropdown. */
+.bfh-budgetcats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.bfh-budgetcat {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 0 12px 0 6px;
+  border: var(--hairline) solid var(--b2);
+  border-radius: var(--radius-pill);
+  background: var(--bg);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-sm);
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-micro) var(--ease-out-soft),
+    background-color var(--duration-micro) var(--ease-out-soft),
+    color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-budgetcat:hover {
+  border-color: var(--ink3);
+}
+.bfh-budgetcat__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgb(var(--ink-c) / 0.06);
+  color: var(--ink2);
+}
+.bfh-budgetcat[aria-checked='true'] {
+  border-color: var(--invert-bg);
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+.bfh-budgetcat[aria-checked='true'] .bfh-budgetcat__icon {
+  background: rgb(var(--background) / 0.18);
+  color: var(--invert-fg);
+}
+.bfh-budgetcat:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+/* Already budgeted: still pickable (to see why), but stepped back. */
+.bfh-budgetcat[data-taken]:not([aria-checked='true']) {
+  border-style: dashed;
+  color: var(--ink2);
+}
+.bfh-budgetcat__note {
+  font-size: var(--fs-small);
+  color: var(--ink3);
+}
+.bfh-budgetcat[aria-checked='true'] .bfh-budgetcat__note {
+  color: inherit;
+  opacity: 0.7;
+}
+
+/* The amount is the number that matters, so it is drawn large. */
+.bfh-budgetform__amount input {
+  font-size: 22px;
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* What the category has been costing — a quiet panel under the amount. */
+.bfh-budgetform__hint {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: -6px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: rgb(var(--ink-c) / 0.04);
+  font-size: var(--fs-body-sm);
+  line-height: 1.45;
+  color: var(--ink2);
+}
+.bfh-budgetform__hint p {
+  margin: 0;
+}
+.bfh-budgetform__hint strong {
+  font-weight: var(--weight-semibold);
+  color: var(--ink);
+}
+.bfh-budgetform__suggest {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.bfh-budgetform__suggest .bfh-choicechip {
+  min-height: 34px;
+  font-variant-numeric: tabular-nums;
+}
+.bfh-budgetform__suggest .bfh-choicechip[aria-pressed='true'] {
+  border-color: var(--invert-bg);
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+.bfh-budgetform__sofar {
+  color: var(--ink);
+}
+/* The one place this form may colour: a limit that is already blown. */
+.bfh-budgetform__sofar[data-over] {
+  color: var(--neg);
+}
+
+/* The picked category, folded, with a way back to the list. */
+.bfh-budgetpicked {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.bfh-budgetpicked .bfh-budgetcat {
+  cursor: default;
+}

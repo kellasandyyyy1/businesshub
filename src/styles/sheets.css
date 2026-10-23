@@ -1693,3 +1693,9 @@ h3,
 .bfh-sheet .bfh-amountfield__box input[inputmode='decimal'] {
   font-family: var(--font-display);
 }
+
+/* While any form or dialog is open, the floating buttons step aside: they sit
+   above the page, and would otherwise cover the sheet's own buttons. */
+body:has(.bfh-modal, .bfh-exportsheet, .bfh-modesheet) :is(.bfh-fab, .bfh-ai-fab) {
+  display: none;
+}

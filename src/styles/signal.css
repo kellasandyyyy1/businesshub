@@ -231,3 +231,138 @@
 .bfh-plot__threshold {
   stroke: var(--warn);
 }
+
+/* ==========================================================================
+   The bell — impossible to miss when something is new
+
+   A count badge in the colour of the most serious new notice (red problem,
+   amber warning, green good news), a ring of the bell when one arrives, and
+   a slow halo while a problem is waiting. Once the list has been opened the
+   badge gives way to a quiet grey dot until something new comes in.
+   ========================================================================== */
+
+.bfh-bell {
+  overflow: visible;
+}
+.bfh-bell[data-fresh] {
+  color: var(--ink);
+}
+.bfh-bell[data-tone='neg'] {
+  border-color: var(--neg-b);
+}
+.bfh-bell[data-tone='warn'] {
+  border-color: var(--warn-b);
+}
+
+.bfh-bell__badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--invert-bg);
+  box-shadow: 0 0 0 2px var(--card);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--invert-fg);
+  animation: bfh-bell-pop 420ms cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+.bfh-bell[data-tone='neg'] .bfh-bell__badge {
+  background: var(--neg);
+}
+.bfh-bell[data-tone='warn'] .bfh-bell__badge {
+  background: var(--warn);
+}
+.bfh-bell[data-tone='pos'] .bfh-bell__badge {
+  background: var(--pos);
+}
+
+/* A problem keeps a slow halo going until it has been looked at. */
+.bfh-bell[data-tone='neg'] .bfh-bell__badge::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 0 var(--neg);
+  animation: bfh-bell-halo 2.4s ease-out infinite;
+}
+
+/* Seen, but still there: a small grey dot, no number, no colour. */
+.bfh-bell__seen {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink3);
+}
+
+.bfh-bell__icon {
+  transform-origin: 50% 2px;
+}
+.bfh-bell[data-ring] .bfh-bell__icon {
+  animation: bfh-bell-ring 900ms ease-in-out;
+}
+
+@keyframes bfh-bell-pop {
+  from {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+}
+@keyframes bfh-bell-ring {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  15% {
+    transform: rotate(16deg);
+  }
+  30% {
+    transform: rotate(-14deg);
+  }
+  45% {
+    transform: rotate(10deg);
+  }
+  60% {
+    transform: rotate(-6deg);
+  }
+  75% {
+    transform: rotate(3deg);
+  }
+}
+@keyframes bfh-bell-halo {
+  0% {
+    box-shadow: 0 0 0 0 rgb(184 56 47 / 0.45);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 8px rgb(184 56 47 / 0);
+  }
+}
+
+@media (max-width: 767px) {
+  .bfh-bell__badge {
+    top: -5px;
+    right: -5px;
+    min-width: 20px;
+    height: 20px;
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bfh-bell__badge,
+  .bfh-bell[data-ring] .bfh-bell__icon,
+  .bfh-bell[data-tone='neg'] .bfh-bell__badge::after {
+    animation: none;
+  }
+}

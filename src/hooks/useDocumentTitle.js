@@ -39,11 +39,27 @@ export function titleFor(pathname) {
   return match ? `${match[1]} — ${BRAND}` : BRAND
 }
 
+/* Fresh notifications lead the tab title — "(3) Dashboard — Dual" — so they
+   are seen from another tab. Kept here, beside the page title, so a route
+   change and a new notice can never overwrite each other. */
+let badge = 0
+let lastPath = '/'
+const apply = () => {
+  const title = titleFor(lastPath)
+  document.title = badge > 0 ? `(${badge > 9 ? '9+' : badge}) ${title}` : title
+}
+
+export function setTitleBadge(count) {
+  badge = count
+  apply()
+}
+
 export function useDocumentTitle() {
   const { pathname } = useLocation()
 
   useEffect(() => {
-    document.title = titleFor(pathname)
+    lastPath = pathname
+    apply()
   }, [pathname])
 }
 

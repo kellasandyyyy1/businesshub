@@ -81,6 +81,10 @@ export default function Budgets() {
           key={editing.id ?? 'new'}
           budget={editing.id ? editing : (editing.prefill ?? null)}
           categories={data.categories}
+          categoryIcons={data.categoryIcons}
+          budgets={data.budgets}
+          expenses={data.expenses}
+          symbol={symbol}
           onClose={() => setEditing(null)}
         />
       )}

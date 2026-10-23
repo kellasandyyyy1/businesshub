@@ -4,6 +4,8 @@ import {
   IconCheck,
   IconDownload,
   IconFileImport,
+  IconTrash,
+  IconX,
 } from '@tabler/icons-react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useEffect, useRef, useState } from 'react'
@@ -23,25 +25,55 @@ import {
 } from '../../lib/dataExport'
 import { clearAll, downloadJson } from '../../lib/backup'
 import { formatFullDate } from '../../lib/format'
+import useDismiss from '../../hooks/useDismiss'
 import useFocusTrap from '../../hooks/useFocusTrap'
 
-/** Typing the word is the guard — no accidental double-click can clear a ledger. */
-function ClearModal({ onClose }) {
+/** What gets erased, counted across both sides, in the order people think of it. */
+const ERASED = [
+  ['transactions', 'transaction', 'transactions'],
+  ['invoices', 'invoice', 'invoices'],
+  ['clients', 'client', 'clients'],
+  ['budgets', 'budget', 'budgets'],
+  ['goals', 'goal', 'goals'],
+  ['netWorth', 'net worth item', 'net worth items'],
+]
+
+/**
+ * Erasing everything. The one screen in the app drawn in red, because it is
+ * the one action that cannot be taken back: it says exactly what will go,
+ * offers the backup right there, and only arms once DELETE is typed.
+ */
+function ClearModal({ counts, onBackup, onClose }) {
   const [typed, setTyped] = useState('')
   const [working, setWorking] = useState(false)
+  const [backedUp, setBackedUp] = useState(false)
+  const [closing, dismiss] = useDismiss(onClose)
   const input = useRef(null)
   const trapRef = useFocusTrap()
 
   useEffect(() => {
-    input.current?.focus()
     const onKeyDown = (e) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape' && !working) dismiss()
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [onClose])
+  }, [dismiss, working])
+
+  // Forgiving about case and stray spaces; strict about the word.
+  const armed = typed.trim().toUpperCase() === 'DELETE'
+
+  const total = (table) => (counts?.business?.[table] ?? 0) + (counts?.personal?.[table] ?? 0)
+  const items = ERASED.map(([table, one, many]) => {
+    const n = total(table)
+    return n > 0 ? `${n.toLocaleString()} ${n === 1 ? one : many}` : null
+  }).filter(Boolean)
+
+  const backup = async () => {
+    if (await onBackup()) setBackedUp(true)
+  }
 
   const confirm = async () => {
+    if (!armed) return
     setWorking(true)
     await clearAll(db)
     // A hard reload is the honest way back: every hook is holding rows that
@@ -50,45 +82,102 @@ function ClearModal({ onClose }) {
   }
 
   return (
-    <div className="bfh-modal" role="dialog" aria-modal="true" aria-label="Clear all data">
-      <button type="button" className="bfh-modal__backdrop" aria-label="Close" onClick={onClose} />
-      <div className="bfh-modal__panel" ref={trapRef}>
-        <header className="bfh-modal__head">
-          <h2 className="bfh-panel__title">Clear all data</h2>
-          <span className="bfh-micro">Cannot be undone</span>
+    <div
+      className="bfh-modal bfh-sheet bfh-clearsheet"
+      data-state={closing ? 'closing' : 'open'}
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="bfh-clear-title"
+      aria-describedby="bfh-clear-desc"
+    >
+      <button type="button" className="bfh-modal__backdrop" aria-label="Close" onClick={() => !working && dismiss()} />
+
+      <form
+        className="bfh-modal__panel"
+        ref={trapRef}
+        onSubmit={(e) => {
+          e.preventDefault()
+          confirm()
+        }}
+      >
+        <header className="bfh-sheet__head bfh-clearsheet__head">
+          <span className="bfh-clearsheet__icon" aria-hidden="true">
+            <IconAlertTriangle size={20} stroke={1.75} />
+          </span>
+          <div className="bfh-clearsheet__titles">
+            <h2 id="bfh-clear-title" className="bfh-sheet__title">
+              Erase all data?
+            </h2>
+            <p className="bfh-clearsheet__sub">This can&apos;t be undone.</p>
+          </div>
+          <button type="button" className="bfh-sheet__close" aria-label="Close" onClick={dismiss} disabled={working}>
+            <IconX size={16} stroke={1.75} aria-hidden="true" />
+          </button>
         </header>
 
-        <div className="bfh-form">
-          <p className="bfh-settings__note bfh-formfield--wide">
-            Every transaction, invoice, client, budget, goal, and setting on this device will be
-            erased. Export a backup first if you might want any of it back.
-          </p>
-          <label className="bfh-formfield bfh-formfield--wide">
-            <span className="bfh-micro">Type DELETE to confirm</span>
+        <div className="bfh-sheet__body">
+          <div className="bfh-clearsheet__what" id="bfh-clear-desc">
+            <p className="bfh-clearsheet__lead">Everything on this device will be erased:</p>
+            <ul className="bfh-clearsheet__list">
+              {items.length > 0 ? (
+                items.map((item) => <li key={item}>{item}</li>)
+              ) : (
+                <li>{counts ? 'No records yet' : 'Counting…'}</li>
+              )}
+              <li>Your settings, categories and payment methods</li>
+            </ul>
+            <p className="bfh-clearsheet__note">Business and personal both. The app starts empty again.</p>
+          </div>
+
+          {/* The safety net, offered where it is needed rather than up the page. */}
+          <div className="bfh-clearsheet__backup" data-done={backedUp || undefined}>
+            <div>
+              <span className="bfh-clearsheet__backuptitle">
+                {backedUp ? 'Backup downloaded' : 'Keep a copy first'}
+              </span>
+              <span className="bfh-clearsheet__backupnote">
+                {backedUp ? 'You can restore it from Settings → Data.' : 'One file with everything, to restore later.'}
+              </span>
+            </div>
+            {backedUp ? (
+              <IconCheck className="bfh-clearsheet__tick" size={20} stroke={2} aria-hidden="true" />
+            ) : (
+              <button type="button" className="bfh-btn-outline" onClick={backup} disabled={working}>
+                <IconDownload size={15} stroke={1.75} aria-hidden="true" />
+                Download backup
+              </button>
+            )}
+          </div>
+
+          <label className="bfh-formfield">
+            <span className="bfh-fieldlabel">
+              Type <strong className="bfh-clearsheet__word">DELETE</strong> to confirm
+            </span>
             <input
               ref={input}
               value={typed}
               onChange={(e) => setTyped(e.target.value)}
               placeholder="DELETE"
               autoComplete="off"
+              autoCapitalize="characters"
+              spellCheck={false}
+              aria-invalid={typed && !armed ? 'true' : undefined}
+              className="bfh-clearsheet__input"
+              data-armed={armed || undefined}
             />
           </label>
         </div>
 
-        <footer className="bfh-modal__foot">
-          <button type="button" className="bfh-btn-ghost" onClick={onClose}>
-            Cancel
+        <footer className="bfh-sheet__foot">
+          <button type="button" className="bfh-btn-text" onClick={dismiss} disabled={working}>
+            Keep my data
           </button>
-          <button
-            type="button"
-            className="bfh-btn-danger"
-            disabled={typed !== 'DELETE' || working}
-            onClick={confirm}
-          >
-            {working ? 'Clearing…' : 'Clear everything'}
+          <button type="submit" className="bfh-btn-erase bfh-sheet__submit" disabled={!armed || working}>
+            <IconTrash size={16} stroke={1.75} aria-hidden="true" />
+            {working ? 'Erasing…' : 'Erase everything'}
           </button>
         </footer>
-      </div>
+      </form>
     </div>
   )
 }
@@ -262,10 +351,11 @@ export default function DataSection({ settings }) {
       downloadJson(exportFilename(mode), payload)
     } catch {
       toast.error("Couldn't create the backup. Try again.")
-      return
+      return false
     }
     toast.info('Backup downloaded')
     await putSetting('lastExport', new Date().toISOString()).catch(() => {})
+    return true
   }
 
   const readFile = async (file) => {
@@ -424,13 +514,17 @@ export default function DataSection({ settings }) {
 
       <section className="bfh-datablock bfh-datablock--danger">
         <div>
-          <h3 className="bfh-datablock__title">Clear all data</h3>
+          <h3 className="bfh-datablock__title bfh-dangertitle">
+            <IconAlertTriangle size={15} stroke={1.75} aria-hidden="true" />
+            Clear all data
+          </h3>
           <p className="bfh-settings__note">
             Erases everything on this device and leaves the app empty. Sample data will not
             come back.
           </p>
         </div>
-        <button type="button" className="bfh-btn-danger" onClick={() => setClearing(true)}>
+        <button type="button" className="bfh-btn-danger bfh-dangerbtn" onClick={() => setClearing(true)}>
+          <IconTrash size={15} stroke={1.75} aria-hidden="true" />
           Clear all data
         </button>
       </section>
@@ -448,7 +542,7 @@ export default function DataSection({ settings }) {
         />
       )}
 
-      {clearing && <ClearModal onClose={() => setClearing(false)} />}
+      {clearing && <ClearModal counts={counts} onBackup={() => runExport('all')} onClose={() => setClearing(false)} />}
     </div>
   )
 }

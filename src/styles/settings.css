@@ -1270,3 +1270,203 @@
 .bfh-dropzone:focus:not(:focus-visible) {
   outline: none;
 }
+
+/* ==========================================================================
+   Danger zone — the one place red is used for an action, because erasing
+   everything is the one action that cannot be taken back. Always beside a
+   warning icon and plain words, so it reads the same without colour.
+   ========================================================================== */
+
+.bfh-dangertitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.bfh-dangertitle svg {
+  color: var(--neg);
+}
+
+.bfh-dangerbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: var(--hairline) solid var(--neg-b);
+  border-radius: var(--radius-sm);
+  background: var(--neg-bg);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-semibold);
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--neg);
+}
+.bfh-dangerbtn:hover:not(:disabled) {
+  border-color: var(--neg);
+}
+
+/* ---- The erase dialog -------------------------------------------------------- */
+
+.bfh-clearsheet__head {
+  align-items: flex-start;
+  gap: 12px;
+}
+.bfh-clearsheet__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--neg-bg);
+  color: var(--neg);
+}
+.bfh-clearsheet__titles {
+  flex: 1;
+  min-width: 0;
+}
+.bfh-clearsheet__sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-medium);
+  color: var(--neg);
+}
+
+.bfh-clearsheet__what {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.bfh-clearsheet__lead {
+  margin: 0;
+  font-size: var(--fs-body);
+  color: var(--ink);
+}
+.bfh-clearsheet__list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 12px 14px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  list-style: none;
+}
+.bfh-clearsheet__list li {
+  position: relative;
+  padding-left: 16px;
+  font-size: var(--fs-body-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.bfh-clearsheet__list li::before {
+  content: '';
+  position: absolute;
+  top: 0.6em;
+  left: 2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink3);
+}
+.bfh-clearsheet__note {
+  margin: 0;
+  font-size: var(--fs-small);
+  color: var(--ink2);
+}
+
+/* The backup offer: a calm card, ticked once done. */
+.bfh-clearsheet__backup {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-sm);
+}
+.bfh-clearsheet__backup > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.bfh-clearsheet__backuptitle {
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--ink);
+}
+.bfh-clearsheet__backupnote {
+  font-size: var(--fs-small);
+  color: var(--ink2);
+}
+.bfh-clearsheet__backup .bfh-btn-outline {
+  flex: none;
+}
+.bfh-clearsheet__backup[data-done] .bfh-clearsheet__backuptitle,
+.bfh-clearsheet__tick {
+  color: var(--pos);
+}
+
+.bfh-clearsheet__word {
+  font-weight: var(--weight-semibold);
+  color: var(--neg);
+}
+.bfh-clearsheet__input {
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.bfh-clearsheet__input[data-armed] {
+  border-color: var(--neg);
+  box-shadow: 0 0 0 3px var(--neg-bg);
+}
+
+/* Solid red only once it is armed; until then it reads as unavailable. */
+.bfh-btn-erase {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--neg);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-semibold);
+  /* White on the light theme's deep red, near-black on the dark theme's
+     lighter one — readable either way. */
+  color: var(--invert-fg);
+  cursor: pointer;
+  transition:
+    opacity var(--duration-micro) var(--ease-out-soft),
+    transform 120ms var(--ease-out-soft);
+}
+.bfh-btn-erase:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.bfh-btn-erase:disabled {
+  background: var(--neg-bg);
+  color: var(--neg);
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.bfh-btn-erase:focus-visible {
+  outline: 2px solid var(--neg);
+  outline-offset: 2px;
+}
+
+@media (max-width: 767px) {
+  .bfh-clearsheet__backup {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .bfh-clearsheet__backup .bfh-btn-outline {
+    justify-content: center;
+    min-height: 44px;
+  }
+}

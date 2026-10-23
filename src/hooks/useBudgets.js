@@ -36,6 +36,8 @@ export function useBudgetsData() {
     return {
       budgets: rows,
       categories,
+      // For the form: what each category has actually cost, to suggest a limit.
+      expenses: transactions.filter((t) => t.type === 'expense'),
       categoryIcons: Object.fromEntries(categories.map((c) => [c.name, c.icon])),
       totals: {
         budgeted: rows.reduce((t, b) => t + b.amount, 0),

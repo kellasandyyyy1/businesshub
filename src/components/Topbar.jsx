@@ -14,7 +14,7 @@ import NotificationsMenu from './NotificationsMenu'
 
 import { PERIODS, usePeriod } from '../context/PeriodContext'
 import { useProfile } from '../context/ProfileContext'
-import useAlerts from '../hooks/useAlerts'
+import useBellState from '../hooks/useBellState'
 import useGreeting from '../hooks/useGreeting'
 import { useIsMobile } from '../hooks/useMediaQuery'
 import useSettings from '../hooks/useSettings'
@@ -26,7 +26,7 @@ const PERIODLESS = new Set(['/personal/goals', '/personal/net-worth', '/reports'
 export default function Topbar({ onOpenMenu, onAsk }) {
   const [bellOpen, setBellOpen] = useState(false)
   const settings = useSettings()
-  const alerts = useAlerts()
+  const bell = useBellState()
   const { periodId, setPeriodId } = usePeriod()
   // Goals and net worth are standing totals, not a window of time; a period
   // switch there would change nothing and suggest that it should.
@@ -132,19 +132,35 @@ export default function Topbar({ onOpenMenu, onAsk }) {
         <span className="bfh-bellwrap">
           <button
             type="button"
-            className="bfh-icon-btn"
+            className="bfh-icon-btn bfh-bell"
             data-bell="true"
+            data-fresh={bell.fresh > 0 || undefined}
+            data-tone={bell.fresh > 0 ? (bell.tone ?? 'ink') : undefined}
+            data-ring={bell.ring || undefined}
             aria-haspopup="dialog"
             aria-expanded={bellOpen}
-            onClick={() => setBellOpen((open) => !open)}
+            onClick={() => {
+              // Opening the list is reading it: the badge goes quiet until
+              // something new arrives.
+              if (!bellOpen) bell.markSeen()
+              setBellOpen((open) => !open)
+            }}
             aria-label={
-              alerts.unread > 0
-                ? `Notifications, ${alerts.unread} needing attention`
-                : 'Notifications, none right now'
+              bell.fresh > 0
+                ? `Notifications, ${bell.fresh} new`
+                : bell.count > 0
+                  ? `Notifications, ${bell.count}`
+                  : 'Notifications, none right now'
             }
           >
-            <IconBell size={16} stroke={1.5} aria-hidden="true" />
-            {alerts.unread > 0 && <span className="bfh-icon-btn__dot" aria-hidden="true" />}
+            <IconBell className="bfh-bell__icon" size={17} stroke={1.6} aria-hidden="true" />
+            {bell.fresh > 0 ? (
+              <span className="bfh-bell__badge" aria-hidden="true">
+                {bell.fresh > 9 ? '9+' : bell.fresh}
+              </span>
+            ) : (
+              bell.count > 0 && <span className="bfh-bell__seen" aria-hidden="true" />
+            )}
           </button>
 
           {bellOpen && <NotificationsMenu onClose={() => setBellOpen(false)} />}
