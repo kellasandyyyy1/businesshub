@@ -13,6 +13,7 @@ import useAlerts from '../hooks/useAlerts'
 import useSettings from '../hooks/useSettings'
 import ModeHint from './ModeHint'
 import ProfileSwitcher from './ProfileSwitcher'
+import { navAnchor } from '../lib/appMap'
 
 /** "Broadheader" → "BR", "Reyes Creative" → "RC". */
 function initials(name) {
@@ -32,6 +33,7 @@ function NavItem({ item, badgeCount, onNavigate }) {
       className="bfh-nav__item"
       data-badge={showBadge ? 'true' : undefined}
       data-label={item.label}
+      data-help-id={navAnchor(item.to)}
       title={item.label}
       onClick={onNavigate}
     >
@@ -67,7 +69,7 @@ export default function Sidebar({ collapsed, open, onNavigate, onAddTransaction 
             mark stands in on the 56px rail, where a 220×56 lockup could only be
             squashed to something unreadable. */}
         {/* Set rather than drawn. The old lockup was a bitmap with the
-            previous name baked into it, which no rename can reach — and text
+            previous name baked into it, which no rename can reach, and text
             costs nothing, scales to any screen and inverts with the theme on
             its own. The favicon mark carries the shape. */}
         <div className="bfh-logo">
@@ -86,7 +88,7 @@ export default function Sidebar({ collapsed, open, onNavigate, onAddTransaction 
         </div>
 
         {/* A one-sided setup has nothing to switch to, so the control is not
-            offered — the app simply is that one side. */}
+            offered, the app simply is that one side. */}
         {showSwitcher && <ProfileSwitcher onNavigate={onNavigate} />}
 
         {/* Names the choice just made above it, so the switcher reads as a
@@ -102,6 +104,7 @@ export default function Sidebar({ collapsed, open, onNavigate, onAddTransaction 
           className="bfh-btn-primary mt-3"
           onClick={onAddTransaction}
           title="Add transaction"
+          data-help-id="add-transaction"
         >
           <IconPlus size={14} stroke={1.75} aria-hidden="true" />
           <span>Add transaction</span>
@@ -114,7 +117,7 @@ export default function Sidebar({ collapsed, open, onNavigate, onAddTransaction 
             also the combined view, so it only means anything when there are two
             sides to combine. */}
         {showSwitcher && (
-        <NavLink to="/overview" className="bfh-nav__item bfh-nav__overview" title="Overview" onClick={onNavigate}>
+        <NavLink to="/overview" className="bfh-nav__item bfh-nav__overview" title="Overview" data-help-id={navAnchor('/overview')} onClick={onNavigate}>
           <span className="bfh-nav__dot" aria-hidden="true" />
           <IconLayoutGrid className="bfh-nav__icon" size={16} stroke={1.5} aria-hidden="true" />
           <span className="bfh-nav__text">Overview</span>
@@ -165,7 +168,7 @@ export default function Sidebar({ collapsed, open, onNavigate, onAddTransaction 
         <button
           type="button"
           className="bfh-profile"
-          title={`${settings.businessName} — open business settings`}
+          title={`${settings.businessName}: open business settings`}
           aria-label={`${settings.businessName}, open business settings`}
           onClick={() => {
             onNavigate?.()

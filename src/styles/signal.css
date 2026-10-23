@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Signal — the one place colour is allowed, and only to mean something
+   Signal, the one place colour is allowed, and only to mean something
 
    Red is a problem, not an outflow. Green is good news, not income. Amber is
    a warning. Each lives on a small element only and always beside an arrow,
@@ -226,14 +226,14 @@
   gap: 8px;
 }
 
-/* Charts stay monochrome. The one exception: a threshold line — the low-cash
-   floor — may be drawn in dashed amber, with its "Low cash" label beside it. */
+/* Charts stay monochrome. The one exception: a threshold line, the low-cash
+   floor, may be drawn in dashed amber, with its "Low cash" label beside it. */
 .bfh-plot__threshold {
   stroke: var(--warn);
 }
 
 /* ==========================================================================
-   The bell — impossible to miss when something is new
+   The bell, impossible to miss when something is new
 
    A count badge in the colour of the most serious new notice (red problem,
    amber warning, green good news), a ring of the bell when one arrives, and

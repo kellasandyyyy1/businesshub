@@ -9,7 +9,7 @@ import { amountLabel, signedAmount, signedLabel } from '../../lib/txDisplay'
 /**
  * The phone ledger: rows grouped under the day they happened, each with its
  * category icon, a one-line context and a signed amount. This is how people
- * read a bank statement — scan down by day, glance right for the money — so
+ * read a bank statement, scan down by day, glance right for the money, so
  * it reads at once without a column header to decode.
  *
  * Rows arrive newest first; grouping keeps that order. Status only shows when
@@ -75,7 +75,7 @@ export default function TxList({ rows, onOpen, categoryIcons = {}, symbol, metaO
 }
 
 /**
- * Pending, as a badge. Amber only once it has waited more than a week —
+ * Pending, as a badge. Amber only once it has waited more than a week,
  * a payment still clearing after a day or two is normal and stays grey.
  */
 export function PendingBadge({ tx }) {

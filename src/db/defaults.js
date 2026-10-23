@@ -1,7 +1,7 @@
 /**
  * First-run configuration.
  *
- * This module holds *configuration only* — the category list a new business
+ * This module holds *configuration only*, the category list a new business
  * picks from and the baseline settings. It deliberately contains no
  * transactions, clients, invoices or budgets: a new device opens the app with
  * an empty ledger and fills it in itself.
@@ -28,7 +28,7 @@ import { ALL_CATEGORIES } from './categoryData'
 export { ALL_CATEGORIES, BUSINESS_CATEGORIES, PERSONAL_CATEGORIES } from './categoryData'
 
 /**
- * Baseline settings. `businessName` is intentionally absent — its absence is
+ * Baseline settings. `businessName` is intentionally absent, its absence is
  * what makes the onboarding gate in App.jsx open on a fresh device. Currency
  * and locale are overwritten by whatever the user picks during onboarding.
  */
@@ -51,7 +51,7 @@ export async function seedDefaults(db) {
 
     // Only what is missing. Dexie runs the version upgraders while creating a
     // database, so by the time this is reached the categories they add are
-    // already there — writing the list wholesale would file every one of them
+    // already there, writing the list wholesale would file every one of them
     // a second time.
     const existing = await db.categories.toArray()
     const seen = new Set(existing.map((c) => `${c.profile}|${c.name}`))
@@ -61,7 +61,7 @@ export async function seedDefaults(db) {
 
     // Settings the same way. `key` is a unique index, so re-adding one that
     // already exists throws a ConstraintError that aborts the whole
-    // transaction — taking the categories above down with it.
+    // transaction, taking the categories above down with it.
     const settings = await db.settings.toArray()
     const keys = new Set(settings.map((row) => row.key))
     const newSettings = DEFAULT_SETTINGS.filter((row) => !keys.has(row.key))

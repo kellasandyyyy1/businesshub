@@ -12,7 +12,7 @@ import {
   writeAiCache,
 } from '../lib/ai'
 
-const SYSTEM = `You are a financial analyst for a Philippine small business. Analyze the data and return ONLY a valid JSON array — no markdown, no backticks, no explanation. Wrap the array as { "insights": [...] }. Each element:
+const SYSTEM = `You are a financial analyst for a Philippine small business. Analyze the data and return ONLY a valid JSON array, no markdown, no backticks, no explanation. Wrap the array as { "insights": [...] }. Each element:
 {
   "id": string,
   "title": string (max 8 words, plain language),
@@ -21,14 +21,14 @@ const SYSTEM = `You are a financial analyst for a Philippine small business. Ana
   "priority": 1-5
 }
 Priority 1 = most urgent action needed. Priority 5 = positive or informational.
-Only surface insights where the data is meaningful. Minimum 3, maximum 8 insights.`
+Only surface insights where the data is meaningful. Minimum 3, maximum 8 insights. Never use em dashes in any text.`
 
 const VALID_TAGS = ['Client Risk', 'Expense', 'Revenue', 'Cash Flow', 'Invoice', 'Budget']
 
 /**
  * AI insights, cached in Dexie. The API is only called when the books have
  * changed since the last run, the cache is over a day old, or the user asks
- * for a refresh — page visits alone never spend a request.
+ * for a refresh, page visits alone never spend a request.
  */
 export function useAiInsights() {
   const [state, setState] = useState({ status: 'idle', insights: null, generatedAt: null })
@@ -42,7 +42,7 @@ export function useAiInsights() {
 
     // Nothing to analyse yet. A new device starts with an empty ledger, and
     // asking the model to find patterns in zero rows comes back with an empty
-    // list — which the parse below would raise as an error. Leaving it idle
+    // list, which the parse below would raise as an error. Leaving it idle
     // hands the page to its own rules engine, whose empty state says the
     // useful thing: there is not enough history yet.
     if (fingerprint.startsWith('0|0|0|0')) {

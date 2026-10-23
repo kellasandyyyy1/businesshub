@@ -25,7 +25,7 @@ export function AiLoading({ label = 'Thinking' }) {
 }
 
 /**
- * Every AI failure surfaces here — inline, dashed, never a crash. A missing
+ * Every AI failure surfaces here, inline, dashed, never a crash. A missing
  * key is a setup prompt rather than an error, since nothing has gone wrong.
  */
 export function AiError({ error, onRetry }) {

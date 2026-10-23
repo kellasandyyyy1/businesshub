@@ -12,6 +12,8 @@ import {
 import { useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 
+import { navAnchor } from '../lib/appMap'
+
 import { useProfile } from '../context/ProfileContext'
 import useFocusTrap from '../hooks/useFocusTrap'
 
@@ -65,7 +67,7 @@ export default function MoreDrawer({ onClose }) {
             const Icon = item.icon
             return (
               <li key={item.to}>
-                <NavLink to={item.to} className="bfh-moredrawer__item" onClick={onClose}>
+                <NavLink to={item.to} className="bfh-moredrawer__item" onClick={onClose} data-help-id={navAnchor(item.to)}>
                   <Icon size={18} stroke={1.5} aria-hidden="true" />
                   <span>{item.label}</span>
                 </NavLink>

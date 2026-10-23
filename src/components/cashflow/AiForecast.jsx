@@ -17,7 +17,7 @@ import { formatCurrency } from '../../lib/format'
 const SCENARIOS = ['conservative', 'expected', 'optimistic']
 const SCENARIO_WORDS = { conservative: 'Worst case', expected: 'Most likely', optimistic: 'Best case' }
 
-const SYSTEM = `You are a financial forecaster. Based on the business data provided, return ONLY valid JSON — no markdown, no backticks:
+const SYSTEM = `You are a financial forecaster. Based on the business data provided, return ONLY valid JSON, no markdown, no backticks:
 {
   "scenarios": {
     "conservative": { "monthlyRevenue": number, "monthlyExpenses": number, "monthlyProfit": number, "endingCash": number, "runwayMonths": number, "recommendation": string },
@@ -31,7 +31,7 @@ const SYSTEM = `You are a financial forecaster. Based on the business data provi
 conservative = pessimistic case (revenue -20%, expenses +10% vs expected).
 expected = most likely based on trend.
 optimistic = upside case (revenue +30%, expenses flat vs expected).
-recommendation = one plain-language sentence about what the business should do.
+recommendation = one plain-language sentence about what the business should do, with no em dashes.
 basedOn = array of data points you used.`
 
 const DAY_MS = 24 * 60 * 60 * 1000

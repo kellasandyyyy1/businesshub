@@ -9,6 +9,8 @@ import {
 } from '@tabler/icons-react'
 import { NavLink, useLocation } from 'react-router-dom'
 
+import { navAnchor } from '../lib/appMap'
+
 import { useDevice } from '../context/BreakpointContext'
 import { useProfile } from '../context/ProfileContext'
 
@@ -49,7 +51,7 @@ export default function BottomNav({ onOpenMore, moreOpen }) {
       {ITEMS.map((item) => {
         const Icon = item.icon
         return (
-          <NavLink key={item.to} to={item.to} end={item.end} className="bfh-bottomnav__item">
+          <NavLink key={item.to} to={item.to} end={item.end} className="bfh-bottomnav__item" data-help-id={navAnchor(item.to)}>
             <Icon size={20} stroke={1.5} aria-hidden="true" />
             <span className="bfh-bottomnav__label">{item.label}</span>
           </NavLink>
@@ -62,6 +64,7 @@ export default function BottomNav({ onOpenMore, moreOpen }) {
         aria-current={moreActive ? 'true' : undefined}
         aria-expanded={moreOpen}
         onClick={onOpenMore}
+        data-help-id="nav-more"
       >
         <IconDots size={20} stroke={1.5} aria-hidden="true" />
         <span className="bfh-bottomnav__label">More</span>

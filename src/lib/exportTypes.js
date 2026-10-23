@@ -2,7 +2,7 @@
  * The nine export shapes. Each builder takes the raw Dexie tables plus the
  * resolved period and returns `{ columns, rows }`.
  *
- * Amounts are plain numbers throughout — the preview adds a currency symbol,
+ * Amounts are plain numbers throughout, the preview adds a currency symbol,
  * the file never does, so a spreadsheet can sum the column.
  */
 
@@ -297,7 +297,7 @@ function clientRevenue({ transactions, invoices, clients, clientsById, from, to,
 function budgetVsActual({ transactions, budgets, today }) {
   const rows = budgets.map((budget) => {
     // A budget is always judged over its own calendar window, not the export
-    // period — otherwise "80% used" would mean nothing.
+    // period, otherwise "80% used" would mean nothing.
     const [windowFrom, windowTo] = budgetWindow(budget.period, today)
     const spend = inRange(transactions, windowFrom, windowTo)
       .filter((t) => t.type === 'expense' && t.category === budget.category)

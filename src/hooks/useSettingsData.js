@@ -28,7 +28,7 @@ export function useSettingsData() {
     const categoryUse = new Map()
     for (const t of transactions.filter(inProfile)) categoryUse.set(t.category, (categoryUse.get(t.category) ?? 0) + 1)
 
-    // The list exactly as stored — the one the transaction form picks from.
+    // The list exactly as stored, the one the transaction form picks from.
     const paymentMethods = methodsFromSetting(map.paymentMethods)
 
     // Uses per method, by id; an older row with only a name counts toward the

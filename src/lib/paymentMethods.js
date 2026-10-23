@@ -29,13 +29,13 @@ const IMAGE_LOGOS = {
   grabpay: { src: '/svg-icon/grabpay.jpg', fit: 'cover', zoom: 1.18 },
   gotyme: { src: '/svg-icon/gotyme.png', fit: 'cover', zoom: 1.2 },
   shopeepay: { src: '/svg-icon/shopeepay.webp', fit: 'cover', zoom: 1.12 },
-  // The everyday kinds have pictures too; any card — debit or credit — shares one.
+  // The everyday kinds have pictures too; any card, debit or credit, shares one.
   cash: { src: '/svg-icon/cash.png', fit: 'contain', pad: true },
   bank: { src: '/svg-icon/banktransfer.png', fit: 'contain', pad: true },
   card: { src: '/svg-icon/debitcard.png', fit: 'contain', pad: true },
 }
 
-// Vector marks in src/assets/brands — any SVG dropped there is picked up by
+// Vector marks in src/assets/brands, any SVG dropped there is picked up by
 // file name, and wins over an image logo of the same slug.
 const SVG_LOGOS = Object.fromEntries(
   Object.entries(import.meta.glob('../assets/brands/*.svg', { eager: true, query: '?url', import: 'default' })).map(
@@ -64,17 +64,17 @@ const KINDS = [
 
 const OTHER = { slug: 'other', label: 'Other', Icon: IconWallet }
 
-/** { slug, label, Icon, logo } — logo is { src, fit, … } only when the brand has one. */
+/** { slug, label, Icon, logo }, logo is { src, fit, … } only when the brand has one. */
 export function paymentKind(name = '') {
   const kind = KINDS.find((k) => k.pattern.test(name)) ?? OTHER
   return { ...kind, logo: LOGOS[kind.slug] ?? null }
 }
 
 /** Common Philippine methods, offered as one-tap adds when they are missing. */
-export const SUGGESTED_METHODS = ['GCash', 'Maya', 'GoTyme', 'GrabPay', 'ShopeePay', 'Debit Card', 'Check', 'PayPal']
+export const SUGGESTED_METHODS = ['GCash', 'Maya', 'GoTyme', 'GrabPay', 'ShopeePay', 'Visa', 'Mastercard', 'PayPal', 'Debit Card', 'Check']
 
 /* -------------------------------------------------------------------------
-   The saved list — Settings → Payment methods
+   The saved list, Settings → Payment methods
 
    Stored as one setting, `paymentMethods`: [{ id, name, active }]. Each
    transaction keeps the method's `paymentMethodId` and a `paymentMethod` name
@@ -82,8 +82,11 @@ export const SUGGESTED_METHODS = ['GCash', 'Maya', 'GoTyme', 'GrabPay', 'ShopeeP
    a delete (through the snapshot).
    ------------------------------------------------------------------------- */
 
+/** The card and online brands that have their own mark, added to every list once. */
+export const CARD_BRANDS = ['Visa', 'Mastercard', 'PayPal']
+
 /** What a household or business starts with before editing the list. */
-export const DEFAULT_PAYMENT_METHODS = ['Cash', 'Bank Transfer', 'GCash', 'PayMaya', 'GoTyme', 'Credit Card']
+export const DEFAULT_PAYMENT_METHODS = ['Cash', 'Bank Transfer', 'GCash', 'PayMaya', 'GoTyme', ...CARD_BRANDS, 'Credit Card']
 
 /** Names compare without case or stray spaces: "gcash " is GCash. */
 export const methodKey = (name) => String(name ?? '').trim().toLowerCase()
@@ -104,7 +107,7 @@ export function methodId(name, taken = []) {
   return `${base}-${n}`
 }
 
-/** The stored list with every entry carrying an id — older lists had none. */
+/** The stored list with every entry carrying an id, older lists had none. */
 export function withIds(list = []) {
   const ids = []
   return list
@@ -150,7 +153,7 @@ export function methodLabel(tx, methods = []) {
 
 /**
  * The picker's order: most recently used in this profile first, then the rest
- * A–Z. There is no "default" method to put ahead of them — the most recent one
+ * A–Z. There is no "default" method to put ahead of them, the most recent one
  * is what a new entry starts on.
  */
 export function sortMethods(methods = [], lastUsed = {}) {

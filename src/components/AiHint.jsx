@@ -42,7 +42,7 @@ export default function AiHint() {
       <span className="bfh-aihint__body">
         <IconSparkles size={14} stroke={1.5} aria-hidden="true" />
         <span className="bfh-aihint__text">
-          Ask Dual anything — finances, expenses, invoices.
+          Ask Dual anything: finances, expenses, invoices.
         </span>
         <button type="button" className="bfh-aihint__try" onClick={openAssistant}>
           Try it →

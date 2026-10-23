@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Sheets — the add/edit transaction dialog, the detail panel, and the buttons
+   Sheets, the add/edit transaction dialog, the detail panel, and the buttons
    they share. Loaded after responsive.css so the phone rules here win.
    ========================================================================== */
 
@@ -289,7 +289,7 @@
   padding: 12px 20px 20px;
 }
 /* A scrolling column would otherwise squeeze its children to fit rather than
-   scroll — the type switch was the first to be crushed. */
+   scroll, the type switch was the first to be crushed. */
 .bfh-sheet__body > * {
   flex-shrink: 0;
 }
@@ -604,7 +604,7 @@
 }
 
 /* The field styling above is for text boxes. Checkboxes and radios inside a
-   form field keep their own size — without this they grew into a 42px grey
+   form field keep their own size, without this they grew into a 42px grey
    square with their label squeezed beside it. */
 .bfh-formfield input[type='checkbox'],
 .bfh-formfield input[type='radio'] {
@@ -648,7 +648,7 @@
 }
 
 /* The plan the form has worked out so far, in the same quiet panel the goal
-   card uses for it — so it reads as the same promise on both. */
+   card uses for it, so it reads as the same promise on both. */
 .bfh-goalform__plan {
   margin: 0;
   padding: 12px 14px;
@@ -672,7 +672,7 @@
 }
 
 /* ==========================================================================
-   Invoice editor — four numbered steps, read top to bottom
+   Invoice editor, four numbered steps, read top to bottom
    ========================================================================== */
 
 .bfh-invform__titles {
@@ -686,7 +686,7 @@
   color: var(--ink3);
 }
 
-/* The body scrolls as one column. Each step keeps its height — the old form
+/* The body scrolls as one column. Each step keeps its height, the old form
    grid could shrink inside it and grew a scroll box of its own, which hid
    the dates behind a second scrollbar. */
 .bfh-invform__body {
@@ -952,7 +952,7 @@
    Invoices list and detail
    ========================================================================== */
 
-/* Status pills read as words, not codes — "Overdue", not "OVERDUE". */
+/* Status pills read as words, not codes, "Overdue", not "OVERDUE". */
 .bfh-status-pill {
   padding: 2px 10px;
   font-family: var(--font-sans);
@@ -1665,7 +1665,7 @@
 }
 
 /* ==========================================================================
-   Display type — Geist for headings and the figures a page leads with.
+   Display type, Geist for headings and the figures a page leads with.
    Body copy is Geist Regular (--font-sans); these are the exceptions
    that should read as titles and numbers rather than prose.
    ========================================================================== */

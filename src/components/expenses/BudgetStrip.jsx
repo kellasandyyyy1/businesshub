@@ -39,7 +39,7 @@ export default function BudgetStrip({ usage, symbol }) {
               </span>
 
               {/* Past 80% the figure picks up a dashed underline. No colour,
-                  no fill — just enough to make the eye stop on it. */}
+                  no fill, just enough to make the eye stop on it. */}
               <span className="bfh-budgetcard__pct" data-caution={item.ratio >= CAUTION_AT}>
                 {pct}%
               </span>

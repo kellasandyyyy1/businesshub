@@ -10,7 +10,7 @@ const SpeechRecognition =
 /**
  * Philippine English first, because it is the model trained on Taglish; the
  * engine may not carry it, so US English follows. The browser's own language
- * is not used — a phone set to plain English would lose the Filipino words.
+ * is not used, a phone set to plain English would lose the Filipino words.
  */
 const PRIMARY_LANG = 'en-PH'
 const FALLBACK_LANG = 'en-US'

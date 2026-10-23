@@ -23,7 +23,7 @@ function readSeen() {
  *
  *   count   notices showing in the list
  *   fresh   how many of them have not been looked at yet
- *   tone    the most serious tone among the fresh ones — neg, warn or pos
+ *   tone    the most serious tone among the fresh ones, neg, warn or pos
  *   ring    true for a moment when something new arrives, to wiggle the bell
  *   markSeen()  call when the list is opened
  *
@@ -48,7 +48,7 @@ export default function useBellState() {
     return best
   }, [fresh])
 
-  // A new arrival rings the bell once — on load too, if something is waiting.
+  // A new arrival rings the bell once, on load too, if something is waiting.
   useEffect(() => {
     const previous = lastFresh.current
     lastFresh.current = fresh.length

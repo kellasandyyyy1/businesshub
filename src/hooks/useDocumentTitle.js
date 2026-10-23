@@ -37,10 +37,10 @@ const TITLES = [
 
 export function titleFor(pathname) {
   const match = TITLES.find(([path]) => (path === '/' ? pathname === '/' : pathname.startsWith(path)))
-  return match ? `${match[1]} — ${BRAND}` : BRAND
+  return match ? `${match[1]} · ${BRAND}` : BRAND
 }
 
-/* Fresh notifications lead the tab title — "(3) Dashboard — Dual" — so they
+/* Fresh notifications lead the tab title, "(3) Dashboard, Dual", so they
    are seen from another tab. Kept here, beside the page title, so a route
    change and a new notice can never overwrite each other. */
 let badge = 0

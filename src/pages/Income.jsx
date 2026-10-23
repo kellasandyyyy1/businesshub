@@ -40,7 +40,7 @@ export default function Income() {
   const [params, setParams] = useSearchParams()
 
   // The + button lands here with ?new=1 and opens this page's own form, already
-  // set to income — rather than leaving for Transactions with a blank one.
+  // set to income, rather than leaving for Transactions with a blank one.
   useEffect(() => {
     if (params.get('new') === null) return
     setEditing({ type: 'income' })
@@ -142,7 +142,7 @@ export default function Income() {
             key: 'client',
             header: 'Client',
             className: 'bfh-cell-client',
-            render: (tx) => clientOf(tx) || '—',
+            render: (tx) => clientOf(tx) || '',
           },
         ]),
     {

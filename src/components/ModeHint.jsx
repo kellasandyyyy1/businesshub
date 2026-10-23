@@ -29,7 +29,7 @@ const read = () => {
  * A note that the other half of the app exists.
  *
  * Someone who picked one side during setup has no way of knowing the other is
- * a setting away — nothing in the interface mentions it, because the whole
+ * a setting away, nothing in the interface mentions it, because the whole
  * point of the choice was to remove it. The dashed border marks this as a
  * prompt rather than a part of the navigation, and dismissing it is permanent:
  * a hint that keeps coming back is an advert.

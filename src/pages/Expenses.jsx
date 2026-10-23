@@ -46,7 +46,7 @@ export default function Expenses() {
   const [params, setParams] = useSearchParams()
 
   // The + button lands here with ?new=1 and opens this page's own form, already
-  // set to expense — rather than leaving for Transactions with a blank one.
+  // set to expense, rather than leaving for Transactions with a blank one.
   useEffect(() => {
     if (params.get('new') === null) return
     setEditing({ type: 'expense' })

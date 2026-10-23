@@ -5,7 +5,7 @@ import { db } from '../db/db'
  *
  * `remove` moves the row into the trash table in one transaction, so it is
  * gone from every list and total at once but still held on the device.
- * `restore` moves it back with the same id — links from other rows (a client,
+ * `restore` moves it back with the same id, links from other rows (a client,
  * the other half of a transfer) still point at it. `commit` lets it go for good.
  */
 export async function remove(table, id) {

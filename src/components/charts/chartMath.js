@@ -15,7 +15,7 @@ export function niceMax(value) {
   return STEPS.find((s) => value / magnitude <= s) * magnitude
 }
 
-/** A rect with only its top corners rounded — the data end, not the baseline. */
+/** A rect with only its top corners rounded, the data end, not the baseline. */
 export function topRounded(x, y, w, h, r) {
   if (h <= 0) return ''
   const radius = Math.min(r, w / 2, h)
@@ -38,7 +38,7 @@ export function formatAxis(value, symbol = '₱') {
   const abs = Math.abs(value)
   const sign = value < 0 ? '-' : ''
   // Two decimals where a step needs them (₱1.45M), none where it does not
-  // (₱1.5M) — one decimal turned a 50K step into two ticks both reading 1.4M.
+  // (₱1.5M), one decimal turned a 50K step into two ticks both reading 1.4M.
   const trim = (n) => String(Number(n.toFixed(2)))
   if (abs >= 1_000_000) return `${sign}${symbol}${trim(abs / 1_000_000)}M`
   if (abs >= 1000) return `${sign}${symbol}${trim(abs / 1000)}K`

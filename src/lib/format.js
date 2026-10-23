@@ -19,7 +19,7 @@ export function formatCurrency(amount, symbol = '₱') {
  *   ₱120.5K   100,000 – 999,999
  *   ₱1.2M     1,000,000 and up
  *
- * Documents that a client will read — the invoice PDF, the report tables —
+ * Documents that a client will read, the invoice PDF, the report tables,
  * use formatCurrency instead, where an abbreviated total would be wrong.
  */
 export function formatAmount(amount, symbol = '₱') {
@@ -47,7 +47,7 @@ const SHORT_MONTHS = [
  * "Aug 21" within the current year and "Aug 21, 2025" beyond it.
  */
 export function formatDate(isoDate, today = new Date().toISOString().slice(0, 10)) {
-  if (!isoDate) return '—'
+  if (!isoDate) return 'No date'
   const date = String(isoDate).slice(0, 10)
   if (date === today) return 'Today'
   if (date === shiftDays(today, -1)) return 'Yesterday'
@@ -63,21 +63,21 @@ export function percentChange(current, previous) {
   return ((current - previous) / Math.abs(previous)) * 100
 }
 
-/** "12%" — the arrow and the border style carry the direction. */
+/** "12%", the arrow and the border style carry the direction. */
 export function formatPercent(value) {
-  if (value === null || !Number.isFinite(value)) return '—'
+  if (value === null || !Number.isFinite(value)) return 'N/A'
   return `${Math.abs(value).toFixed(0)}%`
 }
 
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
 
-/** "19 AUG" — mono micro-label register. */
+/** "19 AUG", mono micro-label register. */
 export function formatDayMonth(isoDate) {
   const [, m, d] = isoDate.split('-')
   return `${Number(d)} ${MONTHS[Number(m) - 1]}`
 }
 
-/** "19 AUG 2026" — for table cells, where the year has to be unambiguous. */
+/** "19 AUG 2026", for table cells, where the year has to be unambiguous. */
 export function formatFullDate(isoDate) {
   const [y, m, d] = isoDate.split('-')
   return `${Number(d)} ${MONTHS[Number(m) - 1]} ${y}`
@@ -100,7 +100,7 @@ export function daysBetween(a, b) {
   return Math.round((new Date(`${b}T00:00:00Z`) - new Date(`${a}T00:00:00Z`)) / 86_400_000)
 }
 
-/** "4 minutes ago" — the freshness line under a cached result. */
+/** "4 minutes ago", the freshness line under a cached result. */
 export function timeAgo(iso) {
   if (!iso) return 'never'
   const minutes = Math.round((Date.now() - new Date(iso).getTime()) / 60_000)

@@ -145,7 +145,7 @@ export default function Reports() {
           <header className="bfh-report__head">
             <h2 className="bfh-report__title">{report.title}</h2>
             <div className="bfh-report__range">
-              {formatFullDate(from)} — {formatFullDate(to)}
+              {formatFullDate(from)} to {formatFullDate(to)}
             </div>
           </header>
 

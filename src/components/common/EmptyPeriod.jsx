@@ -4,8 +4,8 @@ import { PERIODS, usePeriod } from '../../context/PeriodContext'
 
 /**
  * What a page shows when the selected window holds nothing: one card that says
- * so in words and offers the two ways forward — record something, or look
- * further back — in place of a row of zero cards and an empty chart.
+ * so in words and offers the two ways forward, record something, or look
+ * further back, in place of a row of zero cards and an empty chart.
  *
  * `hasHistory` decides the wording: an account with older records is told the
  * window is empty, a new one is told how to begin. Pass `addTo` for a link or

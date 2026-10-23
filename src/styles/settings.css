@@ -236,7 +236,7 @@
     background-color var(--duration-micro) var(--ease-out-soft),
     color var(--duration-micro) var(--ease-out-soft);
 }
-/* Hover and selection both invert — the picker is the one place where a
+/* Hover and selection both invert, the picker is the one place where a
    repeated inversion reads as a grid rather than as emphasis. */
 .bfh-iconpicker__option:hover,
 .bfh-iconpicker__option[aria-checked='true'] {
@@ -436,7 +436,7 @@
   color: var(--ink3);
 }
 
-/* Sentence case, not the uppercase micro register — this is a message, not a
+/* Sentence case, not the uppercase micro register, this is a message, not a
    label, and it should not read like a shipped debug string. */
 .bfh-push__failure {
   margin: 8px 0 0;
@@ -490,7 +490,7 @@
 }
 
 /* ==========================================================================
-   Business — identity row and settings grid
+   Business, identity row and settings grid
    ========================================================================== */
 
 .bfh-identity {
@@ -935,7 +935,7 @@
 }
 
 /* ==========================================================================
-   Data — export by side, restore with the file in view first
+   Data, export by side, restore with the file in view first
    ========================================================================== */
 
 .bfh-datastats {
@@ -1257,7 +1257,7 @@
 }
 
 
-/* Offset, so a focused pill cannot be mistaken for the chosen one — the
+/* Offset, so a focused pill cannot be mistaken for the chosen one, the
    default ring lands exactly where the selected fill does. */
 .bfh-restore__choice:focus-visible,
 .bfh-exportrow:focus-visible,
@@ -1272,7 +1272,7 @@
 }
 
 /* ==========================================================================
-   Danger zone — the one place red is used for an action, because erasing
+   Danger zone, the one place red is used for an action, because erasing
    everything is the one action that cannot be taken back. Always beside a
    warning icon and plain words, so it reads the same without colour.
    ========================================================================== */
@@ -1439,7 +1439,7 @@
   font-size: var(--fs-body-sm);
   font-weight: var(--weight-semibold);
   /* White on the light theme's deep red, near-black on the dark theme's
-     lighter one — readable either way. */
+     lighter one, readable either way. */
   color: var(--invert-fg);
   cursor: pointer;
   transition:

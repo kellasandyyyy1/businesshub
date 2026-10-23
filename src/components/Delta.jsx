@@ -13,10 +13,10 @@ const TONE_CLASS = { pos: 'sig-pos', neg: 'sig-neg', neutral: undefined }
  * income ▲ 18% is green. A change too small to matter reads as flat and grey.
  * With nothing to compare against there is no arrow at all, only the words.
  *
- *   goodWhen   'up' | 'down' — which way is good for this figure
+ *   goodWhen   'up' | 'down', which way is good for this figure
  *   format     'percent' (a % change) | 'points' (a change in a rate, in
  *              percentage points) | 'currency' (an amount)
- *   quiet      keep the arrow but drop the colour — for a figure that only
+ *   quiet      keep the arrow but drop the colour, for a figure that only
  *              repeats a signal shown beside it, so a row never holds more
  *              than about three coloured marks
  */

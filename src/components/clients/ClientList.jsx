@@ -76,7 +76,7 @@ export default function ClientList({
                 {client.company && client.company !== client.name ? client.company : client.email || 'Individual'}
               </span>
             </span>
-            {/* What they have paid, and — when it matters — what they owe. */}
+            {/* What they have paid, and, when it matters, what they owe. */}
             <span className="bfh-clientrow__money">
               <span className="bfh-clientrow__revenue">{formatAmount(client.revenue, symbol)}</span>
               <span className="bfh-clientrow__owed" data-owing={client.outstanding > 0 || undefined}>

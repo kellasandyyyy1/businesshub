@@ -23,7 +23,7 @@ function niceStep(size) {
 /**
  * Where the axis runs. From zero when the balance comes anywhere near it, so
  * a dip toward empty looks like one. When cash stays comfortably high, the
- * axis closes in on the band the balance moves in — otherwise ₱1.5M drifting
+ * axis closes in on the band the balance moves in, otherwise ₱1.5M drifting
  * to ₱1.55M is drawn as a flat line and the chart says nothing.
  */
 function axisRange(balances) {
@@ -80,7 +80,7 @@ export default function CashChart({ series, symbol }) {
   const marks = []
   for (let i = 0; i < series.length; i += every) marks.push(i)
   if (marks[marks.length - 1] !== last) {
-    // The end of the projection is worth naming — but not on top of its neighbour.
+    // The end of the projection is worth naming, but not on top of its neighbour.
     if (x(last) - x(marks[marks.length - 1]) < dateW + GAP) marks.pop()
     marks.push(last)
   }

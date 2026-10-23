@@ -20,7 +20,7 @@ const MONTHS_IN = { monthly: 1, quarterly: 3, yearly: 12 }
 
 /** A suggestion people would actually type: to the nearest 100, 500 or 1,000. */
 function roundTo(value, up = false) {
-  // Finer for small amounts — a ₱149 subscription is not "about ₱100".
+  // Finer for small amounts. A ₱149 subscription is not "about ₱100".
   const step = value >= 20000 ? 1000 : value >= 5000 ? 500 : value >= 1000 ? 100 : 10
   return (up ? Math.ceil(value / step) : Math.round(value / step)) * step
 }
@@ -67,7 +67,7 @@ export default function BudgetModal({ budget, categories, categoryIcons = {}, bu
   // Only expenses have budgets; income categories would never be spent against,
   // and an owner draw is pay, not spending to keep in check.
   const options = categories.filter((c) => c.type === 'expense' && c.name !== OWNER_DRAW_CATEGORY)
-  // The other budgets, by exactly what they watch — two may share a category
+  // The other budgets, by exactly what they watch. Two may share a category
   // as long as they watch different payments in it.
   const others = budgets.filter((b) => b.id !== budget?.id)
   const takenKeys = new Set(others.map(budgetKey))
@@ -101,7 +101,7 @@ export default function BudgetModal({ budget, categories, categoryIcons = {}, bu
     const span = [threeBack.toISOString().slice(0, 10), shiftDays(monthStart, -1)]
     const lastThree = spendForBudget(expenses, draft, span)
     // A whole category averages over all three months, quiet ones included. One
-    // payee — a subscription — averages over the months it was actually
+    // payee. A subscription. Averages over the months it was actually
     // charged, so a plan started last month is not read as half its price.
     const charged = new Set(
       expenses
@@ -142,7 +142,7 @@ export default function BudgetModal({ budget, categories, categoryIcons = {}, bu
     else if (narrow && !form.match.trim()) next.match = 'Type the word to look for, e.g. Claude'
     else if (takenKeys.has(budgetKey(draft))) {
       if (narrow) next.match = `There is already a budget for “${form.match.trim()}” in ${form.category}`
-      else next.category = `${form.category} already has a whole-category budget — pick “Only some payments” to add another`
+      else next.category = `${form.category} already has a whole-category budget. Pick “Only some payments” to add another`
     }
     if (!hasAmount) next.amount = 'Enter how much you can spend'
     setErrors(next)
@@ -168,7 +168,7 @@ export default function BudgetModal({ budget, categories, categoryIcons = {}, bu
     dismiss()
   }
 
-  // Straight away, no second tap — the toast that follows carries Undo.
+  // Straight away, no second tap. The toast that follows carries Undo.
   const remove = async () => {
     dismiss()
     await removeWithUndo(toast, 'budgets', budget.id, `${labelFor(budget.name)} removed`, 'Budget restored')
@@ -393,13 +393,13 @@ export default function BudgetModal({ budget, categories, categoryIcons = {}, bu
             )}
             {use !== null && history.soFar > 0 && (
               <p className="bfh-budgetform__sofar" data-over={use >= 1 || undefined}>
-                {money(history.soFar)} already spent {PERIOD_WORD[form.period]} —{' '}
+                {money(history.soFar)} already spent {PERIOD_WORD[form.period]},{' '}
                 {use >= 1 ? 'over this limit already' : `${Math.round(use * 100)}% of it`}.
               </p>
             )}
           </div>
 
-          {/* 3. Its name — optional, the category is a fine one */}
+          {/* 3. Its name. Optional, the category is a fine one */}
           <label className="bfh-formfield">
             <span className="bfh-fieldlabel">
               Name <span className="bfh-fieldlabel__optional">optional</span>

@@ -8,7 +8,7 @@ import { methodsFromSetting, sortMethods } from '../lib/paymentMethods'
  * The saved payment methods, live, as the transaction form and the filters
  * need them:
  *
- *   all       every method in Settings, active or not — for reading history
+ *   all       every method in Settings, active or not, for reading history
  *   active    the ones offered on new entries, most recently used first
  *   lastUsed  the id this profile picked most recently, or null
  *
@@ -42,7 +42,7 @@ export default function usePaymentMethods(profile) {
 }
 
 /**
- * Just the saved list, live — for showing a transaction's method by its current
+ * Just the saved list, live, for showing a transaction's method by its current
  * name. Lighter than the hook above: no transactions read.
  */
 export function useMethodList() {

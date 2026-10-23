@@ -19,7 +19,7 @@ export default function ReportTable({ report, symbol }) {
       </thead>
       <tbody>
         {report.lines.map((line, index) => (
-          // Report lines are generated, not stored — position is their identity.
+          // Report lines are generated, not stored, position is their identity.
           // eslint-disable-next-line react/no-array-index-key
           <tr key={`${line.kind}-${line.label}-${index}`} data-kind={line.kind}>
             <td className="bfh-report__label">{line.label}</td>

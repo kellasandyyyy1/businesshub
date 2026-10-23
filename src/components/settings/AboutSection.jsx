@@ -29,7 +29,7 @@ export default function AboutSection({ version }) {
 
       <p className="bfh-settings__note">
         Financial management for small businesses, freelancers, and agencies. Everything runs in
-        this browser — no server, no account, and no data leaves the device.
+        this browser. No server, no account, and no data leaves the device.
       </p>
 
       <section className="bfh-shortcuts">
@@ -47,7 +47,7 @@ export default function AboutSection({ version }) {
       </section>
 
       {/* Only one of these can be true, and on a browser that cannot install
-          at all none of them are — so nothing is shown rather than a button
+          at all none of them are. So nothing is shown rather than a button
           that would do nothing. */}
       {(isInstalled || canInstall || isIOS) && (
         <div className="bfh-installrow">

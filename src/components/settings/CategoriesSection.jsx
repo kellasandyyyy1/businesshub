@@ -66,7 +66,7 @@ export default function CategoriesSection({ categoryUse }) {
 
   return (
     <div className="bfh-settings__body">
-      <header className="bfh-cathead">
+      <header className="bfh-cathead" data-help-id="categories-list">
         <h2 className="bfh-panel__title">Categories</h2>
         <button
           type="button"

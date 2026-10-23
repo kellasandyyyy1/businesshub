@@ -9,8 +9,8 @@ import { useDevice } from '../../context/BreakpointContext'
  * The contextual export shortcut used across pages.
  *
  * On a phone it opens the bottom sheet. On larger screens it either hands the
- * Export Center a pre-filled configuration, or — when the caller needs a
- * filter the Export Center cannot express, like a single client — exports
+ * Export Center a pre-filled configuration, or, when the caller needs a
+ * filter the Export Center cannot express, like a single client, exports
  * straight away via `onDirect`.
  */
 export default function ExportButton({

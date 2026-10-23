@@ -13,7 +13,7 @@ import { deadlineLabel, monthlySaveNeeded } from '../../lib/goals'
 
 const TODAY = () => new Date().toISOString().slice(0, 10)
 
-/** What people most often save for — one tap fills the name. */
+/** What people most often save for. One tap fills the name. */
 const IDEAS = ['Emergency fund', 'Travel', 'New phone', 'Education', 'House down payment', 'Wedding']
 
 function monthsFromToday(months) {
@@ -44,7 +44,7 @@ const toForm = (goal) => ({
  * Creating or editing a savings goal.
  *
  * The form works out the plan while it is being filled in: as soon as there
- * is a target and a date, it says what has to go in each month — the number
+ * is a target and a date, it says what has to go in each month. The number
  * that tells someone whether the goal is realistic before they commit to it.
  */
 export default function GoalModal({ goal, symbol, onClose }) {
@@ -57,7 +57,7 @@ export default function GoalModal({ goal, symbol, onClose }) {
   const isEdit = Boolean(goal?.id)
   const money = (v) => formatCurrency(v, symbol)
 
-  // Focus once the sheet has settled, and only where there is a keyboard —
+  // Focus once the sheet has settled, and only where there is a keyboard,
   // on a phone it would raise the keyboard mid-animation.
   useEffect(() => {
     if (!window.matchMedia?.('(pointer: fine)').matches) return undefined
@@ -84,7 +84,7 @@ export default function GoalModal({ goal, symbol, onClose }) {
 
   // One sentence on what this goal asks for, updated as the fields change.
   let plan = null
-  if (target > 0 && current >= target) plan = 'You have already saved enough for this — it will show as reached.'
+  if (target > 0 && current >= target) plan = 'You have already saved enough for this. It will show as reached.'
   else if (target > 0 && deadline && perMonth)
     plan = `Save about ${money(Math.ceil(perMonth))} a month to reach ${money(target)} by ${by}.`
   else if (target > 0 && !deadline) plan = 'No deadline means no monthly plan. You can add a date any time.'
@@ -122,7 +122,7 @@ export default function GoalModal({ goal, symbol, onClose }) {
     dismiss()
   }
 
-  // Straight away, no second tap — the toast that follows carries Undo.
+  // Straight away, no second tap. The toast that follows carries Undo.
   const remove = async () => {
     dismiss()
     await removeWithUndo(toast, 'goals', goal.id, `${short(goal.name)} goal deleted`, 'Goal restored')

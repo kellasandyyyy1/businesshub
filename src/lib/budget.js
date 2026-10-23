@@ -41,7 +41,7 @@ export const CAUTION_AT = 0.8
 /* ---- Narrower budgets -----------------------------------------------------
 
    A budget can cover a whole category, or only the payments in it that
-   mention a word — "Claude" and "Figma" can each have their own limit inside
+   mention a word, "Claude" and "Figma" can each have their own limit inside
    Software & Subscriptions. The word is matched in the description and the
    notes, ignoring case. */
 
@@ -55,7 +55,7 @@ export function inBudget(tx, budget) {
   return norm(tx.description).includes(word) || norm(tx.notes).includes(word)
 }
 
-/** Spend against a budget over a window — the budget-aware spendFor. */
+/** Spend against a budget over a window, the budget-aware spendFor. */
 export function spendForBudget(transactions, budget, [from, to]) {
   return transactions
     .filter((t) => t.date >= from && t.date <= to && inBudget(t, budget))

@@ -36,7 +36,7 @@ const ExportCenter = lazy(() => import('./pages/Export'))
 
 /**
  * A page belongs to one profile or the other, and reaching it from the wrong
- * one — by typing the path, or following an old bookmark — would show the other
+ * one, by typing the path, or following an old bookmark, would show the other
  * profile's data under the wrong heading. These guard whole route subtrees, so
  * the pages themselves stay unaware there are two.
  */
@@ -83,7 +83,7 @@ export default function App() {
   const [showOnboarding, setShowOnboarding] = useState(null)
 
   // Latched on first read. The underlying query is live, so without this the
-  // overlay would dismiss itself the moment step 1 writes the business name —
+  // overlay would dismiss itself the moment step 1 writes the business name,
   // taking steps 2 and 3 with it.
   useEffect(() => {
     if (initiallyNeedsOnboarding !== undefined && showOnboarding === null) {
@@ -153,8 +153,8 @@ export default function App() {
           <Route path="/overview" element={<Overview />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/settings" element={<Settings />} />
-          {/* An unknown path would otherwise render nothing at all — not even
-              the shell — so send it home. */}
+          {/* An unknown path would otherwise render nothing at all, not even
+              the shell, so send it home. */}
           <Route path="*" element={<ProfileHome />} />
         </Route>
       </Routes>

@@ -56,7 +56,7 @@ export default function Dashboard() {
       headline: money(netProfit),
       headlineLabel: 'profit',
       delta: { value: percentChange(netProfit, metrics.prevNetProfit), goodWhen: 'up' },
-      sentence: `Revenue of ${money(revenue)} against ${money(expenses)} in expenses — you kept ${Math.round((netProfit / revenue) * 100)}% of every sale.`,
+      sentence: `Revenue of ${money(revenue)} against ${money(expenses)} in expenses. You kept ${Math.round((netProfit / revenue) * 100)}% of every sale.`,
     }
   }
 

@@ -1,13 +1,13 @@
 /**
- * Report builders. Each returns a plain shape — `{ title, columns, lines }` —
+ * Report builders. Each returns a plain shape, `{ title, columns, lines }`,
  * so the table renderer and the CSV export read from exactly the same numbers.
  *
  * Line kinds:
- *   section  — a heading with no figures
- *   row      — an indented detail line
- *   subtotal — the sum of the rows above it
- *   total    — a single-hairline result (gross profit)
- *   grand    — the double-hairline bottom line (net profit)
+ *   section , a heading with no figures
+ *   row     , an indented detail line
+ *   subtotal, the sum of the rows above it
+ *   total   , a single-hairline result (gross profit)
+ *   grand   , the double-hairline bottom line (net profit)
  */
 
 import { budgetWindow } from './budget'

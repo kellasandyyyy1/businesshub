@@ -25,7 +25,7 @@ const AVATAR_PX = 256
 /** "Broadheader" → "BR", "Reyes Creative" → "RC". */
 function initials(name) {
   const words = name.trim().split(/\s+/).filter(Boolean)
-  if (words.length === 0) return '—'
+  if (words.length === 0) return '?'
   if (words.length === 1) return words[0].slice(0, 2).toUpperCase()
   return (words[0][0] + words[1][0]).toUpperCase()
 }
@@ -79,7 +79,7 @@ export default function BusinessSection({ settings }) {
     setStatus(null)
   }
 
-  // The symbol is derived, never typed — which is what stops it drifting away
+  // The symbol is derived, never typed, which is what stops it drifting away
   // from the currency it belongs to.
   const active = CURRENCIES.find((c) => c.code === form.currency) ?? CURRENCIES[0]
 
@@ -144,7 +144,7 @@ export default function BusinessSection({ settings }) {
 
       {/* ---- Identity ---- */}
       <div className="bfh-identity">
-        <div className="bfh-identity__avatar">
+        <div className="bfh-identity__avatar" data-help-id="profile-picture">
           <span className="bfh-avatarcircle">
             {form.avatar ? (
               <img src={form.avatar} alt="" />
@@ -181,7 +181,7 @@ export default function BusinessSection({ settings }) {
         </div>
 
         <div className="bfh-identity__name">
-          {/* Who you are, as distinct from what the business is called — the
+          {/* Who you are, as distinct from what the business is called, the
               personal side is greeted by this one. */}
           <label className="bfh-formfield">
             <span className="bfh-micro">Your name</span>
@@ -189,7 +189,7 @@ export default function BusinessSection({ settings }) {
             <span className="bfh-fieldhint">Used in personal mode greetings.</span>
           </label>
 
-          <label className="bfh-formfield">
+          <label className="bfh-formfield" data-help-id="business-name-field">
             <span className="bfh-micro">Business name</span>
             <input value={form.businessName} onChange={set('businessName')} />
             <span className="bfh-fieldhint">Shown in invoices, reports, and the dashboard.</span>
@@ -199,7 +199,7 @@ export default function BusinessSection({ settings }) {
 
       {/* ---- The rest ---- */}
       <div className="bfh-settingsgrid">
-        <label className="bfh-formfield">
+        <label className="bfh-formfield" data-help-id="currency-field">
           <span className="bfh-micro">Currency</span>
           <select value={form.currency} onChange={set('currency')}>
             {CURRENCIES.map((c) => (
@@ -218,7 +218,7 @@ export default function BusinessSection({ settings }) {
           </span>
         </label>
 
-        <label className="bfh-formfield">
+        <label className="bfh-formfield" data-help-id="opening-balance-field">
           <span className="bfh-micro">Opening cash balance</span>
           <span className="bfh-prefixfield">
             {/* The prefix follows the chosen currency rather than assuming pesos. */}
@@ -235,7 +235,7 @@ export default function BusinessSection({ settings }) {
           </span>
         </label>
 
-        <label className="bfh-formfield">
+        <label className="bfh-formfield" data-help-id="fiscal-year-field">
           <span className="bfh-micro">Financial year starts</span>
           <select value={form.fiscalMonth} onChange={set('fiscalMonth')}>
             {MONTHS.map((month, i) => (

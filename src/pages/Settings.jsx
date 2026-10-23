@@ -44,7 +44,7 @@ export default function Settings() {
   const current = SECTIONS.find((s) => s.id === section)
 
   const body = (
-    <section className="bfh-card bfh-settings">
+    <section className="bfh-card bfh-settings" data-help-id={section ? `settings-${section}` : undefined}>
       {section === 'business' && (
         // Keyed so the form re-reads stored values after an import.
         <BusinessSection key={JSON.stringify(data.settings.businessName)} settings={data.settings} />
@@ -76,6 +76,7 @@ export default function Settings() {
                   <button
                     type="button"
                     className="bfh-settingslist__item"
+                    data-help-id={`settings-${item.id}`}
                     onClick={() => open(item.id)}
                   >
                     <span>{item.label}</span>
@@ -112,6 +113,7 @@ export default function Settings() {
                 key={item.id}
                 type="button"
                 className="bfh-reportnav__item"
+                data-help-id={`settings-${item.id}`}
                 aria-current={section === item.id ? 'true' : undefined}
                 onClick={() => open(item.id)}
               >

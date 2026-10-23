@@ -2,7 +2,7 @@
    Dashboard
    ========================================================================== */
 
-/* ---- Section 1 — key metrics --------------------------------------------- */
+/* ---- Section 1, key metrics --------------------------------------------- */
 
 .bfh-metrics {
   display: grid;
@@ -84,7 +84,7 @@
   border-style: dashed;
 }
 
-/* ---- Section 2 — chart + right stack -------------------------------------- */
+/* ---- Section 2, chart + right stack -------------------------------------- */
 
 .bfh-split {
   display: grid;
@@ -225,7 +225,7 @@
   background: var(--bg);
 }
 
-/* Icon box — hairline square over the page ground, per the component recipe. */
+/* Icon box, hairline square over the page ground, per the component recipe. */
 .bfh-iconbox {
   display: grid;
   place-items: center;
@@ -268,7 +268,7 @@
   color: var(--ink3);
 }
 
-/* ---- Section 3 — recent transactions -------------------------------------- */
+/* ---- Section 3, recent transactions -------------------------------------- */
 
 .bfh-recent__head {
   display: flex;
@@ -415,7 +415,7 @@
   font-weight: var(--weight-medium);
 }
 
-/* ---- Period summary — the answer the page leads with ------------------------ */
+/* ---- Period summary, the answer the page leads with ------------------------ */
 
 .bfh-summarycard {
   display: flex;

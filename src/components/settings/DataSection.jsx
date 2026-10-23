@@ -327,7 +327,7 @@ export default function DataSection({ settings }) {
   const toast = useToast()
   const [clearing, setClearing] = useState(false)
 
-  // Live, so the strip and the button lines answer for what is there now —
+  // Live, so the strip and the button lines answer for what is there now,
   // including straight after a restore.
   const counts = useLiveQuery(() => exportCounts(db), [], null)
   const stats = useLiveQuery(async () => {
@@ -422,19 +422,19 @@ export default function DataSection({ settings }) {
       <div className="bfh-datastats">
         <div>
           <span className="bfh-micro">Transactions</span>
-          <span className="bfh-datastats__value">{stats?.transactions ?? '—'}</span>
+          <span className="bfh-datastats__value">{stats?.transactions ?? '…'}</span>
         </div>
         <div>
           <span className="bfh-micro">Clients</span>
-          <span className="bfh-datastats__value">{stats?.clients ?? '—'}</span>
+          <span className="bfh-datastats__value">{stats?.clients ?? '…'}</span>
         </div>
         <div>
           <span className="bfh-micro">Goals</span>
-          <span className="bfh-datastats__value">{stats?.goals ?? '—'}</span>
+          <span className="bfh-datastats__value">{stats?.goals ?? '…'}</span>
         </div>
       </div>
 
-      <section className="bfh-dataexport">
+      <section className="bfh-dataexport" data-help-id="data-backup">
         <h3 className="bfh-datablock__title">Export your data</h3>
         <p className="bfh-settings__note">
           Download a backup of your financial data.
@@ -462,7 +462,7 @@ export default function DataSection({ settings }) {
 
       <hr className="bfh-datarule" />
 
-      <section className="bfh-dataexport">
+      <section className="bfh-dataexport" data-help-id="data-restore">
         <h3 className="bfh-datablock__title">Restore from backup</h3>
         <p className="bfh-settings__note">Import a previously exported Dual backup file.</p>
 
@@ -512,7 +512,7 @@ export default function DataSection({ settings }) {
 
       <hr className="bfh-datarule" />
 
-      <section className="bfh-datablock bfh-datablock--danger">
+      <section className="bfh-datablock bfh-datablock--danger" data-help-id="erase-data">
         <div>
           <h3 className="bfh-datablock__title bfh-dangertitle">
             <IconAlertTriangle size={15} stroke={1.75} aria-hidden="true" />

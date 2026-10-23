@@ -10,7 +10,7 @@ import { SUGGESTED_METHODS, matchMethod, methodId, paymentKind } from '../../lib
 const SAVE_FAIL = "Couldn't save. Try again."
 
 /**
- * How money moves in and out — the one list the transaction form picks from.
+ * How money moves in and out. The one list the transaction form picks from.
  * Each method shows its mark and how often it has been used; the switch decides
  * whether new entries can pick it. Renaming carries through to every entry that
  * used it. Deleting keeps those entries' name, shown as "Name · removed".
@@ -84,7 +84,7 @@ export default function PaymentMethodsSection({ paymentMethods, methodUse }) {
     return undefined
   }
 
-  // A brand already on the list under another name — PayMaya for Maya — is not
+  // A brand already on the list under another name, PayMaya for Maya. Is not
   // offered again; generic kinds (Debit beside Credit Card) still are.
   const brandsHeld = new Set(paymentMethods.map((m) => paymentKind(m.name)).filter((k) => k.brand).map((k) => k.slug))
   const suggestions = SUGGESTED_METHODS.filter((s) => !exists(s) && !brandsHeld.has(paymentKind(s).slug))
@@ -95,7 +95,7 @@ export default function PaymentMethodsSection({ paymentMethods, methodUse }) {
       <header className="bfh-pmsection__head">
         <h2 className="bfh-panel__title">Payment methods</h2>
         <p className="bfh-settings__note">
-          The ways money moves in and out. Switch one off to hide it from new entries — past
+          The ways money moves in and out. Switch one off to hide it from new entries. Past
           transactions keep it.
         </p>
       </header>
@@ -189,13 +189,13 @@ export default function PaymentMethodsSection({ paymentMethods, methodUse }) {
         </ul>
       )}
 
-      <form className="bfh-pmadd" onSubmit={add}>
+      <form className="bfh-pmadd" data-help-id="payment-method-add" onSubmit={add}>
         <label className="bfh-fieldlabel" htmlFor="bfh-pmadd-name">
           Add a method
         </label>
         <div className="bfh-pmadd__row">
           <span className="bfh-pmadd__field" data-error={error ? 'true' : undefined}>
-            {/* The mark it will get, as you type — "gcash" turns into GCash's. */}
+            {/* The mark it will get, as you type, "gcash" turns into GCash's. */}
             <PaymentMethodIcon name={name} size={28} />
             <input
               id="bfh-pmadd-name"

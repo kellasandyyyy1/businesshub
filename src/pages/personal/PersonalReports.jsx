@@ -34,7 +34,7 @@ import {
 
 /**
  * Each report says in one line what question it answers. `period` marks the
- * ones the period chips apply to — the rest pick a month, or describe today,
+ * ones the period chips apply to, the rest pick a month, or describe today,
  * and showing chips that change nothing would be a control that lies.
  */
 const REPORTS = [
@@ -185,7 +185,7 @@ export default function PersonalReports() {
           </header>
 
           {/* The period belongs to the report it changes, so it sits inside
-              it — and only on the reports it actually changes. */}
+              it, and only on the reports it actually changes. */}
           {current.period && (
             <div className="bfh-preport__period">
               <div className="bfh-chiprow" role="radiogroup" aria-label="Period" ref={presetRow}>

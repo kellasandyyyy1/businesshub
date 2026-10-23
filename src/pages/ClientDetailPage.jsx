@@ -9,7 +9,7 @@ import { useState } from 'react'
 
 /**
  * The mobile route for one client. Reuses the same detail component the
- * two-column layout renders — only the framing differs.
+ * two-column layout renders, only the framing differs.
  */
 export default function ClientDetailPage() {
   const { id } = useParams()

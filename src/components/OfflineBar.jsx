@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 /**
  * Says the quiet part out loud when the network drops.
  *
- * Nothing actually stops working — the ledger lives in IndexedDB — so the
+ * Nothing actually stops working, the ledger lives in IndexedDB, so the
  * message reassures rather than warns. Only the assistant and push delivery
  * need the network, and both fail politely on their own.
  */

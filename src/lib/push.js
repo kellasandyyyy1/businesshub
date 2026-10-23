@@ -41,7 +41,7 @@ export function isPushEnabled() {
 
 /**
  * A stable id for this browser profile. It is the only thing the backend knows
- * about the user — a random UUID tied to no account and no name.
+ * about the user, a random UUID tied to no account and no name.
  */
 function getDeviceId() {
   let id = localStorage.getItem(DEVICE_KEY)
@@ -81,7 +81,7 @@ export async function subscribeToPush() {
   if (permission !== 'granted') return { ok: false, reason: 'denied' }
 
   try {
-    // Whichever worker is already registered handles push — in production
+    // Whichever worker is already registered handles push, in production
     // that is the generated /sw.js, which imports the push handlers; in dev the
     // plugin serves its own worker under a different name. Registering a fixed
     // path would miss the dev one and fail.
@@ -133,7 +133,7 @@ export async function unsubscribeFromPush() {
       body: JSON.stringify({ deviceId: getDeviceId() }),
     })
   } catch {
-    // The local flag still clears — the backend drops the row on the next 410.
+    // The local flag still clears, the backend drops the row on the next 410.
   }
   localStorage.removeItem(ENABLED_KEY)
 }

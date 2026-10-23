@@ -4,7 +4,7 @@ import { monthlyCaption } from '../../lib/ledger'
 
 /**
  * The four cards at the top of the Income page. More coming in is better.
- * A business earns revenue; a household earns income — the words follow the
+ * A business earns revenue; a household earns income, the words follow the
  * profile, the figures do not change.
  */
 export default function IncomeMetrics({ metrics, symbol, period, isPersonal }) {
@@ -26,7 +26,7 @@ export default function IncomeMetrics({ metrics, symbol, period, isPersonal }) {
       />
       <MetricCard
         label={isPersonal ? 'Main source' : 'Top source'}
-        value={metrics.topSource ?? '—'}
+        value={metrics.topSource ?? 'None yet'}
         badge={metrics.topSource ? share(metrics.topSourceShare) : null}
         context={metrics.topSource ? `of your ${noun}` : `no ${noun} yet`}
       />

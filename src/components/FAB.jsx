@@ -11,7 +11,7 @@ export default function FAB({ onClick }) {
   if (!isMobile) return null
 
   return (
-    <button type="button" className="bfh-fab" onClick={onClick} aria-label="Add transaction">
+    <button type="button" className="bfh-fab" data-help-id="add-transaction" onClick={onClick} aria-label="Add transaction">
       <IconPlus size={22} stroke={2} aria-hidden="true" />
     </button>
   )

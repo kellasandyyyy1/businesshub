@@ -3,11 +3,11 @@ import { createContext, useContext, useMemo, useState } from 'react'
 /**
  * The window every dashboard widget reads from. It lives here rather than in
  * the topbar so a widget anywhere in the tree can subscribe without prop
- * drilling — switching a tab re-renders all of them at once.
+ * drilling, switching a tab re-renders all of them at once.
  */
 
 /* `label` is the compact pill text; `name` is the same window said in words,
-   for headings and sentences — "Last 30 days", not "Last 30d". */
+   for headings and sentences, "Last 30 days", not "Last 30d". */
 export const PERIODS = [
   { id: '7d', label: '7d', name: '7 days', days: 7 },
   { id: '30d', label: '30d', name: '30 days', days: 30 },

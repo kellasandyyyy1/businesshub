@@ -4,7 +4,7 @@
  * One place for both the first-run seed and the migration that reshapes an
  * existing database, so the two can never describe different sets.
  *
- * Icon names are bare Tabler names resolved by `config/categoryIcons.js` — no
+ * Icon names are bare Tabler names resolved by `config/categoryIcons.js`, no
  * `ti-` prefix, which is a webfont this app does not load.
  */
 

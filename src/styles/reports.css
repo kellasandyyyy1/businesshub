@@ -313,7 +313,7 @@
 }
 
 /* ==========================================================================
-   Reports — layout for phones and tablets, choices, headline, downloads.
+   Reports, layout for phones and tablets, choices, headline, downloads.
    Scoped under the page class so it outranks the older rail rules in
    responsive.css, which load later.
    ========================================================================== */
@@ -453,7 +453,7 @@
 }
 
 /* Below a desktop the list of reports becomes one row of chips above the
-   report — on a tablet as well as a phone, where a seven-row list pushed
+   report, on a tablet as well as a phone, where a seven-row list pushed
    the report itself below the fold. */
 @media (max-width: 1023px) {
   .bfh-reports .bfh-reports__grid {

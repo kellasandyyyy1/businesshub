@@ -1,5 +1,5 @@
 /* ==========================================================================
-   bryl-minimal — design tokens
+   bryl-minimal, design tokens
    Monochrome, typography-first. No accent color: emphasis comes from
    inversion, font role, and halftone texture.
 
@@ -29,7 +29,7 @@
   --gray-900: 23 23 23; /* #171717 */
   --gray-950: 15 15 15; /* #0f0f0f */
 
-  /* Text roles — never lighter than gray-400 for anything readable. */
+  /* Text roles, never lighter than gray-400 for anything readable. */
   --text-primary: rgb(var(--ink-c));
   --text-secondary: rgb(var(--gray-500));
   --text-tertiary: rgb(var(--gray-400));
@@ -41,7 +41,7 @@
   --border-hairline: rgb(var(--gray-200));
   --border-strong: rgb(var(--gray-300));
 
-  /* Inversion — the single "loud" element allowed per view */
+  /* Inversion, the single "loud" element allowed per view */
   --invert-bg: rgb(var(--ink-c));
   --invert-fg: rgb(var(--background));
 
@@ -56,7 +56,7 @@
   --ink3: rgb(var(--gray-400)); /* tertiary text, micro-labels */
 
   /* ---- Signal: meaning only ------------------------------------------
-     Colour says good / warning / problem and nothing else — never an
+     Colour says good / warning / problem and nothing else, never an
      outflow, never decoration, never brand. Only small things carry it
      (a delta, a dot, a badge, an icon), always beside an arrow, icon or
      word, so it reads the same in greyscale. Text values clear 4.5:1 on
@@ -72,12 +72,12 @@
   --warn-b: #f0ddbd;
 
   /* ---- Typography ------------------------------------------------------ */
-  /* Body: Geist Regular — everything that is read rather than glanced
+  /* Body: Geist Regular, everything that is read rather than glanced
      at: paragraphs, fields, buttons, list rows. Display (headings and the big
      money figures) use Geist too, at heavier weights. */
   --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
   /* The label register: every micro-label, tag, timestamp, pill and chart axis
-     in the app reaches for it by this token. The name is historical — it has
+     in the app reaches for it by this token. The name is historical, it has
      not been a monospaced face since Geist Mono left.
 
      Geist Pixel is not loaded yet: it is not on Google Fonts and the `geist`
@@ -88,7 +88,7 @@
   --font-display: 'Geist', system-ui, -apple-system, sans-serif;
   --font-serif: 'Source Serif 4', Georgia, serif;
 
-  /* Compact scale — base UI text is 15px, not 16px */
+  /* Compact scale, base UI text is 15px, not 16px */
   --text-page-title: 3rem; /* pixel font, lowercase, line-height 1 */
   --text-h1: 1.6rem;
   --text-h2: 1.3rem;
@@ -145,7 +145,7 @@
   --radius-xs: 6px; /* inputs, minimal controls */
   --radius-pill: 9999px;
 
-  /* ---- Shadows — soft ground contact, never material elevation --------- */
+  /* ---- Shadows, soft ground contact, never material elevation --------- */
   --shadow-card: 0 8px 22px -14px rgb(0 0 0 / 0.25);
   --shadow-card-hover: 0 18px 36px -20px rgb(0 0 0 / 0.4);
   --shadow-modal: 0 40px 90px -20px rgb(0 0 0 / 0.35);
@@ -161,7 +161,7 @@
   --entrance-offset: 12px;
   --pulse-duration: 1.8s;
   /* Sheets and dialogs: a fast start that settles slowly, the curve iOS uses
-     for its own sheets. Exits are quicker than entrances — leaving should
+     for its own sheets. Exits are quicker than entrances, leaving should
      never make anyone wait. */
   --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-exit: cubic-bezier(0.4, 0, 1, 1);
@@ -184,7 +184,7 @@
   --scrollbar-size: 6px;
   --scrollbar-thumb: rgb(var(--gray-300));
 
-  /* ---- Breakpoints — reference values; media queries need literals ------- */
+  /* ---- Breakpoints, reference values; media queries need literals ------- */
   --bp-md: 768px;
   --bp-lg: 1024px;
   --bp-xl: 1280px;
@@ -213,7 +213,7 @@
 }
 
 /* ==========================================================================
-   Dark theme — a re-mapping of the same semantic roles, not a redesign.
+   Dark theme, a re-mapping of the same semantic roles, not a redesign.
    Applied by OS preference, or manually via `.dark` on <html>.
    `.light` on <html> forces light even when the OS prefers dark.
    ========================================================================== */
@@ -237,7 +237,7 @@
     --gray-900: 232 232 234; /* #e8e8ea */
     --gray-950: 240 240 242; /* #f0f0f2 */
 
-    /* In dark mode shadows nearly disappear — borders carry the structure. */
+    /* In dark mode shadows nearly disappear, borders carry the structure. */
     --shadow-card: 0 8px 22px -14px rgb(0 0 0 / 0.6);
     --shadow-card-hover: 0 18px 36px -20px rgb(0 0 0 / 0.75);
     --shadow-modal: 0 40px 90px -20px rgb(0 0 0 / 0.7);

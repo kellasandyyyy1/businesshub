@@ -3,7 +3,7 @@
  *
  * In development the browser calls Groq directly with the key from .env. A
  * deployed build has no key to call with and goes through /api/groq instead,
- * which supplies it server-side — the key is never part of what ships to the
+ * which supplies it server-side, the key is never part of what ships to the
  * browser. Every caller handles a thrown error; nothing here takes the UI down.
  *
  * Financial data still never leaves the device except as the context string the
@@ -16,13 +16,14 @@ import { balanceOf, effectiveStatus } from './invoice'
 import { budgetWindow, spendForBudget } from './budget'
 import { detectRecurring } from './cashflow'
 import { shiftDays } from './format'
+import noDashes from './noDashes'
 
 /** Built before the profile split, so it reads the business side. */
 const inProfile = ofProfile(BUSINESS_PROFILE)
 
 export const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions'
 
-/* Groq retired the Llama chat models this app was built against — a request for
+/* Groq retired the Llama chat models this app was built against, a request for
    one now comes back 404 `model_not_found`, which reads like a bad URL but is
    not. These are the current general-purpose models on the account. */
 export const MODEL_FAST = 'openai/gpt-oss-20b' // auto-categorize
@@ -51,7 +52,7 @@ export function getApiKey() {
 
 /**
  * Whether the assistant is usable at all. In a hosted build the answer is
- * always yes from here — whether the proxy has a key is something only the
+ * always yes from here, whether the proxy has a key is something only the
  * server knows, and it says so with a 503 the caller turns into a message.
  */
 export function hasApiKey() {
@@ -95,7 +96,7 @@ export async function callGroq({
         temperature,
         /* These models think before they answer, and that thinking is billed
            against max_tokens. Left on the default effort the reasoning alone
-           can exhaust a caller's budget and return an empty answer — which
+           can exhaust a caller's budget and return an empty answer, which
            surfaces as `json_validate_failed` on the JSON calls. Low effort
            keeps the budget for the reply the caller actually asked for. */
         ...(model.startsWith('openai/gpt-oss') && { reasoning_effort: 'low' }),
@@ -146,7 +147,7 @@ export function aiErrorMessage(error) {
  * the parser looks for the outermost object or array before giving up.
  */
 export function parseJsonLoose(text) {
-  const cleaned = String(text)
+  const cleaned = noDashes(text)
     .replace(/```json/gi, '')
     .replace(/```/g, '')
     .trim()
@@ -186,7 +187,7 @@ export function splitAnswerAndMeta(text) {
 
   // Walking back from the final brace and balancing depth finds the block's
   // real opening brace. Taking the *last* `{` instead would land inside a
-  // nested object — `{"stats":[{…}]}` ends with two closers, not one.
+  // nested object, `{"stats":[{…}]}` ends with two closers, not one.
   let depth = 0
   for (let i = end; i >= 0; i -= 1) {
     if (source[i] === '}') depth += 1
@@ -239,7 +240,7 @@ function capContext(header, rows) {
 /**
  * A compact, structured text digest of one profile's books.
  *
- * Amounts are plain numbers — currency symbols only confuse the arithmetic the
+ * Amounts are plain numbers, currency symbols only confuse the arithmetic the
  * model has to do. The two profiles get different digests because they are
  * different questions: a business is asked about clients, invoices and runway,
  * a household about savings rate, goals and net worth. Nothing from the other
@@ -334,7 +335,7 @@ async function personalContext(months) {
   }
   lines.push('')
 
-  lines.push('NET WORTH:')
+  lines.push('NET WORTH (entries as #id, type, name, category, amount):')
   if (netWorth.length === 0) {
     lines.push('none recorded')
   } else {
@@ -342,12 +343,12 @@ async function personalContext(months) {
     lines.push(`liabilities, ${money(liabilities)}`)
     lines.push(`net worth, ${money(assets - liabilities)}`)
     for (const item of netWorth) {
-      lines.push(`${item.type}, ${item.name}, ${item.category ?? 'Other'}, ${money(item.amount)}`)
+      lines.push(`#${item.id}, ${item.type}, ${item.name}, ${item.category ?? 'Other'}, ${money(item.amount)}`)
     }
   }
   lines.push('')
 
-  lines.push('GOALS (name, saved, target, percent, deadline):')
+  lines.push('GOALS (#id, name, saved, target, percent, deadline):')
   if (goals.length === 0) {
     lines.push('none set')
   } else {
@@ -355,7 +356,7 @@ async function personalContext(months) {
       const target = Number(goal.target) || 0
       const current = Number(goal.current) || 0
       const pct = target > 0 ? Math.round((current / target) * 100) : 0
-      lines.push(`${goal.name}, ${money(current)}, ${money(target)}, ${pct}%, ${goal.deadline ?? 'no deadline'}`)
+      lines.push(`#${goal.id}, ${goal.name}, ${money(current)}, ${money(target)}, ${pct}%, ${goal.deadline ?? 'no deadline'}`)
     }
   }
   lines.push('')
@@ -375,11 +376,11 @@ async function personalContext(months) {
   lines.push('AVAILABLE CATEGORIES: ' + categories.map((c) => c.name).join('; '))
   lines.push('')
 
-  lines.push('TRANSACTIONS (date, description, amount, category, type) — newest first:')
+  lines.push('TRANSACTIONS (#id, date, description, amount, category, type), newest first:')
   const sorted = [...transactions].sort((a, b) => b.date.localeCompare(a.date))
   const header = lines.join('\n')
   const rows = sorted.map(
-    (t) => `${t.date}, ${t.description}, ${money(t.amount)}, ${t.category}, ${t.type}`,
+    (t) => `#${t.id}, ${t.date}, ${t.description || '(no description)'}, ${money(t.amount)}, ${t.category}, ${t.type}`,
   )
   return capContext(header, rows)
 }
@@ -461,21 +462,21 @@ async function businessContext(months) {
   lines.push('')
 
   // ---- Invoices
-  lines.push('INVOICES (number, client, status, total, dueDate):')
+  lines.push('INVOICES (#id, number, client, status, total, dueDate):')
   for (const invoice of invoices) {
     lines.push(
-      `${invoice.invoiceNumber}, ${clientNames[invoice.clientId] ?? 'unassigned'}, ${effectiveStatus(invoice, today)}, ${money(invoice.total)}, ${invoice.dueDate}`,
+      `#${invoice.id}, ${invoice.invoiceNumber}, ${clientNames[invoice.clientId] ?? 'unassigned'}, ${effectiveStatus(invoice, today)}, ${money(invoice.total)}, ${invoice.dueDate}`,
     )
   }
   lines.push('')
 
   // ---- Budgets
   const allTransactions = await db.transactions.filter(inProfile).toArray()
-  lines.push('BUDGETS (name, category, period, budgeted, spent this period):')
+  lines.push('BUDGETS (#id, name, category, period, budgeted, spent this period):')
   for (const budget of budgets) {
     const spent = spendForBudget(allTransactions, budget, budgetWindow(budget.period, today))
     lines.push(
-      `${budget.name}, ${budget.category}${budget.match ? ` (payments mentioning "${budget.match}")` : ''}, ${budget.period}, ${money(budget.amount)}, ${money(spent)}`,
+      `#${budget.id}, ${budget.name}, ${budget.category}${budget.match ? ` (payments mentioning "${budget.match}")` : ''}, ${budget.period}, ${money(budget.amount)}, ${money(spent)}`,
     )
   }
   lines.push('')
@@ -494,11 +495,11 @@ async function businessContext(months) {
   lines.push('')
 
   // ---- Individual transactions last, so truncation drops detail, not shape.
-  lines.push('TRANSACTIONS (date, description, amount, category, type) — newest first:')
+  lines.push('TRANSACTIONS (#id, date, description, amount, category, type), newest first:')
   const sorted = [...transactions].sort((a, b) => b.date.localeCompare(a.date))
   return capContext(
     lines.join('\n'),
-    sorted.map((t) => `${t.date}, ${t.description}, ${money(t.amount)}, ${t.category}, ${t.type}`),
+    sorted.map((t) => `#${t.id}, ${t.date}, ${t.description || '(no description)'}, ${money(t.amount)}, ${t.category}, ${t.type}`),
   )
 }
 

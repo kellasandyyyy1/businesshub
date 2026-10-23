@@ -2,7 +2,7 @@ import { sum } from './ledger'
 import { netWorthSummary } from './netWorth'
 import { personalMetrics } from './personal'
 
-/** A transfer moves money between our own accounts — never revenue or spend. */
+/** A transfer moves money between our own accounts, never revenue or spend. */
 const isOperating = (r) => r.type === 'income' || r.type === 'expense'
 
 /** The first of the month `today` falls in, and today itself. */
@@ -16,7 +16,7 @@ const inMonth = (rows, { from, to }) => rows.filter((r) => r.date >= from && r.d
  * Cash the business is holding.
  *
  * The same rule the business dashboard uses: everything that has actually
- * cleared, transfers excluded, with no cut-off — cash on hand is a running
+ * cleared, transfers excluded, with no cut-off, cash on hand is a running
  * position rather than something a reporting period slices.
  */
 export function businessCash(transactions = []) {
@@ -38,7 +38,7 @@ export function businessMonth(transactions = [], bounds) {
 /**
  * What the owner has paid themselves this month.
  *
- * Counted from the business side, which is the half that carries the link —
+ * Counted from the business side, which is the half that carries the link,
  * counting both would double it.
  */
 export function transfersThisMonth(businessTransactions = [], bounds) {

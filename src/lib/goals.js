@@ -20,7 +20,7 @@ export function daysUntil(deadline, today) {
  *   completed  the target is met, whatever the date
  *   overdue    the deadline has passed and it is not
  *   behind     less has been put aside than the time elapsed would suggest
- *   not-started nothing put aside yet, and not yet late — "on track" would
+ *   not-started nothing put aside yet, and not yet late, "on track" would
  *              be a strange thing to tell someone who has not begun
  *   on-track   everything else
  *

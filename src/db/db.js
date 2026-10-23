@@ -1,19 +1,19 @@
 import Dexie from 'dexie'
 import { ALL_CATEGORIES, RENAMED_CATEGORIES } from './categoryData'
 import { OWNER_DRAW_CATEGORY, PERSONAL_CATEGORIES, seedDefaults } from './defaults'
-import { methodKey, methodsFromSetting, withIds } from '../lib/paymentMethods'
+import { CARD_BRANDS, methodId, methodKey, methodsFromSetting, paymentKind, withIds } from '../lib/paymentMethods'
 
 /**
- * Dual Finance — local-only database.
+ * Dual Finance, local-only database.
  *
  * Everything lives in IndexedDB via Dexie; there is no backend. Only the
- * fields listed in each store string are indexed — every record still carries
+ * fields listed in each store string are indexed, every record still carries
  * the full shape documented alongside it.
  */
 /**
  * The database the app was called before the rebrand. Kept as a constant
  * because the one-time migration below is the only thing that still needs it,
- * and it has to be exactly right — a typo here silently abandons real data.
+ * and it has to be exactly right, a typo here silently abandons real data.
  */
 const LEGACY_DB_NAME = 'business-finance-hub'
 
@@ -66,14 +66,14 @@ db.version(3)
 /**
  * v4 removes the sample business the app used to seed on first run.
  *
- * Early builds populated a fictional company — transactions, clients,
- * invoices and budgets — so the interface never looked empty. That space
+ * Early builds populated a fictional company, transactions, clients,
+ * invoices and budgets, so the interface never looked empty. That space
  * belongs to the user's own ledger, so the sample is cleared out here and
  * nothing takes its place.
  *
  * WARNING: this clears the four data tables outright. It cannot tell a seeded
  * row from one the user typed, so any real data on the device goes with it.
- * The AI tables go too — both hold output derived from the sample figures.
+ * The AI tables go too, both hold output derived from the sample figures.
  *
  * Categories and settings survive; they are configuration, not data. The one
  * exception is a device that was seeded but never onboarded: its business name
@@ -95,7 +95,7 @@ db.version(4)
     await settings.where('key').equals('seededAt').delete()
 
     // A device that was seeded but never onboarded carries the sample
-    // business's identity — its name and its invoice numbering. Both go, so
+    // business's identity, its name and its invoice numbering. Both go, so
     // onboarding opens on the next load and invoice numbers restart at the
     // default prefix. A device the user really onboarded keeps what they typed.
     const onboarded = await settings.where('key').equals('onboarded').first()
@@ -113,7 +113,7 @@ db.version(4)
  *
  * Each store string below repeats the indexes the table already had. Dexie
  * replaces a table's schema wholesale when a version re-declares it, so an
- * index left out here would be dropped — including invoices' unique
+ * index left out here would be dropped, including invoices' unique
  * `&invoiceNumber`, which InvoiceEditor both queries and relies on to catch
  * duplicate numbers.
  *
@@ -156,7 +156,7 @@ db.version(5)
  * v6 adds the category an owner draw is booked under.
  *
  * Paying yourself is not the same as paying a contractor, and it is the one
- * business expense that is also personal income — the transfer flow keys off
+ * business expense that is also personal income, the transfer flow keys off
  * this category to offer recording both sides at once. A database created
  * after this version gets it from seedDefaults instead.
  */
@@ -198,7 +198,7 @@ db.version(6)
  *
  * It does NOT clear the table. Two reasons: a category the user created
  * themselves is their data, and a transaction stores its category as a name
- * rather than a reference — so wiping the list would strand every row whose
+ * rather than a reference, so wiping the list would strand every row whose
  * name went with it. Renames are applied to the category and to the rows that
  * use it in the same pass, retired defaults are only removed when nothing
  * refers to them, and anything custom is left alone.
@@ -276,7 +276,7 @@ db.version(7)
   })
 
 /**
- * v8 — a holding table for the few seconds a delete can still be undone.
+ * v8, a holding table for the few seconds a delete can still be undone.
  *
  * A removed row moves here whole, in the same transaction that takes it out of
  * its own table, and moves back with the same id if the user taps Undo. While
@@ -291,7 +291,7 @@ db.version(8).stores({
 })
 
 /**
- * v9 — GoTyme joins the payment methods. A list the user has never edited
+ * v9, GoTyme joins the payment methods. A list the user has never edited
  * comes from the defaults and picks it up there; one they have edited is
  * stored, so it gets GoTyme appended here, once. Removing it afterwards sticks.
  */
@@ -304,14 +304,14 @@ db.version(9).stores({}).upgrade(async (tx) => {
 })
 
 /**
- * v10 — transactions point at a saved payment method by id.
+ * v10, transactions point at a saved payment method by id.
  *
  * The method list gains ids and is written down for good (a never-edited list
  * was only ever the defaults in code). Names the ledger already used that the
  * list lacked are kept as methods: Settings has always listed them, so they
  * are methods as far as the user can tell, and dropping them would make
  * their history look orphaned. Every transaction whose free text matches a
- * method by name — ignoring case and stray spaces — then gets that method's
+ * method by name, ignoring case and stray spaces, then gets that method's
  * id; its text stays as the snapshot.
  */
 db.version(10)
@@ -347,6 +347,28 @@ db.version(10)
     })
   })
 
+/**
+ * v11, Visa, Mastercard and PayPal join the payment methods, each with its
+ * own mark. Matched by brand rather than exact name, so a list that already
+ * has "VISA Debit" or "Paypal" is left alone. Removing one afterwards sticks.
+ */
+db.version(11).stores({}).upgrade(async (tx) => {
+  const settings = tx.table('settings')
+  const row = await settings.where('key').equals('paymentMethods').first()
+  if (!row || !Array.isArray(row.value)) return
+  const list = withIds(row.value)
+  const held = new Set(list.map((m) => paymentKind(m.name).slug))
+  const missing = CARD_BRANDS.filter((name) => !held.has(paymentKind(name).slug))
+  if (!missing.length) return
+  const ids = list.map((m) => m.id)
+  const added = missing.map((name) => {
+    const id = methodId(name, ids)
+    ids.push(id)
+    return { id, name, active: true }
+  })
+  await settings.update(row.id, { value: [...list, ...added] })
+})
+
 /** Enum-ish constants so pages and forms never hand-write these strings. */
 export const TRANSACTION_TYPES = ['income', 'expense', 'transfer']
 export const TRANSACTION_STATUSES = ['cleared', 'pending']
@@ -356,7 +378,7 @@ export const BUDGET_PERIODS = ['monthly', 'quarterly', 'yearly']
 /**
  * Upserts a setting by key. `key` is a unique index, so a plain add or put
  * without the row's id would raise a ConstraintError the second time a value
- * is written — which aborts the transaction and surfaces through the live
+ * is written, which aborts the transaction and surfaces through the live
  * query as a render-time throw.
  */
 export async function putSetting(key, value) {
@@ -367,7 +389,7 @@ export async function putSetting(key, value) {
 
 /**
  * Opens the database, writing the default categories and settings the first
- * time it is created. No sample data is written — a new device starts with an
+ * time it is created. No sample data is written, a new device starts with an
  * empty ledger and onboarding collects the rest.
  *
  * Safe to call more than once, and skipped after Settings → Data → clear all,
@@ -375,7 +397,7 @@ export async function putSetting(key, value) {
  */
 /** Storage keys that carried the old prefix, and what they are called now. */
 const LEGACY_STORAGE_KEYS = {
-  // Left side is the old name and must stay that way — it is the only record
+  // Left side is the old name and must stay that way, it is the only record
   // of what these were called before the rename.
   'bfh-active-profile': 'dual-active-profile',
   'bfh-push-enabled': 'dual-push-enabled',
@@ -405,7 +427,7 @@ function migrateStorageKeys() {
 /**
  * Reads everything out of the pre-rebrand database, once.
  *
- * Renaming a Dexie database does not move the data — it opens a different,
+ * Renaming a Dexie database does not move the data, it opens a different,
  * empty one and leaves the original sitting there. So the rows are lifted out
  * before the new database is opened, and written in after, which also means
  * the first-run defaults never fire on top of a migrated set.
@@ -439,7 +461,7 @@ async function readLegacyDatabase() {
   } catch (err) {
     // A database that cannot be read is not worth blocking startup over, but
     // the flag is left unset so a later load can try again.
-    console.warn('Dual: could not read the previous database —', err?.message)
+    console.warn('Dual: could not read the previous database:', err?.message)
     return null
   }
 }
@@ -454,11 +476,11 @@ export async function initDb() {
 
   await db.open()
 
-  // An undo window that never closed — the tab went first — commits now.
+  // An undo window that never closed, the tab went first, commits now.
   try {
     await db.trash.clear()
   } catch (err) {
-    console.warn('Dual: could not clear pending deletes —', err?.message)
+    console.warn('Dual: could not clear pending deletes:', err?.message)
   }
 
   if (legacy) {
@@ -473,7 +495,7 @@ export async function initDb() {
       localStorage.setItem(MIGRATED_FLAG, 'true')
       console.info('Dual: carried your data over from the previous version.')
     } catch (err) {
-      console.warn('Dual: migration incomplete —', err?.message)
+      console.warn('Dual: migration incomplete:', err?.message)
     }
   } else {
     migrateStorageKeys()

@@ -10,7 +10,7 @@ export default function SummaryStrip({ summary, symbol }) {
   const stats = [
     { label: 'Money in', value: formatCurrency(summary.income, symbol) },
     { label: 'Money out', value: formatCurrency(summary.expenses, symbol) },
-    { label: summary.net < 0 ? 'Net — more out than in' : 'Net', value: signedLabel(summary.net, symbol) },
+    { label: summary.net < 0 ? 'Net (more out than in)' : 'Net', value: signedLabel(summary.net, symbol) },
   ]
 
   return (

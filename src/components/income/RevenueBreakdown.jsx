@@ -10,7 +10,7 @@ const CLIENT_TAB = { id: 'client', label: 'Client' }
 /**
  * Where the revenue came from, by category or by client.
  *
- * A personal profile has no clients, so it gets the category list alone —
+ * A personal profile has no clients, so it gets the category list alone,
  * titled "By source", since with one tab the word "category" is already on the
  * tab itself and the heading can say something more useful.
  */

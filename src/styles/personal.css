@@ -444,7 +444,7 @@
   color: var(--ink2);
 }
 
-/* "You own" against "You owe" on one scale — the dashboard's money in/out
+/* "You own" against "You owe" on one scale, the dashboard's money in/out
    bars, so the two read the same way. */
 .bfh-nwsummary__flow {
   margin-top: 14px;
@@ -456,8 +456,8 @@
   color: var(--ink3);
 }
 
-/* What you own and what you owe side by side wherever two columns fit —
-   an iPad in portrait included — so they can be compared at a glance. */
+/* What you own and what you owe side by side wherever two columns fit,
+   an iPad in portrait included, so they can be compared at a glance. */
 .bfh-nwsplit {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -1,5 +1,5 @@
 /**
- * The one empty state used across the app. No border, no fill — the space
+ * The one empty state used across the app. No border, no fill, the space
  * around it is the design. The heading names the space rather than announcing
  * that it is empty, and the action is always verb-first.
  */

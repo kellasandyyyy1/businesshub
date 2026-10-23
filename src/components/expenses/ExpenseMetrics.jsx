@@ -15,7 +15,7 @@ export default function ExpenseMetrics({ metrics, symbol, period }) {
       />
       <MetricCard
         label="Biggest category"
-        value={metrics.largestCategory ?? '—'}
+        value={metrics.largestCategory ?? 'None yet'}
         badge={
           metrics.largestCategory && metrics.total > 0
             ? share(metrics.largestCategoryValue / metrics.total)

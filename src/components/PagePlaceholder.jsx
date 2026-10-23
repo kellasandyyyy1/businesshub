@@ -16,7 +16,7 @@ export default function PagePlaceholder({ title, note }) {
       <div className="bfh-block bfh-card">
         <div className="bfh-micro">Period</div>
         <p className="mt-1 text-[13px]" style={{ color: 'var(--ink2)' }}>
-          Showing the last {period.label} — {startDate} to {endDate}.
+          Showing the last {period.label}: {startDate} to {endDate}.
         </p>
       </div>
 

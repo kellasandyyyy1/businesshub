@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Transactions — toolbar, summary strip, table, detail panel, form modal
+   Transactions, toolbar, summary strip, table, detail panel, form modal
    ========================================================================== */
 
 /* ---- Toolbar -------------------------------------------------------------- */
@@ -51,7 +51,7 @@
   flex-wrap: wrap;
 }
 
-/* Ghost pill select — a native control wearing a micro-label. */
+/* Ghost pill select, a native control wearing a micro-label. */
 .bfh-filter select {
   appearance: none;
   padding: 5px 22px 5px 9px;
@@ -399,7 +399,7 @@ td.bfh-cell-amount {
   flex: 1;
 }
 
-/* Ghost button — dashed, so a destructive action reads as different in kind
+/* Ghost button, dashed, so a destructive action reads as different in kind
    rather than in colour. */
 .bfh-btn-ghost {
   flex: 1;
@@ -538,7 +538,7 @@ td.bfh-cell-amount {
   color: var(--ink2);
 }
 
-/* Type toggle — three segments, the chosen one inverted. */
+/* Type toggle, three segments, the chosen one inverted. */
 .bfh-toggle {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

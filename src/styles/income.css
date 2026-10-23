@@ -3,7 +3,7 @@
    ========================================================================== */
 
 /* The page's own heading row. Smaller than the display title the placeholder
-   routes use — this page has real content under it and does not need a banner. */
+   routes use, this page has real content under it and does not need a banner. */
 .bfh-pagehead {
   display: flex;
   align-items: center;
@@ -156,7 +156,7 @@
   margin-bottom: 4px;
 }
 
-/* A ghost field, narrower than the toolbar's — it sits beside a heading. */
+/* A ghost field, narrower than the toolbar's, it sits beside a heading. */
 .bfh-search--sm {
   flex: 0 1 220px;
   height: 32px;
@@ -175,7 +175,7 @@
   white-space: nowrap;
 }
 
-/* Both ledgers keep the amount in plain ink — direction is carried by the
+/* Both ledgers keep the amount in plain ink, direction is carried by the
    minus sign on the expense side, never by colour. */
 .bfh-table--income .bfh-cell-amount,
 .bfh-table--expense .bfh-cell-amount {

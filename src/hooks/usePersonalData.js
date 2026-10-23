@@ -10,7 +10,7 @@ const PROFILE = 'personal'
  * The full transaction history comes back rather than just the selected window.
  * The period filter is a comparison against two dates, cheap to apply in memory,
  * and holding the whole set means changing period does not go back to
- * IndexedDB — the same arrangement the business Income and Expenses pages use.
+ * IndexedDB, the same arrangement the business Income and Expenses pages use.
  */
 export function usePersonalData() {
   return useLiveQuery(async () => {

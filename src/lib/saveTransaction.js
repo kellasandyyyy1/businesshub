@@ -5,7 +5,7 @@ import { addTransaction } from '../db/queries'
  * Saves a transaction the assistant extracted, once the person has confirmed
  * it on the card in the chat.
  *
- * `prefill` is the output of normalizeAction — already checked against the
+ * `prefill` is the output of normalizeAction, already checked against the
  * profile's real categories, with an unsigned amount. Amounts are stored
  * unsigned everywhere in this app and `type` carries the direction; every
  * total, chart and export sums by type, so a negative amount here would be

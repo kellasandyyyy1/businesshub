@@ -15,7 +15,7 @@ export function personalMetrics({ rows = [], previousRows = [] } = {}) {
   const previousIncome = totalOf(previousRows, 'income')
   const previousExpenses = totalOf(previousRows, 'expense')
 
-  // What is actually left. Negative is a real answer — the "left over" card
+  // What is actually left. Negative is a real answer, the "left over" card
   // shows it as one rather than hiding the month that went wrong.
   const leftOver = income - expenses
 

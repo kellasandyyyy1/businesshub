@@ -15,7 +15,7 @@ const KEY = 'dual-howto-dismissed'
  * The first-run nudge at the top of the dashboard.
  *
  * Shown only while there is genuinely nothing recorded yet, and only until it
- * is dismissed — the choice is remembered in localStorage rather than the
+ * is dismissed, the choice is remembered in localStorage rather than the
  * database, since it is about this browser rather than about the business.
  */
 export default function HowToBanner() {

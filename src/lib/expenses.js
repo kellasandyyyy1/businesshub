@@ -4,7 +4,7 @@ import { PERIOD_DAYS, groupTotals, monthKey, shiftMonths, sum } from './ledger'
 /**
  * Expense-specific derivations. The period maths lives in ./ledger.
  *
- * Amounts are stored unsigned — `type` carries the direction — so everything
+ * Amounts are stored unsigned, `type` carries the direction, so everything
  * here works in positive numbers and the minus sign is a display decision.
  */
 
@@ -109,7 +109,7 @@ export function expenseMetrics({ rows, previousRows, allExpenses, periodId, toda
 /**
  * Each budget against what has been spent on it.
  *
- * Always the current calendar month, never the period switcher — a budget is a
+ * Always the current calendar month, never the period switcher, a budget is a
  * monthly commitment, and it would be misleading for the same budget to look
  * blown simply because someone switched the page to a 90-day view.
  */

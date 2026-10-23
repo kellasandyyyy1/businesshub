@@ -11,7 +11,7 @@ const ADD = '__add'
 /**
  * The payment method on a transaction, chosen from the list in Settings →
  * Payment methods. The same select as Client above it; its last option adds a
- * method in place — the field turns into a name box with Add and ✕, and the new
+ * method in place, the field turns into a name box with Add and ✕, and the new
  * method is saved to Settings and picked in one go.
  *
  *   value    a method id, '' for none, or KEEP for an older entry whose label
@@ -57,7 +57,7 @@ export default function PaymentMethodPicker({ value, onChange, methods, keep }) 
 
   const onKeyDown = (e) => {
     if (e.key === 'Enter') {
-      // Inside the transaction form, Enter here adds the method — it must not
+      // Inside the transaction form, Enter here adds the method, it must not
       // submit the whole transaction.
       e.preventDefault()
       add()

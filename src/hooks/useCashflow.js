@@ -11,7 +11,7 @@ const inProfile = ofProfile(BUSINESS_PROFILE)
  * Cash today, what is expected to land, and the balance that follows.
  *
  * Current cash is the opening balance the user sets in settings plus every
- * cleared movement since — with no opening balance recorded, it is the ledger
+ * cleared movement since, with no opening balance recorded, it is the ledger
  * movement alone and the page says so.
  */
 export function useCashflowData(days) {
@@ -45,7 +45,7 @@ export function useCashflowData(days) {
     // never added up to the line drawn under them.
     const expectedIncome = income.reduce((total, e) => total + e.amount, 0)
     const expectedExpenses = expenses.reduce((total, e) => total + e.amount, 0)
-    // Months the cash lasts at the last 90 days' pace of spending — the same
+    // Months the cash lasts at the last 90 days' pace of spending, the same
     // burn the Insights page and the low-runway notice use.
     const from = new Date(Date.parse(`${today}T00:00:00Z`) - 89 * 86_400_000).toISOString().slice(0, 10)
     const burn =

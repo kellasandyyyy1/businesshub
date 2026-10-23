@@ -3,12 +3,12 @@ import Delta from '../Delta'
 /**
  * One figure in a metrics grid.
  *
- * A readout rather than a link — the dashboard's MetricCard navigates and always
+ * A readout rather than a link, the dashboard's MetricCard navigates and always
  * formats its value as money, which neither the Income nor the Expenses grid
  * wants.
  *
  * Two kinds of note can sit under the figure:
- *   delta  a change against before — { value, goodWhen, quiet } — drawn by
+ *   delta  a change against before, { value, goodWhen, quiet }, drawn by
  *          <Delta>, the only one that may take a colour
  *   badge  a plain worded fact, such as a share of the total; never coloured
  */

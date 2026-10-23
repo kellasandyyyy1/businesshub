@@ -2,7 +2,7 @@ import { db, putSetting } from '../db/db'
 import { matchMethod, methodId, methodsFromSetting } from './paymentMethods'
 
 /**
- * Reads and writes the one payment-method list — the `paymentMethods`
+ * Reads and writes the one payment-method list, the `paymentMethods`
  * setting that Settings → Payment methods edits. The transaction form, the
  * assistant and the filters all use this; nothing keeps a second list.
  */
@@ -16,7 +16,7 @@ export const saveMethods = (list) => putSetting('paymentMethods', list)
 
 /**
  * Adds a method by name. A name already on the list (ignoring case and
- * spaces) is not added again — the existing one comes back with `existed`.
+ * spaces) is not added again, the existing one comes back with `existed`.
  */
 export async function addMethod(name) {
   const trimmed = String(name ?? '').trim()

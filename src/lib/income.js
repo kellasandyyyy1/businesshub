@@ -15,7 +15,7 @@ const recurringKey = (row) =>
  *
  * A source counts as recurring once it appears in two consecutive calendar
  * months. That has to be judged against the whole history, not just the window
- * on screen — a 7-day period can never contain two months, so scoping the test
+ * on screen, a 7-day period can never contain two months, so scoping the test
  * to the visible rows would report zero recurring revenue on every short period.
  */
 export function recurringKeys(allIncome) {
@@ -55,7 +55,7 @@ export function incomeMetrics({ rows, previousRows, allIncome, clientName, perio
 
   const days = PERIOD_DAYS[periodId] ?? PERIOD_DAYS['30d']
   // Revenue divided by the months the window spans. On a period shorter than a
-  // month that is a monthly run rate rather than a month actually earned — the
+  // month that is a monthly run rate rather than a month actually earned, the
   // card's "monthly avg" caption is what tells the two apart.
   const months = days / 30.44
   const average = total / months

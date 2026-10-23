@@ -27,6 +27,7 @@
 @import './styles/signal.css';
 @import './styles/payments.css';
 @import './styles/toast.css';
+@import './styles/help.css';
 
 /* Tailwind is used for utility layout only.
-   Every color comes from the tokens above — never from Tailwind's palette. */
+   Every color comes from the tokens above, never from Tailwind's palette. */

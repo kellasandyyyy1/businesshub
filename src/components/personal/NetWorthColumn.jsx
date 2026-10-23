@@ -25,19 +25,19 @@ const CATEGORY_ICONS = {
 }
 
 /**
- * One side of the sheet — what is owned, or what is owed.
+ * One side of the sheet, what is owned, or what is owed.
  *
  * A flat list, largest first, with each row's category as a caption under
  * its name rather than a heading above it: most households have one or two
  * things per category, and a heading over a single row is furniture. The
  * whole row is the button that opens it.
  *
- * Both sides read the same way on purpose — the eye compares them across the
+ * Both sides read the same way on purpose, the eye compares them across the
  * page, and two different list shapes would make that harder.
  */
 export default function NetWorthColumn({ eyebrow, title, hint, type, items, total, symbol, addLabel, onAdd, onEdit }) {
   const known = categoriesFor(type)
-  // What is owed reads as a subtraction, in ink — a debt is not an error.
+  // What is owed reads as a subtraction, in ink, a debt is not an error.
   const owed = type === 'liability' ? '−' : ''
   const rows = [...items].sort((a, b) => (Number(b.amount) || 0) - (Number(a.amount) || 0))
 

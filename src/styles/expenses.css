@@ -119,7 +119,7 @@
   font-weight: var(--weight-medium);
   color: var(--ink);
 }
-/* Past 80%, the only signal is a dashed underline — no colour, no fill. */
+/* Past 80%, the only signal is a dashed underline, no colour, no fill. */
 .bfh-budgetcard__pct[data-caution='true'] {
   text-decoration: underline dashed;
   text-underline-offset: 3px;

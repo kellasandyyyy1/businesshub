@@ -21,7 +21,7 @@ export default function NotificationsMenu({ onClose }) {
     const onKeyDown = (e) => {
       if (e.key === 'Escape') onClose()
     }
-    // A click anywhere else dismisses it, including on the bell itself — which
+    // A click anywhere else dismisses it, including on the bell itself, which
     // is why the bell's own handler only ever toggles.
     const onPointerDown = (e) => {
       if (!panelRef.current?.contains(e.target) && !e.target.closest?.('[data-bell]')) onClose()

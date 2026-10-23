@@ -11,7 +11,7 @@ const TYPE_OPTIONS = [
   { value: 'transfer', label: 'Transfers' },
 ]
 
-/** A ghost pill select — native control, styled down to a mono micro-label. */
+/** A ghost pill select, native control, styled down to a mono micro-label. */
 function FilterSelect({ label, value, onChange, options }) {
   return (
     <label className="bfh-filter">

@@ -15,7 +15,7 @@ function standing(invoice, balance, money, today) {
   const when = dueLabel(invoice, today)
   switch (invoice.effectiveStatus) {
     case 'draft':
-      return { title: 'Draft — not sent yet', body: 'Send it to your client, then mark it as sent so Dual can track the due date.' }
+      return { title: 'Draft, not sent yet', body: 'Send it to your client, then mark it as sent so Dual can track the due date.' }
     case 'paid':
       return { title: `${when} in full`, body: `${money(invoice.total)} received. Nothing more to do.` }
     case 'overdue':
@@ -116,7 +116,7 @@ export default function InvoiceDetail({ invoice, client, business, symbol, onClo
 
           <section className="bfh-doc__party">
             <span className="bfh-micro">Billed to</span>
-            <div className="bfh-doc__client">{client?.company ?? '—'}</div>
+            <div className="bfh-doc__client">{client?.company ?? invoice.clientName ?? 'No client'}</div>
             {client && (
               <div className="bfh-doc__client-meta">
                 {client.name}

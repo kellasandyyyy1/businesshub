@@ -1,5 +1,5 @@
 /* ==========================================================================
-   App shell — sidebar, topbar, content well.
+   App shell, sidebar, topbar, content well.
    Layout only from Tailwind in the JSX; every colour, border, and radius
    here comes from a token.
    ========================================================================== */
@@ -32,7 +32,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Micro-label — the aesthetic's signature register
+   Micro-label, the aesthetic's signature register
    -------------------------------------------------------------------------- */
 
 .bfh-micro {
@@ -160,7 +160,7 @@
   margin-top: 2px;
 }
 
-/* Primary action — the one inverted element in the chrome. */
+/* Primary action, the one inverted element in the chrome. */
 .bfh-btn-primary {
   display: flex;
   align-items: center;
@@ -283,7 +283,7 @@
 }
 
 /* On the 56px rail there is no room for words, so the two icons stack and the
-   filled one is the whole signal — the same treatment the nav rows get. */
+   filled one is the whole signal, the same treatment the nav rows get. */
 .bfh-sidebar[data-collapsed='true'] .bfh-profileswitch {
   margin: 10px 0 0;
   padding: 3px;
@@ -435,7 +435,7 @@
   display: none;
 }
 
-/* The active dot survives the collapse — it just moves to the rail's edge,
+/* The active dot survives the collapse, it just moves to the rail's edge,
    since there is no room for it inline ahead of a centred icon. */
 .bfh-sidebar[data-collapsed='true'] .bfh-nav__dot {
   position: absolute;
@@ -685,7 +685,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Page entrance — blocks fade up 12px, staggered, capped at 330ms
+   Page entrance, blocks fade up 12px, staggered, capped at 330ms
    -------------------------------------------------------------------------- */
 
 @keyframes bfh-enter {
@@ -751,7 +751,7 @@
   flex-direction: column;
   gap: 14px;
   /* Fills the content well. The design system's 56rem measure still governs
-     prose — it was capping full-width data layouts here by mistake. */
+     prose, it was capping full-width data layouts here by mistake. */
   width: 100%;
 }
 
@@ -786,7 +786,7 @@
 /* The supplied wordmark is white artwork on a transparent background, so on the
    light sidebar it disappears into the surface and only the chart glyph shows.
    Inverting it there paints the same mark in ink; dark mode already suits it. */
-/* The mark is a self-contained badge — dark card, light artwork — so it
+/* The mark is a self-contained badge, dark card, light artwork, so it
    needs no per-theme inversion the way the old bitmap did. */
 
 /* ---- Notifications menu ------------------------------------------------------ */
@@ -951,7 +951,7 @@
   display: none;
 }
 
-/* On a phone the greeting is the control. It stays a heading in appearance —
+/* On a phone the greeting is the control. It stays a heading in appearance,
    the chevrons and the badge below are what say it can be pressed. */
 .bfh-greetingtap {
   display: flex;
@@ -966,7 +966,7 @@
   cursor: pointer;
 }
 
-/* Which set of books is on screen. This was a grey outline at 9px — the
+/* Which set of books is on screen. This was a grey outline at 9px, the
    faintest thing in the header, for the one piece of state a reader has to be
    sure of before trusting any number below it. Filled, so it is answered at a
    glance rather than read. */
@@ -1075,7 +1075,7 @@
   border-color: var(--b2);
 }
 
-/* The mode you are in is the inverted one — the same signal the sidebar
+/* The mode you are in is the inverted one, the same signal the sidebar
    switcher and the assistant pill use. */
 .bfh-modeopt[data-active='true'] {
   border-color: var(--ink);

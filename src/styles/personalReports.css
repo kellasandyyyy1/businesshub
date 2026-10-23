@@ -1,8 +1,8 @@
 /* ==========================================================================
    Personal reports
 
-   Every report is built from the same few pieces — a headline figure, a row
-   of supporting figures, and sections of list rows — so learning one report
+   Every report is built from the same few pieces, a headline figure, a row
+   of supporting figures, and sections of list rows, so learning one report
    teaches all seven, and nothing on a phone has to scroll sideways.
    ========================================================================== */
 
@@ -565,7 +565,7 @@
   }
 
   /* Underlined tabs, so the choice of report never looks like the period
-     chips inside it — two rows of identical pills read as one control. */
+     chips inside it, two rows of identical pills read as one control. */
   .bfh-preportnav {
     gap: 4px;
     padding-bottom: 0;

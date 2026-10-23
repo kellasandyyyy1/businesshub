@@ -33,7 +33,7 @@ export default function PersonalNetWorth() {
   const open = (type) => setEditing({ type })
 
   // Last month's position, for the change beside the total, and the round
-  // number crossed since then — shown once, in the month it happens.
+  // number crossed since then, shown once, in the month it happens.
   const previous = history.length > 1 ? history[history.length - 2].net : null
   const milestone =
     previous === null
@@ -59,7 +59,7 @@ export default function PersonalNetWorth() {
           <EmptyState
             icon={IconScale}
             heading="Track your net worth"
-            body="Add what you own — savings, investments, property — and what you owe. Dual subtracts one from the other to show where you stand."
+            body="Add what you own (savings, investments, property) and what you owe. Dual subtracts one from the other to show where you stand."
             actionLabel="Get started"
             onAction={() => open('asset')}
           />
@@ -125,7 +125,7 @@ export default function PersonalNetWorth() {
             <NetWorthColumn
               eyebrow="Assets"
               title="What you own"
-              hint="Cash, savings, investments, property — anything you could sell or spend."
+              hint="Cash, savings, investments, property: anything you could sell or spend."
               type="asset"
               items={split.assets}
               total={summary.assets}

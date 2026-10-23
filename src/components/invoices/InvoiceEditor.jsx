@@ -89,7 +89,7 @@ export default function InvoiceEditor({
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [onClose])
 
-  // Recomputed on every keystroke — the totals are never stale.
+  // Recomputed on every keystroke. The totals are never stale.
   const totals = useMemo(
     () => computeTotals(form.items, form.taxRate, form.discountRate),
     [form.items, form.taxRate, form.discountRate],
@@ -158,7 +158,7 @@ export default function InvoiceEditor({
     }
 
     // invoiceNumber is a unique index. Letting a clash reach Dexie aborts the
-    // transaction, which the live query then rethrows during render — so the
+    // transaction, which the live query then rethrows during render. So the
     // check happens here, before anything is written.
     const clash = await db.invoices.where('invoiceNumber').equals(record.invoiceNumber).first()
     if (clash && clash.id !== invoice?.id) {
@@ -245,7 +245,7 @@ export default function InvoiceEditor({
                 <option value="">Choose a client…</option>
                 {clients.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.company && c.company !== c.name ? `${c.company} — ${c.name}` : c.name}
+                    {c.company && c.company !== c.name ? `${c.company} · ${c.name}` : c.name}
                   </option>
                 ))}
               </select>
@@ -460,7 +460,7 @@ export default function InvoiceEditor({
         <p className="bfh-invform__foothint">
           {alreadySent
             ? 'This invoice is already marked as sent.'
-            : 'Mark it as sent once it is with your client — Dual then tracks when it is due.'}
+            : 'Mark it as sent once it is with your client, Dual then tracks when it is due.'}
         </p>
         <div className="bfh-invform__actions">
           <button type="button" className="bfh-btn-outline" onClick={() => save(draftStatus)}>

@@ -96,7 +96,7 @@ export function buildCSV(rows, columns) {
 const MAX_COL_CHARS = 40
 
 /**
- * SheetJS is ~190 KB, and most sessions never export a spreadsheet — so it is
+ * SheetJS is ~190 KB, and most sessions never export a spreadsheet, so it is
  * fetched the first time XLSX is actually chosen, not on page load.
  */
 const loadXLSX = () => import('xlsx')
@@ -122,7 +122,7 @@ export async function buildXLSX(rows, columns, sheetName = 'Export') {
 
   // Requested freeze pane. SheetJS's community build does not write pane
   // definitions, so this is inert today and starts working unchanged on a
-  // build that supports it — the autofilter above is the working stand-in.
+  // build that supports it, the autofilter above is the working stand-in.
   ws['!freeze'] = { xSplit: 0, ySplit: 1, topLeftCell: 'A2', activePane: 'bottomLeft', state: 'frozen' }
 
   const wb = XLSX.utils.book_new()

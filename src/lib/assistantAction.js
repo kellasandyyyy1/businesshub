@@ -54,7 +54,7 @@ export function normalizeAction(action, categories = [], methods = []) {
     type,
     category: resolveCategory(prefill.category, categories, type),
     date,
-    // Only a method the user has saved — matched on its name, or the one saved
+    // Only a method the user has saved, matched on its name, or the one saved
     // name it is part of. No match, or more than one, leaves it empty.
     ...methodFields(matchMethod(prefill.paymentMethod, methods, { partial: true })),
     notes: String(prefill.notes ?? '').trim(),

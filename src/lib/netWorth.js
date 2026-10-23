@@ -2,7 +2,7 @@
  * Net worth: what is owned against what is owed.
  *
  * The categories are fixed rather than free text. A list a household types
- * itself drifts — "Savings", "savings account", "BPI savings" — and the
+ * itself drifts, "Savings", "savings account", "BPI savings", and the
  * subtotals stop meaning anything the moment two rows disagree about which
  * group they are in.
  */
@@ -52,7 +52,7 @@ export function groupByCategory(items = [], type) {
 /**
  * The headline figures.
  *
- * A negative net worth is a real answer and is returned as one — owing more
+ * A negative net worth is a real answer and is returned as one, owing more
  * than you own is a fact worth reading plainly, not an error to hide.
  */
 export function netWorthSummary(items = []) {

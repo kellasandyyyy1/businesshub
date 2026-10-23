@@ -11,12 +11,12 @@ import { deadlineLabel, goalProgress, goalStatus, monthlySaveNeeded } from '../.
  * figures above it say where the goal stands; this says how to finish it.
  */
 function planFor(goal, status, perMonth, remaining, money) {
-  if (status === 'completed') return 'Goal reached — well done.'
+  if (status === 'completed') return 'Goal reached. Well done.'
   if (status === 'overdue') return `The deadline has passed with ${money(remaining)} still to go. Set a new date to get a fresh plan.`
   if (!goal.deadline) return 'Add a deadline to get a monthly saving plan.'
   if (!perMonth) return null
   const amount = money(Math.ceil(perMonth))
-  if (status === 'behind') return `A little behind — save about ${amount} a month to catch up.`
+  if (status === 'behind') return `A little behind. Save about ${amount} a month to catch up.`
   if (status === 'not-started') return `Put aside about ${amount} a month to get there on time.`
   return `Keep saving about ${amount} a month to get there on time.`
 }
@@ -25,7 +25,7 @@ function planFor(goal, status, perMonth, remaining, money) {
  * One savings goal.
  *
  * The whole card opens the editor, so the add-money control is a button
- * layered above it rather than nested inside — a button inside a button is
+ * layered above it rather than nested inside. A button inside a button is
  * invalid, and a tap on "Add money" must not also open the editor.
  */
 export default function GoalCard({ goal, symbol, today, onEdit, onContribute }) {

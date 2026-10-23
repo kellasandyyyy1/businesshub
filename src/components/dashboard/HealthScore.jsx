@@ -1,5 +1,5 @@
 /**
- * Business health. The filled pill is the one inverted element on the page —
+ * Business health. The filled pill is the one inverted element on the page,
  * everything else earns emphasis through type and hairlines.
  */
 export default function HealthScore({ health }) {

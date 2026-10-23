@@ -168,7 +168,7 @@ export default function Export() {
             </thead>
             <tbody>
               {previewRows.map((row, index) => (
-                // Export rows are generated, not stored — position is identity.
+                // Export rows are generated, not stored, position is identity.
                 // eslint-disable-next-line react/no-array-index-key
                 <tr key={index}>
                   {result.columns.map((column) => (
@@ -194,7 +194,7 @@ export default function Export() {
       <div className="bfh-block bfh-pagehead">
         <div>
           <h1 className="bfh-pagehead__title">Export</h1>
-          <p className="bfh-pagehead__sub">Download your records as a spreadsheet — pick what, when, and how.</p>
+          <p className="bfh-pagehead__sub">Download your records as a spreadsheet, pick what, when, and how.</p>
         </div>
       </div>
 

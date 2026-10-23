@@ -8,7 +8,7 @@ import { formatCurrency, formatDate } from '../../lib/format'
 import { dueLabel, issueDateOf } from '../../lib/invoice'
 import { dueTone } from '../../lib/signal'
 
-const clientName = (client) => client?.company || client?.name || 'No client'
+const clientName = (client, invoice) => client?.company || client?.name || invoice?.clientName || 'No client'
 
 /**
  * Who and how much on the first line; which invoice and where it stands
@@ -24,7 +24,7 @@ function MobileCard({ invoice, client, symbol, today, onOpen }) {
       onClick={() => onOpen(invoice)}
     >
       <span className="bfh-invcard__top">
-        <span className="bfh-invcard__client">{clientName(client)}</span>
+        <span className="bfh-invcard__client">{clientName(client, invoice)}</span>
         <span className="bfh-invcard__amount">{formatCurrency(invoice.total, symbol)}</span>
       </span>
       <span className="bfh-invcard__bottom">
@@ -57,7 +57,7 @@ function Row({ invoice, client, symbol, today, selected, onOpen, onEdit }) {
       onKeyDown={onKeyDown}
     >
       <td className="bfh-cell-number">{invoice.invoiceNumber}</td>
-      <td className="bfh-cell-client">{clientName(client)}</td>
+      <td className="bfh-cell-client">{clientName(client, invoice)}</td>
       <td className="bfh-cell-date">{formatDate(issueDateOf(invoice))}</td>
       <td className="bfh-cell-when bfh-due" data-status={invoice.effectiveStatus} data-tone={dueTone(invoice, today) ?? undefined}>
         {dueLabel(invoice, today)}
@@ -89,7 +89,7 @@ function Row({ invoice, client, symbol, today, selected, onOpen, onEdit }) {
 const EMPTY_FILTER = {
   overdue: 'Nothing is overdue.',
   sent: 'No invoices are waiting to be paid.',
-  draft: 'No drafts — everything has gone out.',
+  draft: 'No drafts. Everything has gone out.',
   paid: 'No invoices have been paid yet.',
 }
 

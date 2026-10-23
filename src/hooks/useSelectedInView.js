@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 
 /**
  * Keeps the chosen chip of a sideways-scrolling row on screen. On a phone the
- * default can be the last chip of the row — "Last 12 months" — and a choice
+ * default can be the last chip of the row, "Last 12 months", and a choice
  * you cannot see is a choice you cannot tell has been made.
  *
  * Scrolls the row only, never the page. `ready` re-runs it once a page that

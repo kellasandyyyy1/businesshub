@@ -9,7 +9,7 @@ const ICONS = { success: IconCheck, undo: IconTrash, info: IconInfoCircle, error
 const SWIPE = 36
 
 /**
- * Pulled the wrong way, a toast gives a little and no more — the rubber band
+ * Pulled the wrong way, a toast gives a little and no more, the rubber band
  * iOS uses, so the drag never feels like it has come loose.
  */
 const resist = (d) => Math.sign(d) * Math.min(Math.abs(d), 8 + Math.sqrt(Math.abs(d)) * 2)

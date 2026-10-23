@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Responsive retrofit — layout only.
+   Responsive retrofit, layout only.
    Layers: bottom nav 50 · FAB 60 · panels/modals 100 · sheets 100 ·
            command bar 110 · onboarding 120.
    ========================================================================== */
@@ -239,7 +239,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Overlay stacking — modals and panels must clear the bottom nav and FAB
+   Overlay stacking, modals and panels must clear the bottom nav and FAB
    -------------------------------------------------------------------------- */
 
 .bfh-modal {
@@ -338,8 +338,8 @@
 
 @media (max-width: 767px) {
   .bfh-metrics {
-    /* minmax(0,…) not 1fr: a long value — a client name in the top-source
-       card — would otherwise stretch its column and leave the pair uneven. */
+    /* minmax(0,…) not 1fr: a long value, a client name in the top-source
+       card, would otherwise stretch its column and leave the pair uneven. */
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 8px;
   }
@@ -386,7 +386,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Transactions and invoices — table becomes a card list on mobile
+   Transactions and invoices, table becomes a card list on mobile
    -------------------------------------------------------------------------- */
 
 @media (max-width: 767px) {
@@ -394,7 +394,7 @@
     flex-direction: column;
     align-items: stretch;
     /* A wrapping column sizes its line to the widest item, and the filter row's
-       max-content width is far wider than the screen — which then stretched the
+       max-content width is far wider than the screen, which then stretched the
        search field to match and pushed both off the right edge. */
     flex-wrap: nowrap;
     gap: 8px;
@@ -483,7 +483,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Clients — two columns on tablet and up, list-then-detail on mobile
+   Clients, two columns on tablet and up, list-then-detail on mobile
    -------------------------------------------------------------------------- */
 
 @media (max-width: 767px) {
@@ -525,7 +525,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Reports and Settings — side rails stack under 768px
+   Reports and Settings, side rails stack under 768px
    -------------------------------------------------------------------------- */
 
 @media (max-width: 767px) {
@@ -555,7 +555,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Tap targets — 44px minimum on touch-first widths
+   Tap targets, 44px minimum on touch-first widths
    -------------------------------------------------------------------------- */
 
 @media (max-width: 1023px) {
@@ -584,7 +584,7 @@ body {
 }
 
 /* ==========================================================================
-   Responsive audit pass — mobile legibility and touch
+   Responsive audit pass, mobile legibility and touch
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -666,7 +666,7 @@ body {
 /* --------------------------------------------------------------------------
    Command bar becomes a bottom sheet on mobile
    --------------------------------------------------------------------------
-   There is no Ctrl+K on a phone — the topbar button opens it, and it rises from
+   There is no Ctrl+K on a phone, the topbar button opens it, and it rises from
    the bottom where the thumb already is. Tapping the backdrop closes it.
    -------------------------------------------------------------------------- */
 
@@ -760,7 +760,7 @@ body {
   }
 }
 
-/* On a tablet the panel gets a little more room than the 320px desktop rail —
+/* On a tablet the panel gets a little more room than the 320px desktop rail,
    the content well behind it is narrower, so the panel can afford the width. */
 @media (min-width: 768px) and (max-width: 1023px) {
   .bfh-panel {
@@ -788,7 +788,7 @@ body {
   }
 }
 
-/* On a two-up metric grid the badge and its caption do not fit on one line —
+/* On a two-up metric grid the badge and its caption do not fit on one line,
    "vs last period" was being ellipsised down to "vs last peri…". Letting the
    caption drop beneath the badge keeps the whole phrase readable. */
 @media (max-width: 767px) {
@@ -807,7 +807,7 @@ body {
 }
 
 /* --------------------------------------------------------------------------
-   Phone polish — finance lists read as lists, not as rows of badges
+   Phone polish, finance lists read as lists, not as rows of badges
    -------------------------------------------------------------------------- */
 
 @media (max-width: 767px) {

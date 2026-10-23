@@ -37,7 +37,7 @@ function RecurringRow({ item, symbol }) {
 }
 
 /**
- * Where the money went — by category, by merchant, or the subscriptions that
+ * Where the money went, by category, by merchant, or the subscriptions that
  * come back every month.
  */
 export default function SpendingBreakdown({

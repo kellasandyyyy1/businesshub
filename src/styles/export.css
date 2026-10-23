@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Export — pick what, when, and how; see it; download it
+   Export, pick what, when, and how; see it; download it
 
    Numbered steps on the left, the live preview on the right on a desktop.
    Below that the two stack, and on a phone the download bar stays pinned
@@ -358,7 +358,7 @@
 }
 
 /* The table scrolls inside its own box, with a fade on the right edge to say
-   there is more — the page itself never scrolls sideways. */
+   there is more, the page itself never scrolls sideways. */
 .bfh-exp__scroll {
   overflow-x: auto;
   margin: 0 -20px;
@@ -457,7 +457,7 @@
 }
 
 /* ==========================================================================
-   Export sheet — the quick version, opened from a page's Export button
+   Export sheet, the quick version, opened from a page's Export button
    ========================================================================== */
 
 .bfh-exportsheet {
@@ -519,7 +519,7 @@
   min-width: 0;
 }
 
-/* Full labels on one swipeable row — never squeezed into the sheet's width. */
+/* Full labels on one swipeable row, never squeezed into the sheet's width. */
 .bfh-exportsheet__chips {
   margin: 0 -20px;
   padding: 0 20px 2px;
@@ -602,7 +602,7 @@
 /* Tablet: the bottom nav is back, so the pinned bar sits on top of it, with
    room on the right for the floating assistant button. */
 /* Below 1024px the page scrolls inside .bfh-main, whose bottom padding already
-   clears the bottom nav plus 16px — and a sticky element sticks inside that
+   clears the bottom nav plus 16px, and a sticky element sticks inside that
    padding. Pulling it down by the 16px sets the bar flush on the nav; adding
    the nav height again is what left it floating mid-screen. */
 @media (max-width: 1023px) {

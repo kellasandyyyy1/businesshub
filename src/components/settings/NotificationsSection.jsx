@@ -105,7 +105,7 @@ function SwitchList({ toggles, settings }) {
       {toggles.map((toggle) => {
         const value = settings[toggle.key] ?? toggle.fallback
         return (
-          <li key={toggle.key} className="bfh-catrow bfh-catrow--stacked">
+          <li key={toggle.key} className="bfh-catrow bfh-catrow--stacked" data-help-id={`toggle-${toggle.key}`}>
             <span className="bfh-catrow__body">
               <span className="bfh-catrow__name">{toggle.label}</span>
               <span className="bfh-settings__note">{toggle.note}</span>
@@ -162,7 +162,7 @@ export default function NotificationsSection({ settings }) {
         setPushOn(true)
         toast.info('Push notifications on')
       } else if (result.reason === 'server') {
-        // Nothing the user can fix here — say so and let it go.
+        // Nothing the user can fix here. Say so and let it go.
         toast.error("Couldn't reach the notification server. Try again later.")
       } else {
         // Denied or unsupported needs explaining, so it stays beside the switch.
@@ -177,7 +177,7 @@ export default function NotificationsSection({ settings }) {
       <h2 className="bfh-panel__title">Notifications</h2>
       <p className="bfh-settings__note">
         Everything is calculated on this device. Turning push on registers this browser with the
-        delivery server — it stores nothing but that registration.
+        delivery server. It stores nothing but that registration.
       </p>
 
       {showPersonal && <span className="bfh-micro bfh-settings__grouplabel">Business</span>}
@@ -194,7 +194,7 @@ export default function NotificationsSection({ settings }) {
       <SwitchList toggles={GENERAL_TOGGLES} settings={settings} />
 
       <section className="bfh-push">
-        <div className="bfh-catrow bfh-catrow--stacked bfh-push__row">
+        <div className="bfh-catrow bfh-catrow--stacked bfh-push__row" data-help-id="push-toggle">
           <span className="bfh-catrow__body">
             <span className="bfh-catrow__name">Push notifications</span>
             <span className="bfh-settings__note">Get alerts when you&rsquo;re away from the app.</span>

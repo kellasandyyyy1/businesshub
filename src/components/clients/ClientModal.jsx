@@ -15,7 +15,7 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 /**
  * A client saved without a company stores their own name in that field, so
  * lists always have something to show. Reading it back, that copy is blanked
- * — the form shows "no company", not the person's name a second time.
+ *, the form shows "no company", not the person's name a second time.
  */
 function toForm(client) {
   const name = client?.name ?? ''
@@ -50,7 +50,7 @@ export default function ClientModal({ client, onClose, onSaved }) {
 
   const existing = useLiveQuery(() => db.clients.filter(ofProfile(BUSINESS_PROFILE)).toArray(), [], [])
 
-  // Focus once the sheet has settled, and only where there is a keyboard —
+  // Focus once the sheet has settled, and only where there is a keyboard,
   // on a phone it would raise the keyboard mid-animation.
   useEffect(() => {
     if (!window.matchMedia?.('(pointer: fine)').matches) return undefined

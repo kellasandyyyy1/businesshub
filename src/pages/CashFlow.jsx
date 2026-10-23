@@ -100,7 +100,7 @@ export default function CashFlow() {
         </div>
       </div>
 
-      {/* The answer first — where the money will be — then how it gets there. */}
+      {/* The answer first, where the money will be, then how it gets there. */}
       <div className="bfh-block">
         <section className="bfh-card bfh-cashhero">
           <div className="bfh-cashhero__top">
@@ -135,7 +135,7 @@ export default function CashFlow() {
 
           {dipsLow ? (
             <p className="bfh-cashhero__warn" role="status">
-              Cash drops to {money(data.lowest.balance)} around {formatFullDate(data.lowest.date)} — below the{' '}
+              Cash drops to {money(data.lowest.balance)} around {formatFullDate(data.lowest.date)}, below the{' '}
               {money(LOW_CASH_THRESHOLD)} safety line. Chase invoices or move a bill before then.
             </p>
           ) : dipsBelowToday ? (

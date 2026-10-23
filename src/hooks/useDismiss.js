@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 /**
  * Lets an overlay play its exit before it unmounts. `dismiss()` flips the
- * overlay into its closing state — the stylesheet animates that — and calls
+ * overlay into its closing state, the stylesheet animates that, and calls
  * `onClose` once the animation has had time to finish.
  *
  * A timer rather than `animationend`: the event never fires when motion is

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Toasts — confirmations, undo, and errors from what the user just did
+   Toasts, confirmations, undo, and errors from what the user just did
 
    A frosted banner in the manner of iOS: translucent material over a blur,
    soft layered depth, a round glyph, and a spring that settles rather than
@@ -90,7 +90,7 @@
   background: var(--toast-fill);
   color: var(--toast-ink);
 }
-/* Only the outcome takes a tint — done is good news, failed is a problem. */
+/* Only the outcome takes a tint, done is good news, failed is a problem. */
 .bfh-toast[data-type='success'] .bfh-toast__badge {
   background: var(--pos-bg);
   color: var(--pos);

@@ -28,8 +28,8 @@ const tidyUp = (value) => {
 /**
  * Budgets for whichever side is open. Business budgets cap what a category
  * can cost the business; personal ones do the same for the household. Both
- * pages list the charges that come back every month — Spotify, Netflix, a
- * gym — so any of them can be given its own limit in one tap.
+ * pages list the charges that come back every month, Spotify, Netflix, a
+ * gym, so any of them can be given its own limit in one tap.
  */
 export default function Budgets() {
   const { profile, isPersonal } = useProfile()
@@ -39,7 +39,7 @@ export default function Budgets() {
   useAssistantPrefill('SET_BUDGET', (record) => setEditing(record?.id ? record : { prefill: record }))
 
   // First-run suggestions: the categories that actually cost the most over the
-  // last three months, each with a limit near that — or common ones if
+  // last three months, each with a limit near that, or common ones if
   // nothing has been spent yet.
   const starters = useMemo(() => {
     if (!data) return []
@@ -143,7 +143,7 @@ export default function Budgets() {
             </h2>
             <p className="bfh-budgetstart__sub">
               {starters.some((s) => s.monthly > 0)
-                ? 'Where your money went over the last three months — tap one to put a limit on it.'
+                ? 'Where your money went over the last three months, tap one to put a limit on it.'
                 : 'Pick something to keep an eye on. You can change the amount any time.'}
             </p>
             <ul className="bfh-budgetstart__list">
@@ -188,8 +188,8 @@ export default function Budgets() {
               </h2>
               <p className="bfh-subs__sub">
                 {recurring.length > 0
-                  ? `${money(recurring.reduce((t, r) => t + r.monthlyCost, 0))} a month across ${recurring.length} — subscriptions, bills, anything that comes back.`
-                  : 'Anything charged in two of the last three months shows up here — Spotify, Netflix, internet, rent.'}
+                  ? `${money(recurring.reduce((t, r) => t + r.monthlyCost, 0))} a month across ${recurring.length}: subscriptions, bills, anything that comes back.`
+                  : 'Anything charged in two of the last three months shows up here: Spotify, Netflix, internet, rent.'}
               </p>
             </div>
           </header>

@@ -5,7 +5,7 @@ import { balanceOf, effectiveStatus } from './invoice'
 /**
  * The conditions worth interrupting someone for.
  *
- * Each one collapses to a single notification however many rows triggered it —
+ * Each one collapses to a single notification however many rows triggered it,
  * the delivery layer sends at most one push per type per day, so an aggregate
  * ("3 invoices overdue") is the honest shape rather than three separate alerts
  * where only the first would arrive.
@@ -38,7 +38,7 @@ function overdueInvoices({ invoices, today, money }) {
     body:
       overdue.length === 1
         ? `${money(outstanding)} outstanding, ${plural(days, 'day')} past due.`
-        : `${money(outstanding)} outstanding — the oldest is ${plural(days, 'day')} past due.`,
+        : `${money(outstanding)} outstanding, the oldest is ${plural(days, 'day')} past due.`,
     link: '/invoices',
   }
 }
@@ -144,8 +144,8 @@ function stalePending({ transactions, today, money }) {
 
    Same rules as the business set above: one notification per type however many
    rows triggered it, every threshold named once, and nothing read from storage
-   in here. The two markers that have to survive a reload — which goals have
-   already been celebrated, and the last net worth announced — are passed in and
+   in here. The two markers that have to survive a reload, which goals have
+   already been celebrated, and the last net worth announced, are passed in and
    handed back, so this file stays a pure function of its inputs.
    ========================================================================== */
 
@@ -190,7 +190,7 @@ function goalDeadlines({ goals, today, money }) {
         : `${plural(due.length, 'goal')} due within ${GOAL_HORIZON_DAYS} days`,
     body:
       soonest.days > 0
-        ? `${money(remaining)} still needed — ${money(perDay)} a day to reach ${soonest.goal.name}.`
+        ? `${money(remaining)} still needed, ${money(perDay)} a day to reach ${soonest.goal.name}.`
         : `${money(remaining)} still needed, and ${soonest.goal.name} is due today.`,
     link: '/personal/goals',
   }
@@ -214,7 +214,7 @@ function goalsReached({ goals, celebrated, money }) {
     // problem to deal with, and this is the only line that is good news.
     title:
       reached.length === 1
-        ? `${first.name} — goal reached! 🎉`
+        ? `${first.name}: goal reached! 🎉`
         : `${plural(reached.length, 'goal')} reached! 🎉`,
     body:
       reached.length === 1
@@ -271,7 +271,7 @@ function spendingSpike({ personalTransactions, today, money }) {
 
   const expenses = personalTransactions.filter((t) => t.type === 'expense')
   const week = byCategory(expenses.filter((t) => t.date >= weekStart && t.date <= today))
-  // The three weeks before this one, averaged — a single prior week is too thin
+  // The three weeks before this one, averaged, a single prior week is too thin
   // a base to call anything unusual against.
   const history = byCategory(expenses.filter((t) => t.date >= historyStart && t.date < weekStart))
 
@@ -285,7 +285,7 @@ function spendingSpike({ personalTransactions, today, money }) {
   return {
     type: 'spending-spike',
     title: `${worst.category} spending is unusually high`,
-    body: `${money(worst.spent)} this week — about ${(worst.spent / worst.usual).toFixed(1)}× your usual ${money(worst.usual)}.`,
+    body: `${money(worst.spent)} this week, about ${(worst.spent / worst.usual).toFixed(1)}× your usual ${money(worst.usual)}.`,
     link: '/personal/expenses',
   }
 }
@@ -309,7 +309,7 @@ function personalStalePending({ personalTransactions, today, money }) {
     body:
       stale.length === 1
         ? `${money(Number(oldest.amount) || 0)}, added ${plural(days, 'day')} ago.`
-        : `${money(sumAmounts(stale))} in total — the oldest was added ${plural(days, 'day')} ago.`,
+        : `${money(sumAmounts(stale))} in total, the oldest was added ${plural(days, 'day')} ago.`,
     link: '/personal/transactions',
   }
 }
@@ -392,7 +392,7 @@ export const NOTIFICATION_TYPES = [
 /**
  * Builds the current notification list. A generator only returns something once
  * its threshold is crossed, so everything it produces is high priority by
- * definition — the field is kept so a gentler class of notice can be added
+ * definition, the field is kept so a gentler class of notice can be added
  * later without changing what gets pushed.
  */
 export function buildNotifications({
@@ -459,7 +459,7 @@ export function buildNotifications({
    passes it back next time. The arithmetic behind each mark lives here, beside
    the condition that reads it, rather than being restated in the hook. */
 
-/** Goals newly at their target — the ones about to be celebrated. */
+/** Goals newly at their target, the ones about to be celebrated. */
 export const reachedGoalIds = (goals = [], celebrated = []) =>
   goals
     .filter((g) => {

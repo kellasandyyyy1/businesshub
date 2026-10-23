@@ -3,7 +3,7 @@ import { daysBetween, formatDayMonth, formatMonth, shiftDays } from './format'
 /**
  * Period maths shared by the ledger pages.
  *
- * Pure functions only — a page hands in rows read from Dexie and gets back
+ * Pure functions only, a page hands in rows read from Dexie and gets back
  * numbers. Nothing here touches the database or the DOM, and nothing here knows
  * whether the money was coming in or going out.
  */
@@ -33,7 +33,7 @@ export const sum = (rows) => rows.reduce((total, r) => total + (Number(r.amount)
 
 /* ---- Chart buckets ---------------------------------------------------------- */
 
-/** Days for a week, months for a year — the bar count stays readable either way. */
+/** Days for a week, months for a year, the bar count stays readable either way. */
 const BUCKETING = { '7d': 'day', '30d': 'week', '90d': 'week', '12m': 'month' }
 
 /** First day of the month `n` months before `iso`. */
@@ -102,7 +102,7 @@ export function buildSeries(rows, periodId, { from, to }) {
 
 /**
  * Totals per group, largest first, each with its share of the whole. `label`
- * resolves the key to something readable — a client id becomes a name.
+ * resolves the key to something readable, a client id becomes a name.
  */
 export function groupTotals(rows, keyOf, labelOf) {
   const totals = new Map()

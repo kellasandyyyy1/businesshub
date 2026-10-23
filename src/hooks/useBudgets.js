@@ -37,7 +37,7 @@ export function useBudgetsData(profile = BUSINESS_PROFILE) {
       categories,
       // For the form: what each category has actually cost, to suggest a limit.
       expenses: transactions.filter((t) => t.type === 'expense'),
-      // Charges that come back every month — Spotify, Netflix, rent — each
+      // Charges that come back every month, Spotify, Netflix, rent, each
       // with the budget already watching it, if there is one.
       recurring: recurringExpenses(
         transactions.filter((t) => t.type === 'expense'),

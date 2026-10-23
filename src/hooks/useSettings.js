@@ -12,7 +12,7 @@ const FALLBACKS = {
 
 /**
  * The settings table, flattened to a plain `{ key: value }` object and kept
- * live — editing a setting anywhere re-renders every consumer.
+ * live, editing a setting anywhere re-renders every consumer.
  */
 export function useSettings() {
   const rows = useLiveQuery(() => db.settings.toArray(), [], null)

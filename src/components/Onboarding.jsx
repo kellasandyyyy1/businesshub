@@ -72,7 +72,7 @@ const ASSISTANT_FEATURES = [
   {
     icon: IconPlus,
     label: 'Add transactions by typing',
-    sub: "Say 'log 3000 Meralco bill' — it fills the form for you.",
+    sub: "Say 'log 3000 Meralco bill' and it fills the form for you.",
   },
   {
     icon: IconSparkles,
@@ -109,7 +109,7 @@ function Dots({ count, step }) {
 }
 
 /**
- * First run, before any data exists. A full page rather than a modal — there
+ * First run, before any data exists. A full page rather than a modal. There
  * is nothing behind it worth showing yet.
  *
  * The first question is what the app is for, because the answer decides which
@@ -271,7 +271,7 @@ export default function Onboarding({ onDone }) {
         <header className="bfh-onb__head">
           <div className="bfh-onb__brand">
             {/* The mark is already a dark badge with light artwork, so it is the
-                badge — putting it inside a second ink square would sit one on
+                badge. Putting it inside a second ink square would sit one on
                 the other. It animates only here, on the first step. */}
             {step === 0 ? (
               <AnimatedLogo size={36} />
@@ -287,7 +287,7 @@ export default function Onboarding({ onDone }) {
           <Dots count={steps.length} step={step} />
 
           <span className="bfh-onb__step">
-            Step {step + 1} of {steps.length} — {steps[step]}
+            Step {step + 1} of {steps.length}: {steps[step]}
           </span>
           <h1 className="bfh-onb__title">{heading}</h1>
           <p className="bfh-onb__sub">{sub}</p>
@@ -425,7 +425,7 @@ export default function Onboarding({ onDone }) {
                   the quiet option, and giving it equal weight would suggest the
                   number matters less than it does. */}
               <button type="button" className="bfh-onb__skip" onClick={() => goTo(3)}>
-                Skip for now — you can set this in Settings later.
+                Skip for now. You can set this in Settings later.
               </button>
 
               {footer(() => goTo(1, true))}
@@ -484,20 +484,20 @@ export default function Onboarding({ onDone }) {
               <p className="bfh-onb__donesub">
                 {mode === 'business' && 'Your business dashboard is ready.'}
                 {mode === 'personal' && 'Your personal finance dashboard is ready.'}
-                {mode === 'both' && 'Business and personal — both ready.'}
+                {mode === 'both' && 'Business and personal, both ready.'}
               </p>
 
               <dl className="bfh-onb__summary">
                 {needsUser && (
                   <div>
                     <dt className="bfh-onb__label">You</dt>
-                    <dd>{userName.trim() || '—'}</dd>
+                    <dd>{userName.trim() || 'Not set'}</dd>
                   </div>
                 )}
                 {needsBusiness && (
                   <div>
                     <dt className="bfh-onb__label">Business</dt>
-                    <dd>{name.trim() || '—'}</dd>
+                    <dd>{name.trim() || 'Not set'}</dd>
                   </div>
                 )}
                 <div>

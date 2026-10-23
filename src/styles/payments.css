@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Payment methods — Settings list and the mark used wherever a method shows
+   Payment methods, Settings list and the mark used wherever a method shows
    ========================================================================== */
 
 /* A neutral tile that holds either a brand's own logo or a plain icon, so a
@@ -87,7 +87,7 @@
   opacity: 0.5;
 }
 
-/* Always there for an unused method — hover-only would hide it on a phone. */
+/* Always there for an unused method, hover-only would hide it on a phone. */
 .bfh-pmrow__delete {
   flex: none;
   color: var(--ink3);

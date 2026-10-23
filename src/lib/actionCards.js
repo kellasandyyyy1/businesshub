@@ -4,14 +4,14 @@
  * The model proposes; this module decides what the proposal actually means
  * against the books on this device. Each action type has three parts:
  *
- *   prepare — checks the model's fields against real data (categories that
+ *   prepare. Checks the model's fields against real data (categories that
  *             exist, a goal or client by that name, the side being switched
  *             on) and returns a card. Anything that cannot be saved as it
  *             stands gets a `problem`, which turns the card's main button into
  *             "finish it in the form" instead of saving a guess.
- *   save    — writes it through the same helpers the app's own forms use, so a
+ *   save   . Writes it through the same helpers the app's own forms use, so a
  *             confirmed card and a filled-in form produce identical rows.
- *   edit    — where the full form lives and what to fill it with.
+ *   edit   . Where the full form lives and what to fill it with.
  *
  * Amounts are always stored unsigned; direction lives in `type`, as it does
  * everywhere else in this database.
@@ -56,7 +56,7 @@ const positive = (value) => {
 }
 const sameName = (a, b) => text(a).toLowerCase() === text(b).toLowerCase()
 
-/** An exact name first, then one that contains the other — "travel" finds "Travel fund". */
+/** An exact name first, then one that contains the other, "travel" finds "Travel fund". */
 function findByName(rows, name, key = 'name') {
   const wanted = text(name).toLowerCase()
   if (!wanted) return null
@@ -138,8 +138,8 @@ const PREPARE = {
     const problem = isComplete(prefill)
       ? null
       : Number(prefill.amount) > 0
-        ? 'No matching category — pick one in the form.'
-        : 'No amount found — add it in the form.'
+        ? 'No matching category. Pick one in the form.'
+        : 'No amount found. Add it in the form.'
     return { type: 'ADD_TRANSACTION', prefill: { ...prefill, profile: ctx.profile }, problem }
   },
 
@@ -158,7 +158,7 @@ const PREPARE = {
         deadline: isoDate(p.deadline) ?? existing?.deadline ?? null,
         notes: existing?.notes ?? '',
       },
-      problem: !name ? 'No goal name found — add it in the form.' : !target ? 'No target amount found — add it in the form.' : null,
+      problem: !name ? 'No goal name found. Add it in the form.' : !target ? 'No target amount found. Add it in the form.' : null,
     }
   },
 
@@ -176,7 +176,7 @@ const PREPARE = {
       problem: !amount
         ? 'No amount found.'
         : !goal
-          ? `No goal called “${text(p.goalName) || 'that'}” yet — create it first.`
+          ? `No goal called “${text(p.goalName) || 'that'}” yet. Create it first.`
           : null,
     }
   },
@@ -193,9 +193,9 @@ const PREPARE = {
       existing,
       prefill: { name: existing?.name ?? category, category, amount, period },
       problem: !category
-        ? `No business category matches “${text(p.category)}” — pick one in the form.`
+        ? `No business category matches “${text(p.category)}”. Pick one in the form.`
         : !amount
-          ? 'No limit found — add it in the form.'
+          ? 'No limit found. Add it in the form.'
           : null,
     }
   },
@@ -220,9 +220,9 @@ const PREPARE = {
         dueDate: isoDate(p.dueDate) ?? addDays(issueDate, 14),
       },
       problem: !client
-        ? `No client named “${text(p.clientName)}” yet — add them first, or pick one in the form.`
+        ? `No client named “${text(p.clientName)}” yet. Add them first, or pick one in the form.`
         : !rate
-          ? 'No amount found — add it in the form.'
+          ? 'No amount found. Add it in the form.'
           : null,
     }
   },
@@ -239,7 +239,7 @@ const PREPARE = {
         phone: text(p.phone),
       },
       problem: !name
-        ? 'No client name found — add it in the form.'
+        ? 'No client name found. Add it in the form.'
         : duplicate
           ? `${duplicate.name} is already a client.`
           : null,
@@ -255,7 +255,7 @@ const PREPARE = {
         date: isoDate(p.date) ?? todayISO(),
         notes: text(p.notes),
       },
-      problem: amount ? null : 'No amount found — add it in the form.',
+      problem: amount ? null : 'No amount found. Add it in the form.',
     }
   },
 
@@ -274,7 +274,7 @@ const PREPARE = {
       type: 'UPDATE_NET_WORTH',
       existing,
       prefill: { type, name: existing?.name ?? name, category, amount },
-      problem: !name ? 'No name found — add it in the form.' : !amount ? 'No value found — add it in the form.' : null,
+      problem: !name ? 'No name found. Add it in the form.' : !amount ? 'No value found. Add it in the form.' : null,
     }
   },
 }
@@ -384,7 +384,7 @@ export async function saveCard(card) {
 /**
  * Where a card's full form lives: the side it belongs to, the page, and the
  * action that page picks up to open its form filled in. Null when there is no
- * form that would help — a deposit toward a goal that exists is complete.
+ * form that would help. A deposit toward a goal that exists is complete.
  */
 export function editTarget(card, loadedProfile) {
   const { prefill, existing } = card

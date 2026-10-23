@@ -12,7 +12,7 @@ export default function AppearanceSection({ theme }) {
     <div className="bfh-settings__body">
       <h2 className="bfh-panel__title">Appearance</h2>
       <p className="bfh-settings__note">
-        The same monochrome ramp either way — dark mode re-maps the roles, it is not a
+        The same monochrome ramp either way, dark mode re-maps the roles, it is not a
         different design.
       </p>
 

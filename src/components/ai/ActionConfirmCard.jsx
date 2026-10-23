@@ -28,8 +28,8 @@ const dayLabel = (iso) => (iso === new Date().toISOString().slice(0, 10) ? 'Toda
 const clip = (s, n) => (s.length > n ? `${s.slice(0, n - 1)}…` : s)
 
 /**
- * What each kind of card says. Every card has the same anatomy — an eyebrow,
- * an icon, a title, one line of context and a figure — so the person learns
+ * What each kind of card says. Every card has the same anatomy, an eyebrow,
+ * an icon, a title, one line of context and a figure, so the person learns
  * to read one and can read them all.
  */
 function describe(card, { symbol, categoryIcons }) {
@@ -45,7 +45,7 @@ function describe(card, { symbol, categoryIcons }) {
         Icon: categoryIcon(categoryIcons[p.category]),
         title: p.category || p.description || 'Transaction',
         meta: [p.category && p.description, TYPE_WORD[p.type], dayLabel(p.date), SIDE_WORD[p.profile]],
-        figure: amount > 0 ? signedLabel(signed, symbol) : '—',
+        figure: amount > 0 ? signedLabel(signed, symbol) : 'Not set',
         saveLabel: 'Save transaction',
       }
     }
@@ -58,7 +58,7 @@ function describe(card, { symbol, categoryIcons }) {
           existing && Number(existing.target) !== p.target ? `Was ${money(existing.target)}` : null,
           p.deadline ? `By ${formatDate(p.deadline)}` : 'No deadline',
         ],
-        figure: p.target ? money(p.target) : '—',
+        figure: p.target ? money(p.target) : 'Not set',
         note: p.current > 0 ? `${money(p.current)} saved so far` : null,
         saveLabel: existing ? 'Update goal' : 'Save goal',
       }
@@ -68,7 +68,7 @@ function describe(card, { symbol, categoryIcons }) {
         Icon: IconPigMoney,
         title: existing ? `Toward ${existing.name}` : p.goalName || 'Savings',
         meta: [dayLabel(p.date), existing && `${money(existing.current ?? 0)} → ${money((Number(existing.current) || 0) + p.amount)}`],
-        figure: p.amount ? signedLabel(p.amount, symbol) : '—',
+        figure: p.amount ? signedLabel(p.amount, symbol) : 'Not set',
         saveLabel: 'Save deposit',
         fixLabel: 'Create goal',
       }
@@ -78,7 +78,7 @@ function describe(card, { symbol, categoryIcons }) {
         Icon: p.category ? categoryIcon(categoryIcons[p.category]) : IconTargetArrow,
         title: p.category || 'Budget',
         meta: [PERIOD_WORD[p.period], 'Business', existing && `Was ${money(existing.amount)}`],
-        figure: p.amount ? `${money(p.amount)} ${PERIOD_SUFFIX[p.period]}` : '—',
+        figure: p.amount ? `${money(p.amount)} ${PERIOD_SUFFIX[p.period]}` : 'Not set',
         saveLabel: existing ? 'Update budget' : 'Save budget',
       }
     case 'ADD_INVOICE':
@@ -87,7 +87,7 @@ function describe(card, { symbol, categoryIcons }) {
         Icon: IconFileInvoice,
         title: p.clientName || 'Client',
         meta: [clip(p.description, 40), `Due ${formatDate(p.dueDate)}`],
-        figure: p.rate ? money(p.total) : '—',
+        figure: p.rate ? money(p.total) : 'Not set',
         badge: 'Draft',
         note: p.rate && p.tax > 0 ? `${money(p.subtotal)} + ${p.taxRate}% tax` : null,
         saveLabel: 'Save draft',
@@ -107,7 +107,7 @@ function describe(card, { symbol, categoryIcons }) {
         Icon: IconArrowsExchange,
         title: 'Business → Personal',
         meta: [dayLabel(p.date), 'Owner draw / salary'],
-        figure: p.amount ? money(p.amount) : '—',
+        figure: p.amount ? money(p.amount) : 'Not set',
         note: 'Recorded on both sides: an expense to the business, income to you.',
         saveLabel: 'Save transfer',
       }
@@ -117,7 +117,7 @@ function describe(card, { symbol, categoryIcons }) {
         Icon: p.type === 'liability' ? IconTrendingDown : IconChartBar,
         title: p.name || 'Entry',
         meta: [p.category, p.type === 'liability' ? 'Liability' : 'Asset', existing && `Was ${money(existing.amount)}`],
-        figure: p.amount ? signedLabel(p.type === 'liability' ? -p.amount : p.amount, symbol) : '—',
+        figure: p.amount ? signedLabel(p.type === 'liability' ? -p.amount : p.amount, symbol) : 'Not set',
         saveLabel: existing ? 'Update entry' : 'Save entry',
       }
     default:
@@ -127,7 +127,7 @@ function describe(card, { symbol, categoryIcons }) {
 
 /**
  * What the assistant understood, shown before anything is written. The person
- * reads it, then saves, edits it in the full form, or dismisses it — nothing
+ * reads it, then saves, edits it in the full form, or dismisses it, nothing
  * is stored until they tap Save, and an ignored card simply stays put.
  *
  * `card.status` is owned by the assistant: pending → saving → saved, or
@@ -172,7 +172,7 @@ export default function ActionConfirmCard({ card, symbol, categoryIcons = {}, ca
                   className="bfh-confirm__close"
                   onClick={() => onDismiss(card.id)}
                   disabled={status === 'saving'}
-                  aria-label="Dismiss — do not save"
+                  aria-label="Dismiss, do not save"
                 >
                   <IconX size={13} stroke={1.75} aria-hidden="true" />
                 </button>

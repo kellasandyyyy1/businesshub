@@ -4,7 +4,7 @@ import { formatCurrency } from '../../lib/format'
  * The tabbed "where did it come from / go to" card.
  *
  * The shell owns the heading, the tab row and the show-all control; the caller
- * supplies the rows, because not every tab is a list of proportional bars — the
+ * supplies the rows, because not every tab is a list of proportional bars, the
  * recurring view is a different shape entirely.
  */
 export default function BreakdownCard({ title, tabs, tab, onTab, children, footer }) {

@@ -7,8 +7,8 @@ import { getGoals } from '../db/queries'
 /**
  * The personal profile's goals, newest first.
  *
- * Goals belong to the personal side only — a business saves through budgets and
- * cash flow — so this does not take a profile the way the shared hooks do.
+ * Goals belong to the personal side only, a business saves through budgets and
+ * cash flow, so this does not take a profile the way the shared hooks do.
  */
 export function useGoals() {
   return useLiveQuery(async () => {
@@ -22,8 +22,8 @@ export function useGoals() {
  *
  * Two writes that have to agree, so they share one transaction: the goal moves
  * forward and the ledger gains the contribution. Saving is spending as far as
- * the month is concerned — the money has left the pot the household spends
- * from — which is why it lands as an expense under Savings.
+ * the month is concerned, the money has left the pot the household spends
+ * from, which is why it lands as an expense under Savings.
  *
  * `date` defaults to today; the assistant passes the day the person named.
  *

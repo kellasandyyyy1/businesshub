@@ -17,7 +17,7 @@ const OPTIONS = [
  * other exists at all.
  *
  * Collapsed to the 56px rail the labels go and the two icons stack, which the
- * stylesheet handles — the markup is the same either way so nothing remounts
+ * stylesheet handles, the markup is the same either way so nothing remounts
  * when the sidebar narrows.
  */
 export default function ProfileSwitcher({ onNavigate }) {
@@ -34,7 +34,7 @@ export default function ProfileSwitcher({ onNavigate }) {
   }
 
   return (
-    <div className="bfh-profileswitch" role="group" aria-label="Active profile">
+    <div className="bfh-profileswitch" data-help-id="profile-switcher" role="group" aria-label="Active profile">
       {OPTIONS.map(({ id, label, sub, Icon }) => {
         const active = profile === id
         return (
@@ -44,7 +44,7 @@ export default function ProfileSwitcher({ onNavigate }) {
             className="bfh-profileswitch__option"
             data-active={active ? 'true' : 'false'}
             aria-pressed={active}
-            title={`${label} — ${sub}`}
+            title={`${label} · ${sub}`}
             onClick={() => choose(id)}
           >
             <span className="bfh-profileswitch__icon" aria-hidden="true">

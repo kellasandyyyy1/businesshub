@@ -62,7 +62,7 @@ export default function NetWorthModal({ item, defaultType, symbol, onClose }) {
     }
 
     // A balance that has not been re-stated is stale, so every save restamps it
-    // — that timestamp is what the summary's "updated" line reports.
+    //, that timestamp is what the summary's "updated" line reports.
     try {
       if (isEdit) await db.netWorth.update(item.id, { ...record, updatedAt: new Date().toISOString() })
       else await addNetWorthEntry('personal', record)
@@ -75,7 +75,7 @@ export default function NetWorthModal({ item, defaultType, symbol, onClose }) {
     onClose()
   }
 
-  // Straight away, no second tap — the toast that follows carries Undo.
+  // Straight away, no second tap, the toast that follows carries Undo.
   const remove = async () => {
     onClose()
     await removeWithUndo(

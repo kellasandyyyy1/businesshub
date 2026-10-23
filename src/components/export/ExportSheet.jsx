@@ -25,7 +25,7 @@ const FORMATS = [
 ]
 
 /**
- * The mobile export flow. The type is fixed by whatever opened the sheet —
+ * The mobile export flow. The type is fixed by whatever opened the sheet,
  * only period and format are choices, and columns fall back to the defaults.
  */
 export default function ExportSheet({ typeId, defaultPreset = 'this-month', clientId, onClose }) {
@@ -104,7 +104,7 @@ export default function ExportSheet({ typeId, defaultPreset = 'this-month', clie
             <span className="bfh-fieldlabel" id="bfh-exportsheet-period">
               Time period
             </span>
-            {/* One swipeable row with every label whole — squeezing seven
+            {/* One swipeable row with every label whole, squeezing seven
                 periods into the sheet's width is what made them overlap. */}
             <div
               className="bfh-chiprow bfh-exportsheet__chips"

@@ -1,6 +1,6 @@
 /**
  * Derives plain-language observations from the ledger. Every insight is
- * suppressed unless the data can actually support it — a single client is
+ * suppressed unless the data can actually support it. A single client is
  * always 100% of revenue, and that says nothing worth reading.
  *
  * Each returns `{ id, title, body, tag, severity }`. Severity only decides
@@ -122,7 +122,7 @@ function marginTrend({ transactions, today }) {
     title: `You are keeping ${pct(Math.abs(delta))} ${falling ? 'less' : 'more'} of what you earn`,
     body: `Over the last three months you kept ${pct(now)} of your income after costs, against ${pct(before)} in the three months before that. ${
       falling
-        ? 'Costs are growing faster than income — worth finding which ones moved.'
+        ? 'Costs are growing faster than income. Worth finding which ones moved.'
         : 'Income is outpacing costs, which is the direction you want.'
     }`,
     tag: 'Profitability',
@@ -163,7 +163,7 @@ function invoiceSlowdown({ invoices }) {
     title: `Clients are paying ${Math.abs(delta)} days ${slower ? 'slower' : 'faster'}`,
     body: `Your recent invoices took ${now} days to be paid, against ${before} days earlier on. ${
       slower
-        ? 'Money arriving later means you carry costs for longer — a payment reminder a few days before the due date usually helps.'
+        ? 'Money arriving later means you carry costs for longer. A payment reminder a few days before the due date usually helps.'
         : 'That is money reaching you sooner, which takes pressure off everything else.'
     }`,
     tag: 'Getting paid',
@@ -251,7 +251,7 @@ function topRevenueSource({ transactions, money }) {
   return {
     id: 'top-source',
     title: `${category} brings in most of your money`,
-    body: `${money(amount)} of your ${money(total)} income came from ${category.toLowerCase()} — ${pct(amount / total)} of the total. It is the part of the business worth protecting first.`,
+    body: `${money(amount)} of your ${money(total)} income came from ${category.toLowerCase()}, ${pct(amount / total)} of the total. It is the part of the business worth protecting first.`,
     tag: 'Revenue',
     severity: 2,
   }

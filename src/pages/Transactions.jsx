@@ -197,7 +197,7 @@ export default function Transactions() {
       {editing && (
         <TransactionModal
           // Passed straight through. An object with no id is still a new
-          // transaction — the modal decides that on `id` alone — and blanking
+          // transaction, the modal decides that on `id` alone, and blanking
           // it here would throw away anything the assistant filled in.
           transaction={editing}
           categories={data.categories}

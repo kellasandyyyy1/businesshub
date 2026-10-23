@@ -9,7 +9,7 @@ import { PERSONAL_DRAW_CATEGORY } from './defaults'
  * so the filter lives in one place rather than at eighty call sites.
  *
  * Profiled tables: transactions, clients, invoices, budgets, categories, goals,
- * netWorth. `settings` is not one of them — it holds one row per key for the
+ * netWorth. `settings` is not one of them, it holds one row per key for the
  * whole app.
  */
 
@@ -17,7 +17,7 @@ import { PERSONAL_DRAW_CATEGORY } from './defaults'
  * The profile every page built before the two-profile split reads from. Those
  * pages are business-only, and all data that existed before v5 is business
  * data, so they behave exactly as they always have. The parts that introduce
- * personal UI replace this with the active profile from ProfileContext — this
+ * personal UI replace this with the active profile from ProfileContext, this
  * constant is the list of places they have to touch.
  */
 export const BUSINESS_PROFILE = 'business'
@@ -41,7 +41,7 @@ export const profileOf = (row) => row?.profile ?? 'business'
 
 /**
  * Predicate for Dexie's `Collection.filter`. Use it to scope a query that has
- * to start from another index — `.where('date').between(...)` walks the date
+ * to start from another index, `.where('date').between(...)` walks the date
  * index and this skips the rows belonging to the other profile, so the query
  * stays indexed and stays in index order.
  */
@@ -86,12 +86,12 @@ export function transactionsBetween(profile, startDate, endDate) {
     .toArray()
 }
 
-/** Everything dated before `date` — what a period's opening position needs. */
+/** Everything dated before `date`, what a period's opening position needs. */
 export function transactionsBefore(profile, date) {
   return db.transactions.where('date').below(date).filter(ofProfile(profile)).toArray()
 }
 
-/** Newest first, optionally capped — for "recent activity" style lists. */
+/** Newest first, optionally capped, for "recent activity" style lists. */
 export function recentTransactions(profile, limit) {
   const c = db.transactions.orderBy('date').reverse().filter(ofProfile(profile))
   return limit ? c.limit(limit).toArray() : c.toArray()
@@ -110,7 +110,7 @@ export function getInvoices(profile) {
   return db.invoices.filter(ofProfile(profile)).toArray()
 }
 
-/** Newest first — the order the invoice list shows. */
+/** Newest first, the order the invoice list shows. */
 export function recentInvoices(profile) {
   return db.invoices.orderBy('createdAt').reverse().filter(ofProfile(profile)).toArray()
 }
@@ -239,7 +239,7 @@ export async function addTransactionWithDraw(record, { alsoPersonal = false } = 
 /**
  * Keeps a linked pair in step when the business side is edited.
  *
- * Only the facts the two share travel across — what the money was and when it
+ * Only the facts the two share travel across, what the money was and when it
  * moved. The personal row's own wording is left alone: it says where the money
  * came from, which does not change because the business description did.
  */
@@ -262,7 +262,7 @@ export async function updateTransactionWithDraw(id, record) {
  * The most recent transfers, each with the personal row it created.
  *
  * A pair whose other half has been deleted is dropped rather than listed with
- * a blank beside it — the list is there to show what matched.
+ * a blank beside it, the list is there to show what matched.
  */
 export async function recentTransfers(limit = 5) {
   const business = await db.transactions

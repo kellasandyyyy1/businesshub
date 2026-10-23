@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Ask Dual — the assistant panel
+   Ask Dual, the assistant panel
    ========================================================================== */
 
 .bfh-assist {
@@ -35,6 +35,30 @@
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
   }
+}
+
+/* Show me on a wide screen: the scrim lifts so the page can be seen and used,
+   and the panel narrows and steps to the side away from the highlighted spot. */
+.bfh-assist[data-guide] {
+  padding: 16px;
+  pointer-events: none;
+  justify-items: end;
+  align-items: end;
+}
+.bfh-assist[data-guide='left'] {
+  justify-items: start;
+}
+.bfh-assist[data-guide] .bfh-assist__scrim {
+  display: none;
+}
+.bfh-assist[data-guide] .bfh-assist__panel {
+  width: 380px;
+  max-height: min(72vh, 640px);
+  pointer-events: auto;
+}
+/* At this width the side switch drops its words so the title keeps its line. */
+.bfh-assist[data-guide] .bfh-assist__sidelabel {
+  display: none;
 }
 
 .bfh-assist__panel {
@@ -189,7 +213,7 @@
   line-height: 1.5;
 }
 
-/* The answer is not a bubble — it is the page talking, so it runs full width. */
+/* The answer is not a bubble, it is the page talking, so it runs full width. */
 .bfh-assist__reply {
   display: flex;
   flex-direction: column;
@@ -536,7 +560,7 @@
 }
 
 /* A system line belongs to neither side of the conversation, so it is not a
-   bubble — it sits centred between the turns it separates. */
+   bubble, it sits centred between the turns it separates. */
 .bfh-assist__system {
   margin: 8px auto;
   font-family: var(--font-mono);
@@ -548,7 +572,7 @@
 }
 
 /* ==========================================================================
-   Confirmation card — a transaction the assistant understood, waiting for
+   Confirmation card, a transaction the assistant understood, waiting for
    the person to save it. Nothing is written until they tap Save.
    ========================================================================== */
 
@@ -813,7 +837,7 @@
   }
 }
 
-/* A small status tag beside the eyebrow — an invoice says it is a draft. */
+/* A small status tag beside the eyebrow, an invoice says it is a draft. */
 .bfh-confirm__eyebrow {
   display: inline-flex;
   align-items: center;
@@ -836,6 +860,123 @@
 .bfh-confirm__note--warn::before {
   content: '! ';
   font-weight: var(--weight-semibold);
+}
+
+/* ---- Edit and delete: the change itself, or a choice of records ---------- */
+
+.bfh-recordcard__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* One row per changed field and no others: the old value struck through and
+   receding, the new one in full ink. */
+.bfh-recordcard__diff {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 0 0;
+  border-top: var(--hairline) solid var(--b);
+}
+.bfh-recordcard__row {
+  display: grid;
+  grid-template-columns: minmax(72px, auto) minmax(0, 1fr);
+  align-items: baseline;
+  gap: 12px;
+  font-size: var(--fs-small);
+}
+.bfh-recordcard__row dt {
+  color: var(--ink2);
+}
+.bfh-recordcard__row dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 4px 8px;
+  margin: 0;
+  min-width: 0;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.bfh-recordcard__before {
+  color: var(--ink3);
+  text-decoration-thickness: 1px;
+  overflow-wrap: anywhere;
+}
+.bfh-recordcard__arrow {
+  color: var(--ink3);
+}
+.bfh-recordcard__after {
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.bfh-recordcard__ask {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+}
+.bfh-recordcard__choices {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.bfh-recordcard__choices li + li {
+  border-top: var(--hairline) solid var(--b);
+}
+.bfh-recordcard__choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 9px 12px;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-sans);
+  text-align: left;
+  color: var(--ink2);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--duration-micro) var(--ease-out-soft);
+}
+.bfh-recordcard__choice:hover {
+  background: rgb(var(--ink-c) / 0.04);
+  color: var(--ink);
+}
+.bfh-recordcard__choice:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -2px;
+}
+.bfh-recordcard__choicetext {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.bfh-recordcard__choicetitle {
+  overflow: hidden;
+  font-size: var(--fs-small);
+  font-weight: var(--weight-medium);
+  color: var(--ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bfh-recordcard__choicemeta {
+  font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink3);
 }
 
 /* ==========================================================================
@@ -878,7 +1019,7 @@
 /* ---- Answers -------------------------------------------------------------- */
 
 /* Lists get the dash the prompt asks the model to write, rather than nothing
-   at all — the browser bullet was being reset away. */
+   at all, the browser bullet was being reset away. */
 .ai-text ul {
   list-style: none;
   padding-left: 0;
@@ -972,7 +1113,7 @@
 }
 
 /* ==========================================================================
-   Header — who is answering, from which books, and the two ways out
+   Header, who is answering, from which books, and the two ways out
    ========================================================================== */
 
 .bfh-assist__head {
@@ -1026,7 +1167,7 @@
   gap: 4px;
 }
 
-/* Business | Personal — the same segmented look as the rest of the app. */
+/* Business | Personal, the same segmented look as the rest of the app. */
 .bfh-assist__sides {
   display: inline-flex;
   gap: 2px;

@@ -3,7 +3,7 @@
  *
  * Inline rather than the favicon file the rest of the app uses: CSS cannot
  * reach inside an <img>, so the only way to animate the parts is to have them
- * in the document. Everywhere else keeps the static file — this is for the one
+ * in the document. Everywhere else keeps the static file, this is for the one
  * screen where the app is introducing itself and has nothing else to show.
  *
  * The whole animation sits inside a no-preference query, so a device asking for

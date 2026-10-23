@@ -39,7 +39,7 @@ export function ratesOf(invoice, fallbackTaxRate = 12) {
   }
 }
 
-/** The date an invoice was issued — newer rows carry it explicitly. */
+/** The date an invoice was issued, newer rows carry it explicitly. */
 export const issueDateOf = (invoice) => invoice.issueDate ?? invoice.createdAt?.slice(0, 10) ?? ''
 
 /**
@@ -78,7 +78,7 @@ const dayDiff = (a, b) => Math.round((new Date(`${b}T00:00:00Z`) - new Date(`${a
 const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`
 
 /**
- * One line on where the invoice stands against the calendar — what a person
+ * One line on where the invoice stands against the calendar, what a person
  * would say about it, rather than a status word and a date to compare in
  * their head: "Due in 11 days", "20 days overdue", "Paid Aug 25".
  */
@@ -109,7 +109,7 @@ const ACTION_ORDER = { overdue: 0, sent: 1, viewed: 1, draft: 2, paid: 3 }
 
 /**
  * The list in the order it needs attention: late first, then whatever falls
- * due soonest, then drafts waiting to go out, then the paid record — newest
+ * due soonest, then drafts waiting to go out, then the paid record, newest
  * payment first.
  */
 export function sortForAction(invoices) {

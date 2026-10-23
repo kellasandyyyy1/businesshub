@@ -78,7 +78,7 @@
   text-overflow: ellipsis;
 }
 
-/* Over 80% used, the percentage takes a dashed underline. The bar stays ink —
+/* Over 80% used, the percentage takes a dashed underline. The bar stays ink,
    caution is signalled by treatment, never by colour. */
 .bfh-budget__pct {
   flex: none;
@@ -209,7 +209,7 @@
    Budget form
    ========================================================================== */
 
-/* Categories as tappable chips with their icon, wrapping — the question is
+/* Categories as tappable chips with their icon, wrapping, the question is
    answered by picking, not by opening a dropdown. */
 .bfh-budgetcats {
   display: flex;
@@ -282,7 +282,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* What the category has been costing — a quiet panel under the amount. */
+/* What the category has been costing, a quiet panel under the amount. */
 .bfh-budgetform__hint {
   display: flex;
   flex-direction: column;
@@ -336,7 +336,7 @@
 }
 
 /* ==========================================================================
-   Repeating charges — Spotify, Netflix, rent — each a tap from a limit
+   Repeating charges, Spotify, Netflix, rent, each a tap from a limit
    ========================================================================== */
 
 .bfh-subs {
@@ -512,7 +512,7 @@
 /* ---- Budgets page: first run and phone ------------------------------------- */
 
 /* The starter list: the categories that cost the most, each one tap from a
-   budget — the way in when nothing has been set yet. */
+   budget, the way in when nothing has been set yet. */
 .bfh-budgetstart {
   grid-column: 1 / -1;
   display: flex;

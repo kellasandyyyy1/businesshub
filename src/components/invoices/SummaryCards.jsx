@@ -32,8 +32,7 @@ export default function SummaryCards({ summary, symbol, onShowOverdue }) {
             <span className="dot dot-neg" aria-hidden="true" />{' '}
             <strong>
               <span className="sig-neg">{summary.overdue.count} overdue</span> · {money(summary.overdue.value)}
-            </strong>{' '}
-            — follow these up first
+            </strong>. Follow these up first.
           </span>
           <span className="bfh-invhero__alertgo" aria-hidden="true">
             View

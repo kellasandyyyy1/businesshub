@@ -5,13 +5,13 @@ import EmptyPeriod from './EmptyPeriod'
 
 /**
  * The first thing on a dashboard: one plain-language answer to "how am I
- * doing?" for the selected window — the figure that matters most, a sentence
+ * doing?" for the selected window, the figure that matters most, a sentence
  * that explains it, and money in against money out as two bars you can
  * compare at a glance. Everything below it is detail.
  *
  * The headline stays ink. `delta` ({ value, goodWhen }) adds the change under
  * it, and `sentenceTone: 'warn'` puts an amber dot before the sentence when
- * more went out than came in — the words themselves stay grey.
+ * more went out than came in, the words themselves stay grey.
  *
  * When the window is empty it says so, and offers the two ways forward: add
  * something, or look further back.

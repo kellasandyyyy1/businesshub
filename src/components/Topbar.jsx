@@ -66,6 +66,7 @@ export default function Topbar({ onOpenMenu, onAsk }) {
           <button
             type="button"
             className="bfh-greetingtap"
+            data-help-id="profile-switcher"
             onClick={() => setModeOpen(true)}
             aria-haspopup="dialog"
             aria-label={`${greeting}. Currently in ${mode} mode. Change mode`}
@@ -92,7 +93,7 @@ export default function Topbar({ onOpenMenu, onAsk }) {
         ) : (
           <div className="min-w-0">
             <div className="bfh-greeting">{greeting}</div>
-            {/* Which books are on screen, not whose they are — the greeting
+            {/* Which books are on screen, not whose they are, the greeting
                 above already says that. */}
             <div className="bfh-micro bfh-greeting__sub">
               {dateLabel} · {mode}
@@ -133,6 +134,7 @@ export default function Topbar({ onOpenMenu, onAsk }) {
           <button
             type="button"
             className="bfh-icon-btn bfh-bell"
+            data-help-id="notification-bell"
             data-bell="true"
             data-fresh={bell.fresh > 0 || undefined}
             data-tone={bell.fresh > 0 ? (bell.tone ?? 'ink') : undefined}

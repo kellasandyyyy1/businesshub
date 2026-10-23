@@ -5,11 +5,11 @@ import ToastViewport from '../components/ToastViewport'
 /**
  * Short confirmations of what the user just did, an undo for what they just
  * removed, and the error when a save fails. Never financial alerts, insights
- * or AI suggestions — those belong to the bell, the page and push.
+ * or AI suggestions, those belong to the bell, the page and push.
  *
  *   toast.success('Budget saved')
  *   toast.undo('Goal deleted', onUndo, onExpire)
- *   toast.error("Couldn't save. Try again.")   — stays until closed
+ *   toast.error("Couldn't save. Try again.")  , stays until closed
  */
 
 const ToastContext = createContext(null)
@@ -51,7 +51,7 @@ export function ToastProvider({ children }) {
     [remove],
   )
 
-  /** Closing by hand counts as letting the window run out — the delete stands. */
+  /** Closing by hand counts as letting the window run out, the delete stands. */
   const dismiss = useCallback((id) => expire(id), [expire])
 
   const startTimer = useCallback(
@@ -106,7 +106,7 @@ export function ToastProvider({ children }) {
       }
 
       // The same words already up are replaced rather than stacked, and the
-      // oldest makes way past two — an undo it pushes out still commits.
+      // oldest makes way past two, an undo it pushes out still commits.
       const current = live.current.filter((t) => !t.settled)
       const same = current.filter((t) => t.message === toast.message)
       const rest = current.filter((t) => t.message !== toast.message)
@@ -141,6 +141,6 @@ export function ToastProvider({ children }) {
   )
 }
 
-/** Works outside the provider too (tests, stray mounts) — it simply does nothing. */
+/** Works outside the provider too (tests, stray mounts), it simply does nothing. */
 const NOOP = { success() {}, info() {}, error() {}, undo() {}, dismiss() {} }
 export const useToast = () => useContext(ToastContext) ?? NOOP

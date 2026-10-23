@@ -9,7 +9,7 @@ import { ofProfile } from '../db/queries'
  *
  * Rows are matched with `ofProfile` rather than an equality query on the
  * profile index. A row written before the profile split has no such field and
- * reads as business — an indexed `equals('business')` would walk straight past
+ * reads as business, an indexed `equals('business')` would walk straight past
  * it, so an export would quietly omit the oldest rows in the ledger and an
  * import would leave them behind to be duplicated.
  */

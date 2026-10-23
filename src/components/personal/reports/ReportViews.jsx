@@ -25,7 +25,7 @@ function Hero({ label, value, context }) {
   )
 }
 
-/** Two or three supporting figures in one row — never a grid with holes in it. */
+/** Two or three supporting figures in one row, never a grid with holes in it. */
 function Stats({ stats }) {
   return (
     <dl className="bfh-prstats" data-count={stats.length}>
@@ -62,7 +62,7 @@ function Bar({ share, target }) {
 
 /**
  * The row every list in the reports is made of. Name and figure share the
- * first line — the name gives way with an ellipsis, the figure never does —
+ * first line, the name gives way with an ellipsis, the figure never does,
  * and anything else drops to a line of its own underneath, so nothing has to
  * scroll sideways or squeeze into a column.
  */
@@ -101,7 +101,7 @@ function Empty({ children }) {
 
 /** "↑ 12% on the previous period", in words for the cases with no arrow. */
 function compared(delta, against) {
-  if (!delta || delta === '—') return null
+  if (!delta) return null
   if (delta === 'New') return `Nothing in ${against} to compare with.`
   if (delta === 'Level') return `About the same as ${against}.`
   return `${delta} on ${against}.`
@@ -109,7 +109,7 @@ function compared(delta, against) {
 
 /** The short form for a row: "↑ 12% vs before", "new", or nothing. */
 function shortDelta(delta, against = 'before') {
-  if (!delta || delta === '—') return null
+  if (!delta) return null
   if (delta === 'New') return against === 'before' ? 'new this period' : `nothing ${against}`
   if (delta === 'Level') return `same as ${against}`
   return `${delta} vs ${against}`
@@ -254,7 +254,7 @@ export function IncomeBreakdown({ view, series, months, symbol, icons, period })
 export function SavingsReport({ view, goals, symbol, today }) {
   const rateSeries = view.rateHistory.map((m) => ({ key: m.month, label: m.label.slice(0, 3), value: m.rate ?? 0 }))
   const deficits = view.rateHistory.filter((m) => m.deficit)
-  const rate = view.savingsRate === null ? '—' : `${Math.round(view.savingsRate)}%`
+  const rate = view.savingsRate === null ? 'N/A' : `${Math.round(view.savingsRate)}%`
 
   let context
   if (view.income === 0 && view.expenses === 0) context = 'Nothing came in or went out in this period.'
@@ -406,7 +406,7 @@ function SpendingCalendar({ grid, symbol }) {
 
 export function MonthlySnapshot({ view, symbol, onMonth, month, today }) {
   const atLatest = month >= today.slice(0, 7)
-  const rate = view.savingsRate === null ? '—' : `${Math.round(view.savingsRate)}%`
+  const rate = view.savingsRate === null ? 'N/A' : `${Math.round(view.savingsRate)}%`
 
   let context
   if (view.income === 0 && view.expenses === 0) context = 'Nothing recorded this month.'

@@ -61,7 +61,7 @@ export default function AppShell() {
   }, [params, setParams, navigate])
 
   // Tapping a notification while the app is already open should move the app,
-  // not spawn a second window — the worker posts the destination back here.
+  // not spawn a second window, the worker posts the destination back here.
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return undefined
     const onMessage = (event) => {

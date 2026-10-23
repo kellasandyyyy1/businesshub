@@ -10,8 +10,8 @@ import { useDevice } from '../../context/BreakpointContext'
  *
  * The columns are passed in because the two ledgers do not show the same
  * things: income names the client it came from, expenses carry a minus sign.
- * Everything else — the search field, the empty state, load-more, the row
- * click — is identical, so it lives here once. On a phone the rows become the
+ * Everything else, the search field, the empty state, load-more, the row
+ * click, is identical, so it lives here once. On a phone the rows become the
  * day-grouped TxList, which signs its own amounts.
  */
 export default function LedgerTable({
@@ -54,7 +54,7 @@ export default function LedgerTable({
       <header className="bfh-ledger__head">
         <h2 className="bfh-panel__title">{title}</h2>
 
-        {/* A table showing a fixed slice — the dashboard's last eight — has
+        {/* A table showing a fixed slice, the dashboard's last eight, has
             nothing to search, so it puts a link through to the full list in
             the same slot instead. */}
         {onSearch ? (

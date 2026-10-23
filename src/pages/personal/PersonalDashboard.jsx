@@ -100,7 +100,7 @@ export default function PersonalDashboard() {
       headlineLabel: 'overspent',
       delta: { value: percentChange(expenses, previousExpenses), goodWhen: 'down' },
       sentenceTone: 'warn',
-      sentence: `You spent ${money(expenses)} against ${money(income)} coming in — ${money(-leftOver)} more than you earned.`,
+      sentence: `You spent ${money(expenses)} against ${money(income)} coming in, ${money(-leftOver)} more than you earned.`,
     }
   } else {
     summary = {
@@ -198,7 +198,7 @@ export default function PersonalDashboard() {
               />
               <MetricCard
                 label="Savings rate"
-                value={savingsRate === null ? '—' : `${Math.round(savingsRate)}%`}
+                value={savingsRate === null ? 'N/A' : `${Math.round(savingsRate)}%`}
                 delta={{ value: rateChange, goodWhen: 'up', format: 'points' }}
                 context={
                   savingsRate === null

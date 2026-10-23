@@ -23,7 +23,7 @@ const LABEL_GAP = 14
  * The bar plot every bar chart in the app draws with: one or more series per
  * time bucket, a recessive grid, and a tooltip on hover, tap or arrow key.
  *
- * `bars` names the series in draw order — `[{ key, name, tone }]`, where tone
+ * `bars` names the series in draw order, `[{ key, name, tone }]`, where tone
  * is `primary` (solid ink) or `secondary` (a light tint of it). Each item in
  * `data` carries a value under every bar's key, plus `key` and `label`, and an
  * optional longer `title` for the tooltip.
@@ -94,7 +94,7 @@ export default function BarPlot({
 
   const point = active !== null ? data[active] : null
   // The tooltip sits beside its bucket, inside the plot, on whichever side
-  // has the room — never over the title or the legend.
+  // has the room, never over the title or the legend.
   const tip = point ? tipPlacement(centre(active), Math.min(slot, groupW + 16) / 2, width) : null
 
   return (

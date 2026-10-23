@@ -110,10 +110,10 @@ export default function ModesSection() {
   const change = pending && pending !== activeMode ? describe(activeMode, pending) : null
 
   return (
-    <section className="bfh-modesetting">
+    <section className="bfh-modesetting" data-help-id="active-modes">
       <h3 className="bfh-datablock__title">Active modes</h3>
       <p className="bfh-modesetting__lede">
-        Choose what Dual tracks for you. Turning a mode off hides it — nothing is deleted, and
+        Choose what Dual tracks for you. Turning a mode off hides it. Nothing is deleted, and
         it all comes back if you turn it on again.
       </p>
 

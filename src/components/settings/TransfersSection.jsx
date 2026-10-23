@@ -10,7 +10,7 @@ import { formatCurrency, formatDate } from '../../lib/format'
  * The owner draws that were recorded on both sides.
  *
  * Read-only on purpose. Each pair is two rows that have to agree, and the one
- * place that can keep them agreeing is the business transaction itself — so
+ * place that can keep them agreeing is the business transaction itself, so
  * that is where a row sends you rather than offering an edit here that would
  * only change half of it.
  */

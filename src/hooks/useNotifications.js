@@ -46,8 +46,8 @@ const requestedThisSession = new Set()
 /**
  * What had already been said when this session began.
  *
- * Read once and then held, because two things read these markers — the shell,
- * which delivers, and the bell, which lists — and the live query behind each
+ * Read once and then held, because two things read these markers, the shell,
+ * which delivers, and the bell, which lists, and the live query behind each
  * re-runs on every write. Re-reading storage would mean the shell recording a
  * milestone as sent and the bell, resolving a moment later against the new
  * marker, deciding there was no milestone to show. The notice would be pushed

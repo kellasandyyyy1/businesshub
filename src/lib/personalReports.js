@@ -38,7 +38,7 @@ const lastOf = (month) => {
  * The window a preset means, and the one before it.
  *
  * Every report compares against the previous stretch of the same length, so
- * the comparison is like for like — a 3-month window is measured against the
+ * the comparison is like for like, a 3-month window is measured against the
  * 3 months before it, not against last month.
  */
 export function resolveReportPeriod(preset, today, custom = {}) {
@@ -100,7 +100,7 @@ const incomeOf = (rows) => rows.filter((r) => r.type === 'income')
 
 /** "↑ 12%", "↓ 8%", or "New" when there is nothing to compare against. */
 export function deltaLabel(current, previous) {
-  if (!previous) return current ? 'New' : '—'
+  if (!previous) return current ? 'New' : ''
   const change = ((current - previous) / Math.abs(previous)) * 100
   if (Math.abs(change) < 0.5) return 'Level'
   return `${change > 0 ? '↑' : '↓'} ${Math.abs(change).toFixed(0)}%`
@@ -205,7 +205,7 @@ export function monthlySeries(transactions = [], today, type, count = 6) {
 
   return totals.map((entry, i) => ({
     ...entry,
-    delta: i === 0 ? '—' : deltaLabel(entry.value, totals[i - 1].value),
+    delta: i === 0 ? '' : deltaLabel(entry.value, totals[i - 1].value),
   }))
 }
 
@@ -340,7 +340,7 @@ export function monthlySnapshot(transactions = [], month) {
  * The running position, month by month.
  *
  * Each entry holds only its current value and the date it was last touched,
- * so a month's figure is every item stated on or before that month's end —
+ * so a month's figure is every item stated on or before that month's end,
  * a running position rather than only what changed that month, which would
  * read as if everything else had vanished.
  */

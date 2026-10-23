@@ -86,7 +86,7 @@ export default function TransactionModal({
 
   // Once the saved methods have loaded, settle what the picker starts on:
   //   editing          the method it was saved with (or its old label, kept)
-  //   assistant text   the saved method it names — exact, or the only close
+  //   assistant text   the saved method it names. Exact, or the only close
   //                    one; anything else is left empty, never invented
   //   new entry        whichever method this profile used last
   const settled = useRef(false)
@@ -108,7 +108,7 @@ export default function TransactionModal({
   }, [methods, isEdit])
 
   // Active methods, plus the one this entry already uses if it has since been
-  // switched off — an edit should never silently drop it.
+  // switched off. An edit should never silently drop it.
   const pickable = methods
     ? [
         ...methods.active,
@@ -353,7 +353,7 @@ export default function TransactionModal({
           )}
 
           {/* Paying yourself is the one business expense that is also personal
-              income. Offered only on that category, and only on a new row —
+              income. Offered only on that category, and only on a new row,
               an existing pair is already linked, and one that is not should
               not gain a second record retrospectively. */}
           {showDrawToggle && (
@@ -411,7 +411,7 @@ export default function TransactionModal({
                 </div>
                 <span className="bfh-fieldhint">
                   {form.status === 'pending'
-                    ? 'Not in your account yet — it will not count toward your cash balance.'
+                    ? 'Not in your account yet. It will not count toward your cash balance.'
                     : 'The money has already moved.'}
                 </span>
               </div>

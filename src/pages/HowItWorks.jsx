@@ -104,7 +104,7 @@ const FAQ = [
   {
     Icon: IconDeviceLaptop,
     q: 'Where is my data kept?',
-    a: 'Only on this device — no account, no cloud. Download a backup from Settings → Data to keep a copy.',
+    a: 'Only on this device. No account, no cloud. Download a backup from Settings → Data to keep a copy.',
   },
 ]
 
@@ -130,7 +130,7 @@ export default function HowItWorks() {
       <header className="bfh-block bfh-how__hero">
         <h1 className="bfh-how__title">How Dual works</h1>
         <p className="bfh-how__lead">
-          Your business and personal money in one place — kept apart, and explained in plain words.
+          Your business and personal money in one place, kept apart, and explained in plain words.
         </p>
       </header>
 

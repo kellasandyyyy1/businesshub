@@ -129,7 +129,7 @@ export default function Invoices() {
         />
       </div>
 
-      {/* The editor takes precedence — opening it from the detail panel swaps
+      {/* The editor takes precedence, opening it from the detail panel swaps
           the two rather than stacking them. */}
       {editing ? (
         <InvoiceEditor

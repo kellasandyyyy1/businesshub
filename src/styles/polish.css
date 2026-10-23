@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Polish — empty states, onboarding, page transition, shortcuts, print
+   Polish, empty states, onboarding, page transition, shortcuts, print
    ========================================================================== */
 
 /* ---- Empty states ------------------------------------------------------------ */
@@ -80,7 +80,7 @@
   gap: 2px;
 }
 
-/* The logomark is a self-contained badge — dark card, light artwork — so it
+/* The logomark is a self-contained badge, dark card, light artwork, so it
    needs no theme treatment: it reads on the light surface as a solid shape and
    on the dark one through its own chart glyph and hairline edge. Square, and
    sized to sit above the wordmark without competing with it. */
@@ -91,7 +91,7 @@
   margin-bottom: 10px;
 }
 
-/* Numbered, em-dashed step markers — the section-header convention. */
+/* Numbered, em-dashed step markers, the section-header convention. */
 .bfh-onboard__steps {
   display: flex;
   gap: 14px;
@@ -247,7 +247,7 @@
 }
 
 /* ==========================================================================
-   Onboarding — the assistant step
+   Onboarding, the assistant step
    ========================================================================== */
 
 /* The assistant step carries more below it than the others, so its heading
@@ -362,7 +362,7 @@
 }
 
 /* ==========================================================================
-   Dashboard — assistant hint
+   Dashboard, assistant hint
    ========================================================================== */
 
 .bfh-aihint {
@@ -413,7 +413,7 @@
 
 /* The sentence takes the line and the action drops beneath it. Wrapping alone
    was not enough: the text flexes, so it shrank to make room for the button
-   instead of pushing it down — 166px of sentence broken over three lines with
+   instead of pushing it down, 166px of sentence broken over three lines with
    a 44px close target beside it. Giving the action a full-width basis is what
    actually moves it. */
 @media (max-width: 560px) {

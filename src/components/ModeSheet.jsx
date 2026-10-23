@@ -27,7 +27,7 @@ const OPTIONS = [
  * The mode picker, on a phone.
  *
  * The switcher itself lives in the sidebar, which on a phone is a drawer behind
- * the hamburger — findable only if you already know it is there. This puts the
+ * the hamburger, findable only if you already know it is there. This puts the
  * same choice on the thing that already names the mode: the greeting.
  *
  * Portalled, because the sheet has to sit above the bottom bar and the floating

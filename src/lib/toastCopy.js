@@ -1,11 +1,11 @@
 /**
  * Words for toasts, so each one says what it was about: "Income added",
- * "Marketing budget removed" — never a bare "Saved".
+ * "Marketing budget removed", never a bare "Saved".
  */
 
 const TX_NOUNS = { income: 'Income', expense: 'Expense', transfer: 'Transfer' }
 
-/** "Income", "Expense", "Transfer" — what a transaction of this type is called. */
+/** "Income", "Expense", "Transfer", what a transaction of this type is called. */
 export const txNoun = (type) => TX_NOUNS[type] ?? 'Transaction'
 
 /** A name short enough to sit in a toast beside its verb. */

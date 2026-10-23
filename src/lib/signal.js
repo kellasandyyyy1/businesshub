@@ -3,7 +3,7 @@
  * invoice due in two days reads the same on every page that shows it.
  *
  * Tones: 'pos' good news · 'warn' a warning · 'neg' a problem · 'neutral'.
- * Anything ordinary — an expense, a sent invoice, a goal on pace — is
+ * Anything ordinary, an expense, a sent invoice, a goal on pace, is
  * neutral or gets no badge at all, so colour keeps meaning something.
  */
 
@@ -40,7 +40,7 @@ export function dueTone(invoice, today) {
 
 /** Budget use (spent ÷ cap) to a tone: ink below 80%, amber to 100%, red past it. */
 export function budgetTone(use, budget) {
-  // A budget for one payee — a subscription — is used up by its single charge
+  // A budget for one payee, a subscription, is used up by its single charge
   // every month, so "nearly there" is just normal. It only signals when the
   // charge comes in above the limit: a price rise, or a second charge.
   if (budget?.match) return use > 1 ? 'neg' : null

@@ -16,7 +16,7 @@ const inProfile = ofProfile(BUSINESS_PROFILE)
 const sumBy = (rows, type) =>
   rows.filter((r) => r.type === type).reduce((total, r) => total + r.amount, 0)
 
-/** Transfers move money between our own accounts — never revenue or spend. */
+/** Transfers move money between our own accounts. Never revenue or spend. */
 const isOperating = (r) => r.type === 'income' || r.type === 'expense'
 
 /**
@@ -43,7 +43,7 @@ function buildBuckets(periodId, startDate, endDate) {
   const buckets = []
 
   if (plan.unit === 'month') {
-    // Exactly N whole months back from today — anchoring on the window start
+    // Exactly N whole months back from today. Anchoring on the window start
     // would spill into a thirteenth bucket labelled the same as the first.
     let cursor = monthStart(endDate, -(plan.months - 1))
     while (cursor <= endDate) {
@@ -74,7 +74,7 @@ function buildBuckets(periodId, startDate, endDate) {
 }
 
 /* -------------------------------------------------------------------------
-   Business health — four weighted signals, all derived from real rows
+   Business health. Four weighted signals, all derived from real rows
    ------------------------------------------------------------------------- */
 
 function healthScore({ revenue, expenses, overdueAmount, outstandingAmount, budgetUse, runwayMonths }) {
@@ -105,14 +105,14 @@ function healthScore({ revenue, expenses, overdueAmount, outstandingAmount, budg
   const advice = {
     margin:
       margin > 0
-        ? `Net margin is ${(margin * 100).toFixed(0)}% — trim recurring spend to widen it.`
-        : 'Spending outran income this period — review the largest expenses first.',
-    collection: `${(lateShare * 100).toFixed(0)}% of your receivables are past due — chase those invoices.`,
+        ? `Net margin is ${(margin * 100).toFixed(0)}%. Trim recurring spend to widen it.`
+        : 'Spending outran income this period. Review the largest expenses first.',
+    collection: `${(lateShare * 100).toFixed(0)}% of your receivables are past due. Chase those invoices.`,
     budget:
       budgetUse > 1
-        ? `You are ${((budgetUse - 1) * 100).toFixed(0)}% over budget — rebalance before month end.`
-        : 'Budget use is close to the line — watch the next few expenses.',
-    runway: `Cash covers about ${runwayMonths.toFixed(1)} months of spend — build a deeper reserve.`,
+        ? `You are ${((budgetUse - 1) * 100).toFixed(0)}% over budget. Rebalance before month end.`
+        : 'Budget use is close to the line. Watch the next few expenses.',
+    runway: `Cash covers about ${runwayMonths.toFixed(1)} months of spend. Build a deeper reserve.`,
   }
 
   let label = 'At risk'

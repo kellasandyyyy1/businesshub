@@ -40,7 +40,7 @@ export async function recordCategorization({ description, amount, category }) {
 }
 
 const SYSTEM = (categories) =>
-  `You are a transaction categorizer for a Philippine small business. Given a transaction description and amount, return ONLY valid JSON — no markdown, no explanation, no backticks:
+  `You are a transaction categorizer for a Philippine small business. Given a transaction description and amount, return ONLY valid JSON, no markdown, no explanation, no backticks:
 { "category": string, "confidence": "high" | "medium" | "low" }
 Available categories: ${categories.join('; ')}.
 Use past examples to match patterns.`
