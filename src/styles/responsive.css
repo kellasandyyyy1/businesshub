@@ -84,7 +84,8 @@
 /* Clear the bottom bar and the home indicator. */
 @media (max-width: 1023px) {
   .bfh-main {
-    padding-bottom: calc(56px + env(safe-area-inset-bottom) + 16px);
+    /* The floating bar (12px off the edge, 56px tall), plus 16px of air. */
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
   }
 }
 
@@ -92,48 +93,122 @@
    Bottom navigation
    -------------------------------------------------------------------------- */
 
+/* A floating pill: icons only, and the page you are on as a dark pill that
+   names it. It hovers clear of the screen edge and the home indicator. */
 .bfh-bottomnav {
+  --bottomnav-h: 56px;
+  --bottomnav-gap: 12px;
+
   position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  bottom: calc(var(--bottomnav-gap) + env(safe-area-inset-bottom));
+  left: 50%;
   z-index: 50;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  height: calc(56px + env(safe-area-inset-bottom));
-  padding-bottom: env(safe-area-inset-bottom);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  height: var(--bottomnav-h);
+  padding: 6px;
+  border: var(--hairline) solid var(--b);
+  border-radius: var(--radius-pill);
   background: var(--card);
-  border-top: var(--hairline) solid var(--b);
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.04),
+    0 10px 28px -10px rgb(0 0 0 / 0.18);
+  transform: translateX(-50%);
 }
 
 .bfh-bottomnav__item {
   display: flex;
-  flex-direction: column;
+  flex: none;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  height: 56px;
+  gap: 0;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 12px;
   border: 0;
+  border-radius: var(--radius-pill);
   background: transparent;
-  color: var(--ink3);
+  color: var(--ink2);
   text-decoration: none;
   cursor: pointer;
-  transition: color var(--duration-micro) var(--ease-out-soft);
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 260ms var(--ease-out-soft),
+    color 200ms var(--ease-out-soft),
+    gap 260ms var(--ease-out-soft),
+    padding 260ms var(--ease-out-soft);
 }
 .bfh-bottomnav__item:hover {
-  color: var(--ink2);
+  color: var(--ink);
+}
+.bfh-bottomnav__item:active {
+  transform: scale(0.96);
+}
+.bfh-bottomnav__item:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
 .bfh-bottomnav__item[aria-current='page'],
 .bfh-bottomnav__item[aria-current='true'] {
-  color: var(--ink);
+  gap: 7px;
+  padding: 0 16px 0 14px;
+  background: var(--invert-bg);
+  color: var(--invert-fg);
 }
 
+.bfh-bottomnav__icon {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+}
+
+/* Something on that page needs you, a dot rather than a count, as on the bell. */
+.bfh-bottomnav__dot {
+  position: absolute;
+  top: -2px;
+  right: -3px;
+  width: 7px;
+  height: 7px;
+  border: 1.5px solid var(--card);
+  border-radius: 50%;
+  background: var(--neg);
+  box-sizing: content-box;
+}
+.bfh-bottomnav__item[aria-current='page'] .bfh-bottomnav__dot {
+  border-color: var(--invert-bg);
+}
+
+/* The word only shows on the page you are on; elsewhere it folds to nothing
+   but stays readable to a screen reader. */
 .bfh-bottomnav__label {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-micro);
+  max-width: 0;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--weight-medium);
   line-height: 1;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  opacity: 0;
+  transition:
+    max-width 260ms var(--ease-out-soft),
+    opacity 180ms var(--ease-out-soft);
+}
+.bfh-bottomnav__item[aria-current='page'] .bfh-bottomnav__label,
+.bfh-bottomnav__item[aria-current='true'] .bfh-bottomnav__label {
+  max-width: 120px;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bfh-bottomnav__item,
+  .bfh-bottomnav__label {
+    transition: none;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -217,7 +292,8 @@
 .bfh-fab {
   position: fixed;
   right: 20px;
-  bottom: calc(72px + env(safe-area-inset-bottom));
+  /* Above the floating bar (12px + 56px) with a 12px gap. */
+  bottom: calc(80px + env(safe-area-inset-bottom));
   z-index: 60;
   display: grid;
   place-items: center;
@@ -234,7 +310,7 @@
 /* The AI launcher would otherwise sit under the bottom bar on a tablet. */
 @media (min-width: 768px) and (max-width: 1023px) {
   .bfh-ai-fab {
-    bottom: calc(76px + env(safe-area-inset-bottom));
+    bottom: calc(80px + env(safe-area-inset-bottom));
   }
 }
 
@@ -765,26 +841,6 @@ body {
 @media (min-width: 768px) and (max-width: 1023px) {
   .bfh-panel {
     width: 360px;
-  }
-}
-
-/* The 11px floor makes "TRANSACTIONS" wider than a fifth of a 375px screen.
-   Dropping the micro tracking buys the room back without shrinking the type. */
-@media (max-width: 767px) {
-  /* Five equal columns leave 'Transactions' 10px short while the other four
-     have room to spare. Sharing the bar by content instead of by fifths fits
-     every label at 11px, with 44px still the narrowest slot. */
-  .bfh-bottomnav {
-    display: flex;
-  }
-  .bfh-bottomnav__item {
-    flex: 1 1 auto;
-    min-width: 44px;
-    padding: 0 4px;
-  }
-  .bfh-bottomnav__label {
-    letter-spacing: 0;
-    white-space: nowrap;
   }
 }
 

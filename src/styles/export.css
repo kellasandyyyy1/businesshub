@@ -603,11 +603,11 @@
    room on the right for the floating assistant button. */
 /* Below 1024px the page scrolls inside .bfh-main, whose bottom padding already
    clears the bottom nav plus 16px, and a sticky element sticks inside that
-   padding. Pulling it down by the 16px sets the bar flush on the nav; adding
-   the nav height again is what left it floating mid-screen. */
+   padding. Pulling it down by 8px of that leaves it 8px above the floating
+   nav; adding the nav height again is what left it floating mid-screen. */
 @media (max-width: 1023px) {
   .bfh-exp__submit {
-    bottom: -16px;
+    bottom: -8px;
   }
 }
 @media (min-width: 768px) and (max-width: 1023px) {

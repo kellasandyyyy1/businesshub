@@ -796,6 +796,89 @@
   display: inline-flex;
 }
 
+/* ---- Ask and bell, together ------------------------------------------------
+   Wider screens leave the wrapper out of the layout. On a phone it is one pill
+   in the bottom bar's material: card surface, hairline, soft lift, with two
+   round borderless buttons inside and the bell's badge tucked on its corner. */
+
+.bfh-topbar__actions {
+  display: contents;
+}
+
+@media (max-width: 767px) {
+  .bfh-topbar__actions {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 2px;
+    padding: 2px;
+    border: var(--hairline) solid var(--b);
+    border-radius: var(--radius-pill);
+    background: var(--card);
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.04),
+      0 6px 18px -10px rgb(0 0 0 / 0.2);
+  }
+
+  .bfh-topbar__actions .bfh-icon-btn {
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--ink2);
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      background-color var(--duration-micro) var(--ease-out-soft),
+      color var(--duration-micro) var(--ease-out-soft),
+      transform 120ms var(--ease-out-soft);
+  }
+  .bfh-topbar__actions .bfh-icon-btn:hover {
+    background: var(--surface-fill);
+    color: var(--ink);
+  }
+  .bfh-topbar__actions .bfh-icon-btn:active {
+    transform: scale(0.94);
+  }
+  .bfh-topbar__actions .bfh-icon-btn:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: -2px;
+  }
+  .bfh-topbar__actions .bfh-icon-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Open, it holds the dark fill the bottom bar uses for where you are. */
+  .bfh-topbar__actions .bfh-bell[aria-expanded='true'] {
+    background: var(--invert-bg);
+    color: var(--invert-fg);
+  }
+  .bfh-topbar__actions .bfh-bell[data-fresh] {
+    color: var(--ink);
+  }
+
+  /* Inside the pill the badge sits on the button's own corner, not over the
+     pill's edge, ringed in the pill's surface so it reads as a separate mark. */
+  .bfh-topbar__actions .bfh-bell__badge {
+    top: 4px;
+    right: 3px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    font-size: 10px;
+    box-shadow: 0 0 0 2px var(--card);
+  }
+  .bfh-topbar__actions .bfh-bell__seen {
+    top: 11px;
+    right: 11px;
+    box-shadow: 0 0 0 2px var(--card);
+  }
+  .bfh-topbar__actions .bfh-bell[aria-expanded='true'] :is(.bfh-bell__seen, .bfh-bell__badge) {
+    box-shadow: 0 0 0 2px var(--invert-bg);
+  }
+}
+
 .bfh-notifmenu {
   position: absolute;
   top: calc(100% + 8px);

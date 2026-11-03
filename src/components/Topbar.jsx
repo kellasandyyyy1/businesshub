@@ -119,53 +119,58 @@ export default function Topbar({ onOpenMenu, onAsk }) {
           </div>
         )}
 
-        {/* The floating button is out of thumb reach on a phone, so the ask
-            control also lives here at mobile widths. */}
-        <button
-          type="button"
-          className="bfh-icon-btn bfh-icon-btn--mobile"
-          onClick={onAsk}
-          aria-label="Ask anything"
-        >
-          <IconMessageCircle size={16} stroke={1.5} aria-hidden="true" />
-        </button>
-
-        <span className="bfh-bellwrap">
+        {/* On a phone the two sit together in one pill, in the same material
+            as the floating bottom bar; on wider screens the wrapper steps
+            aside and the bell stands on its own as before. */}
+        <span className="bfh-topbar__actions">
+          {/* The floating button is out of thumb reach on a phone, so the ask
+              control also lives here at mobile widths. */}
           <button
             type="button"
-            className="bfh-icon-btn bfh-bell"
-            data-help-id="notification-bell"
-            data-bell="true"
-            data-fresh={bell.fresh > 0 || undefined}
-            data-tone={bell.fresh > 0 ? (bell.tone ?? 'ink') : undefined}
-            data-ring={bell.ring || undefined}
-            aria-haspopup="dialog"
-            aria-expanded={bellOpen}
-            onClick={() => {
-              // Opening the list is reading it: the badge goes quiet until
-              // something new arrives.
-              if (!bellOpen) bell.markSeen()
-              setBellOpen((open) => !open)
-            }}
-            aria-label={
-              bell.fresh > 0
-                ? `Notifications, ${bell.fresh} new`
-                : bell.count > 0
-                  ? `Notifications, ${bell.count}`
-                  : 'Notifications, none right now'
-            }
+            className="bfh-icon-btn bfh-icon-btn--mobile"
+            onClick={onAsk}
+            aria-label="Ask anything"
           >
-            <IconBell className="bfh-bell__icon" size={17} stroke={1.6} aria-hidden="true" />
-            {bell.fresh > 0 ? (
-              <span className="bfh-bell__badge" aria-hidden="true">
-                {bell.fresh > 9 ? '9+' : bell.fresh}
-              </span>
-            ) : (
-              bell.count > 0 && <span className="bfh-bell__seen" aria-hidden="true" />
-            )}
+            <IconMessageCircle size={16} stroke={1.5} aria-hidden="true" />
           </button>
 
-          {bellOpen && <NotificationsMenu onClose={() => setBellOpen(false)} />}
+          <span className="bfh-bellwrap">
+            <button
+              type="button"
+              className="bfh-icon-btn bfh-bell"
+              data-help-id="notification-bell"
+              data-bell="true"
+              data-fresh={bell.fresh > 0 || undefined}
+              data-tone={bell.fresh > 0 ? (bell.tone ?? 'ink') : undefined}
+              data-ring={bell.ring || undefined}
+              aria-haspopup="dialog"
+              aria-expanded={bellOpen}
+              onClick={() => {
+                // Opening the list is reading it: the badge goes quiet until
+                // something new arrives.
+                if (!bellOpen) bell.markSeen()
+                setBellOpen((open) => !open)
+              }}
+              aria-label={
+                bell.fresh > 0
+                  ? `Notifications, ${bell.fresh} new`
+                  : bell.count > 0
+                    ? `Notifications, ${bell.count}`
+                    : 'Notifications, none right now'
+              }
+            >
+              <IconBell className="bfh-bell__icon" size={17} stroke={1.6} aria-hidden="true" />
+              {bell.fresh > 0 ? (
+                <span className="bfh-bell__badge" aria-hidden="true">
+                  {bell.fresh > 9 ? '9+' : bell.fresh}
+                </span>
+              ) : (
+                bell.count > 0 && <span className="bfh-bell__seen" aria-hidden="true" />
+              )}
+            </button>
+
+            {bellOpen && <NotificationsMenu onClose={() => setBellOpen(false)} />}
+          </span>
         </span>
       </div>
       {modeOpen && <ModeSheet onClose={() => setModeOpen(false)} />}
